@@ -12,7 +12,9 @@ namespace BinaryBZNViewer
 {
     public partial class Form1 : Form
     {
-        string filename;
+        private string filename;
+        private BinaryBZN BZNFile;
+        private bool EnableListSelectCallback = true;
 
         public Form1()
         {
@@ -24,6 +26,11 @@ namespace BinaryBZNViewer
             openFileDialog1.ShowDialog();
         }
 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog();
+        }
+
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             if (!e.Cancel)
@@ -33,22 +40,24 @@ namespace BinaryBZNViewer
             }
         }
 
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            if (!e.Cancel)
+            {
+                filename = saveFileDialog1.FileName;
+                saveSelectedFile();
+            }
+        }
+
         private void loadSelectedFile()
         {
             if (System.IO.File.Exists(filename))
             {
-                // unload anything loaded?
-                //listBox1.Items.Clear();
-                // />
+                BZNFile = new BinaryBZN(System.IO.File.OpenRead(filename));
 
-                BinaryBZN BZNFile = new BinaryBZN(System.IO.File.OpenRead(filename));
+                saveFileDialog1.FileName = filename;
+                saveToolStripMenuItem.Enabled = true;
 
-                //VersionField;
-                //Version;
-                //SaveTypeField;
-                //SaveType;
-                //BinarySaveField;
-                //BinarySave;
                 listBox1.Items.Clear();
                 listBox1.BeginUpdate();
                 foreach(Field field in BZNFile.fields)
@@ -57,6 +66,39 @@ namespace BinaryBZNViewer
                 }
                 listBox1.EndUpdate();
             }
+        }
+
+        private void saveSelectedFile()
+        {
+            BZNFile.save(System.IO.File.OpenWrite(filename));
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem != null && EnableListSelectCallback)
+            {
+                byte[] data = ((Field)listBox1.SelectedItem).GetRawRef();
+                if (data != null)
+                {
+                    hexBox1.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(data);
+                    hexBox1.ByteProvider.Changed += new EventHandler(ByteProvider_Changed);
+                }
+                else
+                {
+                    hexBox1.ByteProvider = null;
+                }
+            }
+        }
+
+        private void ByteProvider_Changed(object sender, EventArgs e)
+        {
+            ((Field)listBox1.SelectedItem).SetRawRef(((Be.Windows.Forms.DynamicByteProvider)sender).Bytes.ToArray());
+            EnableListSelectCallback = false;
+            listBox1.SuspendLayout();
+            int index = listBox1.SelectedIndex;
+            listBox1.Items[index] = listBox1.Items[index];
+            listBox1.ResumeLayout();
+            EnableListSelectCallback = true;
         }
     }
 }
