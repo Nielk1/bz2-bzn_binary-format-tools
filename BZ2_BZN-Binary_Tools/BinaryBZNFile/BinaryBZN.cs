@@ -9,24 +9,30 @@ namespace BinaryBZNFile
 {
     public enum FIELD_TYPE : byte
     {
-        DATA_VOID     = 0,
-        DATA_BOOL     = 1,
-        DATA_CHAR     = 2,
-        DATA_SHORT    = 3,
-        DATA_LONG     = 4,
-        DATA_FLOAT    = 5,
-        DATA_DOUBLE   = 6,
-        DATA_ID       = 7,
-        DATA_PTR      = 8,
-        DATA_VEC3D    = 9,
-        DATA_VEC2D    = 10,
-        DATA_MAT3DOLD = 11,
-        DATA_MAT3D    = 12,
-        DATA_STRING   = 13,
-        DATA_QUAT     = 14
+        DATA_VOID     = 0, //0x00
+        DATA_BOOL     = 1, //0x01
+        DATA_CHAR     = 2, //0x02
+        DATA_SHORT    = 3, //0x03
+        DATA_LONG     = 4, //0x04
+        DATA_FLOAT    = 5, //0x05
+        DATA_DOUBLE   = 6, //0x06
+        DATA_ID       = 7, //0x07
+        DATA_PTR      = 8, //0x08
+        DATA_VEC3D    = 9, //0x09
+        DATA_VEC2D    = 10,//0x0A
+        DATA_MAT3DOLD = 11,//0x0B
+        DATA_MAT3D    = 12,//0x0C
+        DATA_STRING   = 13,//0x0D
+        DATA_QUAT     = 14 //0x0E
     }
 
-    public class BinaryBZN
+    public interface IBinaryBZN
+    {
+        List<Field> fields { get; set; }
+        void save(System.IO.FileStream fileStream);
+    }
+
+    public class BinaryBZN : IBinaryBZN
     {
         //public string VersionField;
         //public string Version;
@@ -35,9 +41,11 @@ namespace BinaryBZNFile
         //public string BinarySaveField;
         //public string BinarySave;
         public List<byte> StringPart;
-        public List<Field> fields;
+        public List<Field> fields { get; set; }
 
-        public BinaryBZN(Stream filestream)
+        private bool bz1 = false;
+
+        public BinaryBZN(Stream filestream, bool bz1 = false)
         {
             //VersionField = "";
             //Version = "";
@@ -56,6 +64,8 @@ namespace BinaryBZNFile
             List<byte> tmpBytes = new List<byte>();
 
             bool InBinaryData = false;
+
+            this.bz1 = bz1;
 
             while (filestream.Read(readByte, 0, 1) > 0)
             {
@@ -100,36 +110,39 @@ namespace BinaryBZNFile
             //    throw new Exception("Binary flag not \"true\".");
             //}
 
-            for (int x = 0; x < dataBytes.Length;)
+            int offset = 0;
+            if (bz1) offset = 1;
+            for (int x = 0; x < dataBytes.Length; )
             {
-                ushort Size = (ushort)((dataBytes[x + 2] << 8) | dataBytes[x + 1]);
+                ushort Size = (ushort)((dataBytes[x + 2 + offset] << 8) | dataBytes[x + 1 + offset]);
+                int dataOffset = x + 3 + offset;
 
                 switch (dataBytes[x])
                 {
                     case 0: // DATA_VOID
-                        fields.Add(new NamedField(FIELD_TYPE.DATA_VOID, "DATA_VOID", dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new NamedField(FIELD_TYPE.DATA_VOID, "DATA_VOID", dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 1: // DATA_BOOL
-                        fields.Add(new BoolField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new BoolField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         //fields.Add(new BoolField(dataBytes[x + 3] != 0x00));
                         break;
                     case 2: // DATA_CHAR
-                        fields.Add(new CharField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new CharField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 3: // DATA_SHORT
-                        fields.Add(new ShortField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new ShortField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         //fields.Add(new ShortField((short)((dataBytes[x + 4] << 8) | dataBytes[x + 3])));
                         break;
                     case 4: // DATA_LONG
-                        fields.Add(new LongField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new LongField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         //fields.Add(new LongField((long)((dataBytes[x + 6] << 24) | (dataBytes[x + 5] << 16) | (dataBytes[x + 4] << 8) | dataBytes[x + 3])));
                         break;
                     case 5: // DATA_FLOAT
-                        fields.Add(new FloatField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new FloatField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         //fields.Add(new FloatField(System.BitConverter.ToSingle(dataBytes, x + 3)));
                         break;
                     case 6: // DATA_DOUBLE
-                        fields.Add(new DoubleField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new DoubleField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         /*fields.Add(new DoubleField((double)(
                             (dataBytes[x + 10] << 64) |
                             (dataBytes[x + 9] << 56) |
@@ -142,26 +155,26 @@ namespace BinaryBZNFile
                         break;
                     case 7: // DATA_ID
                         //fields.Add(new UnknownField("DATA_ID", Size));
-                        fields.Add(new NamedField(FIELD_TYPE.DATA_ID, "DATA_ID", dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new NamedField(FIELD_TYPE.DATA_ID, "DATA_ID", dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 8: // DATA_PTR
                         //fields.Add(new PtrField((long)((dataBytes[x + 6] << 24) | (dataBytes[x + 5] << 16) | (dataBytes[x + 4] << 8) | dataBytes[x + 3])));
-                        fields.Add(new PtrField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new PtrField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 9: // DATA_VEC3D
                         /*fields.Add(new Vec3DField(System.BitConverter.ToSingle(dataBytes, x + 3),
                                                   System.BitConverter.ToSingle(dataBytes, x + 7),
                                                   System.BitConverter.ToSingle(dataBytes, x + 11)));*/
-                        fields.Add(new Vec3DField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new Vec3DField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 10: // DATA_VEC2D
                         /*fields.Add(new Vec2DField(System.BitConverter.ToSingle(dataBytes, x + 3),
                                                   System.BitConverter.ToSingle(dataBytes, x + 7)));*/
-                        fields.Add(new Vec2DField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new Vec2DField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 11: // DATA_MAT3DOLD
                         //fields.Add(new UnknownField("DATA_MAT3DOLD", Size));
-                        fields.Add(new NamedField(FIELD_TYPE.DATA_MAT3DOLD, "DATA_MAT3DOLD", dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new NamedField(FIELD_TYPE.DATA_MAT3DOLD, "DATA_MAT3DOLD", dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 12: // DATA_MAT3D
                         /*fields.Add(new Mat3DField(System.BitConverter.ToSingle(dataBytes, x + 3),
@@ -180,25 +193,25 @@ namespace BinaryBZNFile
                                                   System.BitConverter.ToSingle(dataBytes, x + 55),
                                                   System.BitConverter.ToSingle(dataBytes, x + 59),
                                                   System.BitConverter.ToSingle(dataBytes, x + 63)));*/
-                        fields.Add(new Mat3DField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new Mat3DField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 13: // DATA_STRING
                         //fields.Add(new StringField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
-                        fields.Add(new NamedField(FIELD_TYPE.DATA_STRING, "DATA_STRING", dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new NamedField(FIELD_TYPE.DATA_STRING, "DATA_STRING", dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
                     case 14: // DATA_QUAT
                         /*fields.Add(new QuatField((float)((dataBytes[x +  6] << (8 *  3)) | (dataBytes[x +  5] << (8 *  2)) | (dataBytes[x +  4] <<  8)       |  dataBytes[x + 3]),
                                                  (float)((dataBytes[x + 10] << (8 *  7)) | (dataBytes[x +  9] << (8 *  6)) | (dataBytes[x +  8] << (8 *  5)) | (dataBytes[x + 7] << (8 * 4))),
                                                  (float)((dataBytes[x + 14] << (8 * 11)) | (dataBytes[x + 13] << (8 * 10)) | (dataBytes[x + 12] << (8 *  9)) | (dataBytes[x + 11] << (8 * 8))),
                                                  (float)((dataBytes[x + 18] << (8 * 15)) | (dataBytes[x + 17] << (8 * 14)) | (dataBytes[x + 16] << (8 * 13)) | (dataBytes[x + 15] << (8 * 12)))));*/
-                        fields.Add(new QuatField(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                        fields.Add(new QuatField(dataBytes.Skip(dataOffset).Take(Size).ToArray()));
                         break;
-//                    default:
-//                        fields.Add(new Field(dataBytes.Skip(x + 3).Take(Size).ToArray()));
-//                        break;
+                    //                    default:
+                    //                        fields.Add(new Field(dataBytes.Skip(x + 3).Take(Size).ToArray()));
+                    //                        break;
                 }
 
-                x += 3 + Size;
+                x += 3 + + offset + Size;
             }
         }
 
@@ -210,8 +223,76 @@ namespace BinaryBZNFile
             {
                 byte[] fieldData = fields[x].GetRawRef();
                 fileStream.WriteByte((byte)(fields[x].GetFieldType()));
+                if (bz1) fileStream.WriteByte((byte)0);
                 fileStream.Write(System.BitConverter.GetBytes((short)(fieldData.Length)), 0, 2);
                 fileStream.Write(fieldData, 0, fieldData.Length);
+            }
+            fileStream.Close();
+        }
+    }
+
+    public class N64BZN : IBinaryBZN
+    {
+        //public string VersionField;
+        //public string Version;
+        //public string SaveTypeField;
+        //public string SaveType;
+        //public string BinarySaveField;
+        //public string BinarySave;
+        public List<byte> StringPart;
+        public List<Field> fields { get; set; }
+
+        public N64BZN(Stream filestream)
+        {
+            //VersionField = "";
+            //Version = "";
+            //SaveTypeField = "";
+            //SaveType = "";
+            //BinarySaveField = "";
+            //BinarySave = "";
+            StringPart = new List<byte>();
+            //List<char> tmpString = new List<char>();
+            fields = new List<Field>();
+
+            // this reading code is awful btw
+            byte[] readByte = new byte[1];
+            //bool saw0D = false;
+            //int readingLine = 0;
+            List<byte> tmpBytes = new List<byte>();
+
+            while (filestream.Read(readByte, 0, 1) > 0)
+            {
+                byte byteX = readByte[0];
+                tmpBytes.Add(byteX);
+            }
+            byte[] dataBytes = tmpBytes.ToArray();
+
+            //if (!BinarySave.ToLowerInvariant().Equals("true"))
+            //{
+            //    throw new Exception("Binary flag not \"true\".");
+            //}
+            
+            for (int x = 0; x < dataBytes.Length; )
+            {
+                ushort Size = (ushort)((dataBytes[x] << 8) | dataBytes[x + 1]);
+
+                fields.Add(new NamedField(FIELD_TYPE.DATA_VOID, "UNKNOWN", dataBytes.Skip(x + 2).Take(Size).ToArray()));
+
+                x += 2 + Size;
+                if (Size % 2 != 0) x++; // deal with padding
+            }
+        }
+
+        public void save(FileStream fileStream)
+        {
+            fileStream.SetLength(0);
+            fileStream.Write(StringPart.ToArray(), 0, StringPart.Count);
+            for (int x = 0; x < fields.Count; x++)
+            {
+                byte[] fieldData = fields[x].GetRawRef();
+                fileStream.Write(System.BitConverter.GetBytes((short)(fieldData.Length)).Reverse().ToArray(), 0, 2);
+                fileStream.Write(fieldData, 0, fieldData.Length);
+                if (fieldData.Length % 2 != 0) fileStream.WriteByte((byte)0); // deal with padding
             }
             fileStream.Close();
         }

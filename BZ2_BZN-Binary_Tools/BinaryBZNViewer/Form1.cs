@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using BinaryBZNFile;
+using System.IO;
 
 namespace BinaryBZNViewer
 {
     public partial class Form1 : Form
     {
         private string filename;
-        private BinaryBZN BZNFile;
+        private IBinaryBZN BZNFile;
         private bool EnableListSelectCallback = true;
 
         public Form1()
@@ -53,7 +54,12 @@ namespace BinaryBZNViewer
         {
             if (System.IO.File.Exists(filename))
             {
-                BZNFile = new BinaryBZN(System.IO.File.OpenRead(filename));
+                if (Path.GetExtension(filename).ToLowerInvariant() == ".bin")
+                {
+                    BZNFile = new N64BZN(System.IO.File.OpenRead(filename));
+                }else{
+                    BZNFile = new BinaryBZN(System.IO.File.OpenRead(filename), bz1Mode.Checked);
+                }
 
                 saveFileDialog1.FileName = filename;
                 saveToolStripMenuItem.Enabled = true;
@@ -75,6 +81,7 @@ namespace BinaryBZNViewer
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            fieldIndex.Text = listBox1.SelectedIndex.ToString();
             if (listBox1.SelectedItem != null && EnableListSelectCallback)
             {
                 byte[] data = ((Field)listBox1.SelectedItem).GetRawRef();
