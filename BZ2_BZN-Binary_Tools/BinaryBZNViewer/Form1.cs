@@ -14,7 +14,7 @@ namespace BinaryBZNViewer
     public partial class Form1 : Form
     {
         private string filename;
-        private IBinaryBZN BZNFile;
+        private IRawBZN BZNFile;
         private bool EnableListSelectCallback = true;
 
         public Form1()
@@ -58,7 +58,7 @@ namespace BinaryBZNViewer
                 {
                     BZNFile = new N64BZN(System.IO.File.OpenRead(filename));
                 }else{
-                    BZNFile = new BinaryBZN(System.IO.File.OpenRead(filename), bz1Mode.Checked);
+                    BZNFile = new RawBZN(System.IO.File.OpenRead(filename), bz1Mode.Checked);
                 }
 
                 saveFileDialog1.FileName = filename;

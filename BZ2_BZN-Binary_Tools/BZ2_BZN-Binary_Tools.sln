@@ -1,9 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryBZNFile", "BinaryBZNFile\BinaryBZNFile.csproj", "{EE2533A6-61FB-42C4-B835-75234CA99666}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryBZNViewer", "BinaryBZNViewer\BinaryBZNViewer.csproj", "{16F80091-C6BC-47A0-87B9-3AD5028EC672}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "N64BZNParser", "N64BZNParser\N64BZNParser.csproj", "{BB244241-7077-4B45-AFCA-FAF4DEB7848B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,16 @@ Global
 		{16F80091-C6BC-47A0-87B9-3AD5028EC672}.Release|Mixed Platforms.Build.0 = Release|x86
 		{16F80091-C6BC-47A0-87B9-3AD5028EC672}.Release|x86.ActiveCfg = Release|x86
 		{16F80091-C6BC-47A0-87B9-3AD5028EC672}.Release|x86.Build.0 = Release|x86
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BB244241-7077-4B45-AFCA-FAF4DEB7848B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

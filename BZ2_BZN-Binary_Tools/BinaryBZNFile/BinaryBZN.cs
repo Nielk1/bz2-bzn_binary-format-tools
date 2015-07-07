@@ -26,13 +26,14 @@ namespace BinaryBZNFile
         DATA_QUAT     = 14 //0x0E
     }
 
-    public interface IBinaryBZN
+    public interface IRawBZN
     {
+        List<ASCIIField> asciiFields { get; set; }
         List<Field> fields { get; set; }
         void save(System.IO.FileStream fileStream);
     }
 
-    public class BinaryBZN : IBinaryBZN
+    public class RawBZN : IRawBZN
     {
         //public string VersionField;
         //public string Version;
@@ -41,11 +42,13 @@ namespace BinaryBZNFile
         //public string BinarySaveField;
         //public string BinarySave;
         public List<byte> StringPart;
+
+        public List<ASCIIField> asciiFields { get; set; }
         public List<Field> fields { get; set; }
 
         private bool bz1 = false;
 
-        public BinaryBZN(Stream filestream, bool bz1 = false)
+        public RawBZN(Stream filestream, bool bz1 = false)
         {
             //VersionField = "";
             //Version = "";
@@ -55,6 +58,7 @@ namespace BinaryBZNFile
             //BinarySave = "";
             StringPart = new List<byte>();
             //List<char> tmpString = new List<char>();
+            asciiFields = new List<ASCIIField>();
             fields = new List<Field>();
 
             // this reading code is awful btw
@@ -67,41 +71,79 @@ namespace BinaryBZNFile
 
             this.bz1 = bz1;
 
+            {
+                while (!InBinaryData && filestream.Position < filestream.Length)
+                {
+                    ASCIIField item = new ASCIIField();
+
+                    string[] line = ReadLine(filestream).Split(' ');
+                    if (line[1] == "=")
+                    {
+                        item.name = line[0];
+                        item.isArray = false;
+                        item.value = new string[1];
+                        item.value[0] = line[2];
+                    }
+                    else if (line[2] == "=")
+                    {
+                        item.name = line[0];
+                        item.isArray = true;
+                        int count = int.Parse(line[1].Substring(1, line[1].Length - 2));
+
+                        item.value = new string[count];
+
+                        for (int lineNum = 0; lineNum < count; lineNum++)
+                        {
+                            item.value[lineNum] = ReadLine(filestream).TrimEnd('\r', '\n');
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Error reading ASCII data, \"=\" not found where expected.");
+                    }
+
+                    asciiFields.Add(item);
+
+                    if (item.name == "binarySave" && item.value[0] == "true")
+                        InBinaryData = true;
+                }
+            }
+
             while (filestream.Read(readByte, 0, 1) > 0)
             {
                 byte byteX = readByte[0];
-                if (InBinaryData)
+                //if (InBinaryData)
                 {
                     tmpBytes.Add(byteX);
                     //Console.WriteLine("Wrote Byte " + byteX.ToString("X"));
                 }
-                else
-                {
-                    if (!Char.IsControl((char)byteX))
-                    {
-                        //tmpString += (char)byteX;
-                        tmpBytes.Add(byteX);
-                        //Console.WriteLine("Wrote Char " + (char)byteX);
-                    }
-                    else
-                    {
-                        if (byteX == 0x0A || byteX == 0x0D)
-                        {
-                            //StringPart += tmpString + (char)byteX;
-                            tmpBytes.ForEach(i => StringPart.Add(i));
-                            StringPart.Add(byteX);
-                            //tmpString = string.Empty;
-                            tmpBytes.Clear(); // woops, don't need these bytes after all
-                            //Console.WriteLine("Wrote Char " + (char)byteX);
-                        }
-                        else
-                        {
-                            tmpBytes.Add(byteX);
-                            InBinaryData = true;
-                            //Console.WriteLine("Wrote Bytes " + byteX.ToString("X"));
-                        }
-                    }
-                }
+                //else
+                //{
+                //    if (!Char.IsControl((char)byteX))
+                //    {
+                //        //tmpString += (char)byteX;
+                //        tmpBytes.Add(byteX);
+                //        //Console.WriteLine("Wrote Char " + (char)byteX);
+                //    }
+                //    else
+                //    {
+                //        if (byteX == 0x0A || byteX == 0x0D)
+                //        {
+                //            //StringPart += tmpString + (char)byteX;
+                //            tmpBytes.ForEach(i => StringPart.Add(i));
+                //            StringPart.Add(byteX);
+                //            //tmpString = string.Empty;
+                //            tmpBytes.Clear(); // woops, don't need these bytes after all
+                //            //Console.WriteLine("Wrote Char " + (char)byteX);
+                //        }
+                //        else
+                //        {
+                //            tmpBytes.Add(byteX);
+                //            InBinaryData = true;
+                //            //Console.WriteLine("Wrote Bytes " + byteX.ToString("X"));
+                //        }
+                //    }
+                //}
             }
             byte[] dataBytes = tmpBytes.ToArray();
 
@@ -213,6 +255,8 @@ namespace BinaryBZNFile
 
                 x += 3 + + offset + Size;
             }
+
+
         }
 
         public void save(FileStream fileStream)
@@ -229,9 +273,31 @@ namespace BinaryBZNFile
             }
             fileStream.Close();
         }
+
+        private string ReadLine(Stream fileStream)
+        {
+            byte[] lineBuffer = new byte[64];
+
+            int idx = 0;
+
+            for (; ; )
+            {
+                byte character = (byte)fileStream.ReadByte();
+
+                if(character == 0x0D)
+                {
+                    fileStream.ReadByte(); // 0x0A
+                    break;
+                }
+
+                lineBuffer[idx++] = character;
+            }
+
+            return Encoding.ASCII.GetString(lineBuffer, 0, idx);
+        }
     }
 
-    public class N64BZN : IBinaryBZN
+    public class N64BZN : IRawBZN
     {
         //public string VersionField;
         //public string Version;
@@ -239,7 +305,8 @@ namespace BinaryBZNFile
         //public string SaveType;
         //public string BinarySaveField;
         //public string BinarySave;
-        public List<byte> StringPart;
+        //public List<byte> StringPart;
+        public List<ASCIIField> asciiFields { get; set; }
         public List<Field> fields { get; set; }
 
         public N64BZN(Stream filestream)
@@ -250,8 +317,9 @@ namespace BinaryBZNFile
             //SaveType = "";
             //BinarySaveField = "";
             //BinarySave = "";
-            StringPart = new List<byte>();
+            //StringPart = new List<byte>();
             //List<char> tmpString = new List<char>();
+            asciiFields = new List<ASCIIField>();
             fields = new List<Field>();
 
             // this reading code is awful btw
@@ -286,7 +354,7 @@ namespace BinaryBZNFile
         public void save(FileStream fileStream)
         {
             fileStream.SetLength(0);
-            fileStream.Write(StringPart.ToArray(), 0, StringPart.Count);
+            //fileStream.Write(StringPart.ToArray(), 0, StringPart.Count);
             for (int x = 0; x < fields.Count; x++)
             {
                 byte[] fieldData = fields[x].GetRawRef();
@@ -296,6 +364,13 @@ namespace BinaryBZNFile
             }
             fileStream.Close();
         }
+    }
+
+    public class ASCIIField
+    {
+        public string name;
+        public bool isArray;
+        public string[] value;
     }
 
     public class Field
