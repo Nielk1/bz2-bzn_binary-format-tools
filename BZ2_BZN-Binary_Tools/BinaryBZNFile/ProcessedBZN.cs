@@ -47,6 +47,7 @@ namespace BinaryBZNFile
             {"avrec4", "recycler"},
             {"avrec5", "recycler"},
             {"avrec6", "recycler"},
+            {"avrec8", "recycler"},
             {"avrecy", "recycler"},
             {"avret3", "recycler"},
             {"avret4", "recycler"},
@@ -186,48 +187,27 @@ namespace BinaryBZNFile
             {"splintbm", "spraybomb"},
             {"waspmsl", "torpedo"},
 
+            {"bvarmo", "armory"},//{"UKN_BVARMO", "armory"}, // or factory
+            {"bvrckt", "wingman"},//{"UKN_BVRCKT", "wingman"},
+            {"bvcons", "constructionrig"},
+            {"sbmbld", "powerplant"},//{"sbmbld", "supplydepot"},//{"UKN_SBMBLD", "powerplant"},
+            {"svtug", "tug"},//{"UKN_SVTUG", "tug"}, // or person?
+            {"svrckt", "wingman"},//{"UKN_SVRCKT", "wingman"},
+            {"avtug", "tug"},//{"UKN_AVTUG", "tug"},
+            {"avrckt", "wingman"},//{"UKN_AVRCKT", "wingman"},
+            
             // n64 items
-            {"svslf_n64_ammo_hull_only", "armory"},
-            {"bzn64_unknown_item_1", "wingman"},
-            {"bzn64_unknown_item_2", "armory"}, // or factory
-            {"bzn64_unknown_item_3", "wingman"},
-            {"bzn64_unknown_item_4", "wingman"},
-            {"bzn64_unknown_item_5", "turret"},
-            {"bzn64_unknown_item_6", "recycler"},
-            {"bzn64_unknown_item_7", "wingman"},
-            {"bzn64_unknown_item_8", "constructionrig"},
-            {"bzn64_unknown_item_9", "powerplant"},
-            {"bzn64_unknown_item_10", "tug"}, // or person?
-            {"bzn64_unknown_item_11", "wingman"},
-            {"bzn64_unknown_item_12", "i76building"},
-            {"bzn64_unknown_item_13", "recycler"},
-            {"bzn64_unknown_item_14", "wingman"},
-            {"bzn64_unknown_item_15", "apc"},
-            {"bzn64_unknown_item_16", "i76building"},
-            {"bzn64_unknown_item_17", "tug"},
-            {"bzn64_unknown_item_18", "wingman"},
-            {"bzn64_unknown_item_19", "recycler"},
-            {"bzn64_unknown_item_20", "wingman"},
-            {"bzn64_unknown_item_21", "i76building"},
-            {"bzn64_unknown_item_22", "wingman"},
-            {"bzn64_unknown_item_23", "wingman"},
-            {"bzn64_unknown_item_24", "wingman"},
-            {"bzn64_unknown_item_25", "recycler"},
-            {"bzn64_unknown_item_26", "i76building"},
-            {"bzn64_unknown_item_27", "i76building"},
-            {"bzn64_unknown_item_28", "i76building"},
-            {"bzn64_unknown_item_29", "i76building"},
-            {"bzn64_unknown_item_30", "i76building"},
-            {"bzn64_unknown_item_31", "i76building"},
-            {"bzn64_unknown_item_32", "constructionrig"},
             {"avcnst_n64_1", "constructionrig"},
-            {"avcnst_n64_2", "constructionrig"},
             {"avcnst_n64_3", "constructionrig"},
+            {"avcnst_n64_4", "constructionrig"},
+            {"avcnst_n64_5", "constructionrig"},
+            
             {"avmuf_n64_1", "factory"},
             {"avmuf_n64_2", "factory"},
             {"avmuf_n64_3", "factory"},
             {"avmuf_n64_4", "factory"},
             {"avmuf_n64_5", "factory"},
+            
             {"avrecy_n64_1", "recycler"},
             {"avrecy_n64_2", "recycler"},
             {"avrecy_n64_3", "recycler"},
@@ -237,16 +217,28 @@ namespace BinaryBZNFile
             {"avrecy_n64_7", "recycler"},
             {"avrecy_n64_8", "recycler"},
             {"avrecy_n64_9", "recycler"},
+            
+            {"bvrecy_n64_1", "recycler"},
+            {"bvrecy_n64_2", "recycler"},
+            {"bvrecy_n64_3", "recycler"},
+            
             {"svmuf_n64_1", "factory"},
             {"svmuf_n64_2", "factory"},
             {"svmuf_n64_3", "factory"},
+            
             {"svrecy_n64_1", "recycler"},
             {"svrecy_n64_2", "recycler"},
             {"svrecy_n64_3", "recycler"},
             {"svrecy_n64_4", "recycler"},
             {"svrecy_n64_5", "recycler"},
             {"svrecy_n64_6", "recycler"},
+            {"svrecy_n64_7", "recycler"},
+            
+            {"svslf_n64_ammo_hull_only", "armory"},
+
             {"svscav_n64_1", "scavenger"},
+
+            {"svmammoth", "wingman"},
         };
         #endregion
 
@@ -288,11 +280,11 @@ namespace BinaryBZNFile
             {0x0038, "aptech"},
             {0x003B, "aspilo"},
             {0x0040, "avartl"},
-            {0x0042, "bzn64_unknown_item_32"},
+            {0x0042, "avcnst_n64_1"},
             {0x0043, "avcns9"},
-            {0x0044, "avcnst_n64_1"},
-            {0x0045, "avcnst_n64_2"},
-            {0x0047, "avcnst_n64_3"},
+            {0x0044, "avcnst_n64_3"},
+            {0x0045, "avcnst_n64_4"},
+            {0x0047, "avcnst_n64_5"},
             {0x0048, "avfigh"},
             {0x004A, "avhaul"},
             {0x004B, "avhraz"},
@@ -304,7 +296,7 @@ namespace BinaryBZNFile
             {0x005A, "avmuf_n64_4"},
             {0x005B, "avmuf_n64_5"},
             {0x005C, "avmuf4"},
-            {0x005F, "bzn64_unknown_item_22"},
+            {0x005F, "avrckt"},
             {0x0060, "avrec2"},
             {0x0061, "avrec3"},
             {0x0062, "avrec4"},
@@ -327,30 +319,30 @@ namespace BinaryBZNFile
             {0x0079, "avtank"},
             {0x007A, "avtest"},
             {0x007C, "avturr"},
-            {0x007D, "bzn64_unknown_item_20"},
+            {0x007D, "avwalk"},
             {0x009A, "boltmine"},
-            {0x00A0, "bzn64_unknown_item_15"},
-            {0x00A2, "bzn64_unknown_item_17"},
-            {0x00A3, "bzn64_unknown_item_3"},
-            {0x00A4, "bzn64_unknown_item_23"},
+            {0x00A0, "bvapc"},
+            {0x00A2, "avtug"},
+            {0x00A3, "bvhraz"},
+            {0x00A4, "bvltnk"},
             {0x00A6, "bvmuf"},
-            {0x00A8, "bzn64_unknown_item_18"},
-            {0x00A9, "bzn64_unknown_item_4"},
+            {0x00A8, "bvfigh"},
+            {0x00A9, "bvrckt"},
             {0x00AA, "bvrec8"},
             {0x00AB, "bvrecy"},
-            {0x00AD, "bzn64_unknown_item_7"},
-            {0x00AE, "bzn64_unknown_item_2"},
-            {0x00AF, "bzn64_unknown_item_1"},
+            {0x00AD, "bvscav"},
+            {0x00AE, "bvarmo"},
+            {0x00AF, "bvtank"},
             {0x00B2, "bvturr"},
-            {0x00B3, "bzn64_unknown_item_5"},
+            {0x00B3, "bvwalk"},
             {0x00BD, "eggeizr1"},
-            {0x00EC, "bzn64_unknown_item_26"},
-            {0x00ED, "bzn64_unknown_item_27"},
-            {0x00EE, "bzn64_unknown_item_31"},
-            {0x00EF, "bzn64_unknown_item_21"},
-            {0x00F0, "bzn64_unknown_item_28"},
-            {0x00F1, "bzn64_unknown_item_29"},
-            {0x00F2, "bzn64_unknown_item_30"},
+            {0x00EC, "hbblda"},
+            {0x00ED, "hbbldb"},
+            {0x00EE, "hbbldc"},
+            {0x00EF, "hbbldd"},
+            {0x00F0, "hbblde"},
+            {0x00F1, "hbbldf"},
+            {0x00F2, "hbcerb"},
             {0x00F3, "hbchar"},
             {0x00F4, "hbcrys"},
             {0x00F7, "hbfact"},
@@ -364,7 +356,7 @@ namespace BinaryBZNFile
             {0x010D, "npscr2"},
             {0x010E, "npscr3"},
             {0x0112, "obcycl"},
-            {0x0113, "bzn64_unknown_item_12"},
+            {0x0113, "obdata"},
             {0x0115, "obheph"},
             {0x0119, "oblema"},
             {0x011B, "oblemc"},
@@ -374,9 +366,9 @@ namespace BinaryBZNFile
             {0x012A, "player"},
             {0x012B, "playrt"},
             {0x012C, "playsv"},
-            {0x012F, "bzn64_unknown_item_16"},
+            {0x012F, "proxmine"},
             {0x0135, "savmf"},
-            {0x0137, "bzn64_unknown_item_24"},
+            {0x0137, "svsav"},
             {0x0138, "sbbarr"},
             {0x0139, "sbcafe"},
             {0x013A, "sbcom7"},
@@ -388,7 +380,7 @@ namespace BinaryBZNFile
             {0x0140, "sblpad"},
             {0x0141, "sblpd2"},
             {0x0142, "sblpow"},
-            {0x0143, "bzn64_unknown_item_9"},
+            {0x0143, "sbmbld"},
             {0x0144, "sbshld"},
             {0x0145, "sbsilo"},
             {0x0146, "sbspow"},
@@ -408,20 +400,20 @@ namespace BinaryBZNFile
             {0x0178, "svartl"},
             {0x017A, "svcnst"},
             {0x017D, "svfigh"},
-            {0x017F, "bzn64_unknown_item_10"},
+            {0x017F, "svtug"},
             {0x0181, "svhraz"},
             {0x0184, "svltnk"},
             {0x0187, "svmuf_n64_1"},
             {0x0188, "svmuf_n64_2"},
             {0x0189, "svmuf_n64_3"},
             {0x018A, "svmuf13"},
-            {0x018B, "bzn64_unknown_item_14"},
+            {0x018B, "svrckt"},
             {0x018C, "svrecy_n64_1"},
             {0x018D, "svrecy_n64_2"},
             {0x018E, "svrecy_n64_3"},
-            {0x018F, "bzn64_unknown_item_25"},
-            {0x0190, "svrecy_n64_4"},
-            {0x0191, "svrecy_n64_5"},
+            {0x018F, "svrecy_n64_6"},
+            {0x0190, "svrecy_n64_5"},
+            {0x0191, "svrecy_n64_6"},
             {0x0193, "svscav_n64_1"},
             {0x0194, "svslf"},
             {0x0195, "svtank"},
@@ -430,12 +422,12 @@ namespace BinaryBZNFile
             {0x01A0, "ubtart"},
             {0x01B1, "abbar7"},
             {0x01B3, "avrecy_n64_9"},
-            {0x01B4, "svrecy_n64_6"},
-            {0x01B6, "bzn64_unknown_item_8"},
-            {0x01B9, "bzn64_unknown_item_13"},
-            {0x01BB, "bzn64_unknown_item_6"},
-            {0x01BC, "bzn64_unknown_item_19"},
-            {0x01BD, "bzn64_unknown_item_11"},
+            {0x01B4, "svrecy_n64_7"},
+            {0x01B6, "bvcons"},
+            {0x01B9, "bvrecy_n64_1"},
+            {0x01BB, "bvrecy_n64_2"},
+            {0x01BC, "bvrecy_n64_3"},
+            {0x01BD, "svmammoth"},
             {0x01C0, "svslf_n64_ammo_hull_only"},
         };
         #endregion
@@ -513,6 +505,12 @@ namespace BinaryBZNFile
         public float z;
     }
 
+    public struct Vector2D
+    {
+        public float x;
+        public float z;
+    }
+
     public struct Euler
     {
         public float mass;
@@ -529,6 +527,14 @@ namespace BinaryBZNFile
         public Vector3D Accel;
     }
 
+    public struct Matrix
+    {
+        public Vector3D right;
+        public Vector3D up;
+        public Vector3D front;
+        public Vector3D posit;
+    }
+
     public class BZNGameObjectWrapper
     {
         public string PrjID { get; set; }
@@ -538,20 +544,20 @@ namespace BinaryBZNFile
         public string label { get; set; }
         public UInt32 isUser { get; set; }
         public UInt32 obj_addr { get; set; }
-        public byte[] transform { get; set; }
+        public Matrix transform { get; set; }
 
         public BZNGameObject gameObject { get; set; }
 
         public BZNGameObjectWrapper(IRawBZN bzn, ref int idx, int version, bool bzn64 = false)
         {
-            if(bzn64)
+            if (bzn64)
             {
                 UInt16 ItemID = BitConverter.ToUInt16(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
 
                 if (ProcessedBZN.BZn64IdMap.ContainsKey(ItemID))
                 {
                     PrjID = ProcessedBZN.BZn64IdMap[ItemID];
-//                    Console.WriteLine("            {" + string.Format("0x{0,4:X4}", ItemID) + ", \"" + PrjID + "\"}");
+                    //                    Console.WriteLine("            {" + string.Format("0x{0,4:X4}", ItemID) + ", \"" + PrjID + "\"}");
                 }
                 else
                 {
@@ -565,7 +571,7 @@ namespace BinaryBZNFile
                         PrjID = ProcessedBZN.KnownItemsFromBZ1[ProcessedBZN.MASTERIDX];
                     }
 
-//                    Console.WriteLine("            {" + string.Format("0x{0,4:X4}", ItemID) + ", \"" + PrjID + "\"},");
+                    //                    Console.WriteLine("            {" + string.Format("0x{0,4:X4}", ItemID) + ", \"" + PrjID + "\"},");
                 }
 
                 ProcessedBZN.MASTERIDX++;
@@ -587,14 +593,14 @@ namespace BinaryBZNFile
 
                 obj_addr = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
 
-                transform = bzn.fields[idx++].GetRawRef().Reverse().ToArray();
+                transform = new Matrix();// bzn.fields[idx++].GetRawRef().Reverse().ToArray();
             }
             else
             {
                 PrjID = Encoding.ASCII.GetString(bzn.fields[idx++].GetRawRef());
                 PrjID = PrjID.IndexOf('\0') > -1 ? PrjID.Substring(0, PrjID.IndexOf('\0')) : PrjID;
 
-//Console.WriteLine(PrjID);
+                //Console.WriteLine(PrjID);
 
                 seqno = BitConverter.ToUInt16(bzn.fields[idx++].GetRawRef().ToArray(), 0);
 
@@ -613,7 +619,7 @@ namespace BinaryBZNFile
 
                 obj_addr = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
 
-                transform = bzn.fields[idx++].GetRawRef().ToArray();
+                transform = new Matrix();// bzn.fields[idx++].GetRawRef().ToArray();
             }
 
             switch (ProcessedBZN.ClassLabelMap[PrjID])
@@ -669,6 +675,111 @@ namespace BinaryBZNFile
             }
             gameObject.LoadData(bzn, ref idx, version, bzn64);
         }
+
+        public BZNGameObjectWrapper(BZNReader reader)
+        {
+            IBZNToken tok;
+            if (!reader.BinaryMode)
+            {
+                tok = reader.ReadToken();
+                if (!tok.IsValidationOnly() || !tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse [GameObject]");
+            }
+
+            if (reader.N64)
+            {
+                tok = reader.ReadToken();
+                UInt16 ItemID = tok.GetUInt16();
+                if (!ProcessedBZN.BZn64IdMap.ContainsKey(ItemID)) throw new InvalidCastException(string.Format("Cannot convert n64 PrjID enumeration 0x{0:2X} to string PrjID", ItemID));
+                PrjID = ProcessedBZN.BZn64IdMap[ItemID];
+            }
+            else
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("PrjID", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse PrjID/ID");
+                PrjID = tok.GetString();
+            }
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("seqno", BinaryFieldType.DATA_SHORT)) throw new Exception("Failed to parse seqno/SHORT");
+            seqno = tok.GetUInt16();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("pos", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse pos/VEC3D");
+            pos = tok.GetVector3D();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("team", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse team/LONG");
+            team = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("label", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse label/CHAR");
+            label = tok.GetString();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("isUser", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse isUser/LONG");
+            isUser = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("obj_addr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse obj_addr/PTR");
+            obj_addr = tok.GetUInt32H();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("transform", BinaryFieldType.DATA_MAT3DOLD)) throw new Exception("Failed to parse transform/MAT3DOLD");
+            transform = tok.GetMatrix();
+
+            switch (ProcessedBZN.ClassLabelMap[PrjID])
+            {
+                case "scrapsilo":
+                    gameObject = new BZNScrapSilo();
+                    break;
+                case "wingman":
+                case "turret":
+                case "minelayer":
+                case "sav":
+                    gameObject = new BZNHoverCraft();
+                    break;
+                case "wpnpower":
+                    gameObject = new BZNWeaponPowerup();
+                    break;
+                case "armory":
+                    gameObject = new BZNArmory();
+                    break;
+                case "recycler":
+                    gameObject = new BZNRecycler();
+                    break;
+                case "factory":
+                    gameObject = new BZNFactory();
+                    break;
+                case "constructionrig":
+                    gameObject = new BZNConstructionRig();
+                    break;
+                case "person":
+                    gameObject = new BZNPerson();
+                    break;
+                case "apc":
+                    gameObject = new BZNAPC();
+                    break;
+                case "scavenger":
+                    gameObject = new BZNScavenger();
+                    break;
+                case "turrettank":
+                    gameObject = new BZNTurretTank();
+                    break;
+                case "howitzer":
+                    gameObject = new BZNHowitzer();
+                    break;
+                case "tug":
+                    gameObject = new BZNTug();
+                    break;
+                case "walker":
+                    gameObject = new BZNCraft();
+                    break;
+                default:
+                    gameObject = new BZNGameObject();
+                    break;
+            }
+            gameObject.LoadData(reader);
+        }
     }
 
     public class BZNGameObject
@@ -690,7 +801,8 @@ namespace BinaryBZNFile
         public UInt32 maxAmmo { get; set; }
         public UInt32 priority { get; set; }
         public UInt32 what { get; set; }
-        public UInt32 who { get; set; }
+        //public UInt32 who { get; set; }
+        public Int32 who { get; set; }
         public UInt32 where { get; set; }
         public UInt32 param { get; set; }
         public bool aiProcess { get; set; }
@@ -758,7 +870,7 @@ namespace BinaryBZNFile
                 maxAmmo = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
                 priority = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
                 what = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
-                who = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
+                who = (Int32)BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
                 where = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
                 param = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
                 aiProcess = BitConverter.ToBoolean(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
@@ -851,7 +963,7 @@ namespace BinaryBZNFile
                 maxAmmo = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
                 priority = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
                 what = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
-                who = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
+                who = (Int32)BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
                 where = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
                 param = BitConverter.ToUInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
                 aiProcess = BitConverter.ToBoolean(bzn.fields[idx++].GetRawRef().ToArray(), 0);
@@ -862,6 +974,228 @@ namespace BinaryBZNFile
                 if (version > 1030)
                 {
                     perceivedTeam = BitConverter.ToInt32(bzn.fields[idx++].GetRawRef().ToArray(), 0);
+                }
+                else
+                {
+                    perceivedTeam = -1;
+                }
+            }
+        }
+
+        public virtual void LoadData(BZNReader reader)
+        {
+            IBZNToken tok;
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("illumination", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse illumination/FLOAT");
+            illumination = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("pos", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse pos/VEC3D");
+            pos = tok.GetVector3D();
+
+            if (reader.BinaryMode)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                float euler_mass = tok.GetSingle();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                float euler_mass_inv = tok.GetSingle();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                float euler_v_mag = tok.GetSingle();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                float euler_v_mag_inv = tok.GetSingle();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                float euler_I = tok.GetSingle();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                float euler_k_i = tok.GetSingle();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's EC3D");
+                Vector3D euler_v = tok.GetVector3D();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's EC3D");
+                Vector3D euler_omega = tok.GetVector3D();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's EC3D");
+                Vector3D euler_Accel = tok.GetVector3D();
+
+                euler = new Euler()
+                {
+                    mass = euler_mass,
+                    mass_inv = euler_mass_inv,
+                    v_mag = euler_v_mag,
+                    v_mag_inv = euler_v_mag_inv,
+                    I = euler_I,
+                    k_i = euler_k_i,
+                    v = euler_v,
+                    omega = euler_omega,
+                    Accel = euler_Accel
+                };
+            }
+            else
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("euler", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler");
+                euler = tok.GetEuler();
+            }
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("seqNo", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse seqNo/SHORT");
+            seqNo = tok.GetUInt16();
+
+            if(reader.N64)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
+                name = tok.GetString();
+            }
+            else
+            {
+                if (reader.Version > 1030)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
+                    name = tok.GetString();
+                }
+            }
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("isObjective", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isObjective/BOOL");
+            isObjective = tok.GetBoolean();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("isSelected", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isSelected/BOOL");
+            isSelected = tok.GetBoolean();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("isVisible", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse isVisible/LONG");
+            isVisible = tok.GetUInt32H();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("seen", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse seen/LONG");
+            seen = tok.GetUInt32H();
+
+            if(reader.N64)
+            {
+
+            }
+            else
+            {
+                //[10:03:38 PM] Kenneth Miller: I think I may have figured out what that stuff is, maybe
+                //[10:03:50 PM] Kenneth Miller: They're timestamps
+                //[10:04:04 PM] Kenneth Miller: playerShot, playerCollide, friendShot, friendCollide, enemyShot, groundCollide
+                //[10:04:13 PM] Kenneth Miller: the default value is -HUGE_NUMBER (-1e30)
+                //[10:04:26 PM] Kenneth Miller: And due to the nature of the game, groundCollide is the most likely to get set first
+                //[10:05:02 PM] Kenneth Miller: Old versions of the mission format used to contain those values but later versions only include them in the savegame
+                //[10:05:05 PM] Kenneth Miller: (not the mission)
+                //[10:05:31 PM] Kenneth Miller: (version 1033 was where they were removed from the mission)
+                if (reader.Version < 1033)
+                {
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
+                    tok = reader.ReadToken(); // float
+                }
+            }
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("healthRatio", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse healthRatio/FLOAT");
+            healthRatio = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("curHealth", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse curHealth/LONG");
+            curHealth = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("maxHealth", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse maxHealth/LONG");
+            maxHealth = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("ammoRatio", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse ammoRatio/FLOAT");
+            ammoRatio = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("curAmmo", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse curAmmo/LONG");
+            curAmmo = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("maxAmmo", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse maxAmmo/LONG");
+            maxAmmo = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("priority", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse priority/LONG");
+            priority = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("what", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse what/VOID");
+            what = tok.GetUInt32H();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("who", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse who/LONG");
+            who = tok.GetInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("where", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse where/PTR");
+            where = tok.GetUInt32H();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("param", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse param/LONG");
+            param = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
+            aiProcess = tok.GetBoolean();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("isCargo", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isCargo/BOOL");
+            isCargo = tok.GetBoolean();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("independence", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse independence/LONG");
+            independence = tok.GetUInt32();
+
+            if (reader.N64)
+            {
+                tok = reader.ReadToken();
+                UInt16 curPilotID = tok.GetUInt16();
+                if (!ProcessedBZN.BZn64IdMap.ContainsKey(curPilotID)) throw new InvalidCastException(string.Format("Cannot convert n64 curPilotID enumeration 0x{0:2X} to string curPilotID", curPilotID));
+                curPilot = ProcessedBZN.BZn64IdMap[curPilotID];
+            }
+            else
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("curPilot", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse curPilot/ID");
+                curPilot = tok.GetString();
+            }
+
+            if (reader.N64)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("perceivedTeam", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse perceivedTeam/LONG");
+                perceivedTeam = tok.GetInt32();
+            }
+            else
+            {
+                if (reader.Version > 1030)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("perceivedTeam", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse perceivedTeam/LONG");
+                    perceivedTeam = tok.GetInt32();
                 }
                 else
                 {
@@ -889,6 +1223,15 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok = reader.ReadToken();
+            if (!tok.Validate("undefptr", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse undefptr/LONG");
+            undefptr = tok.GetUInt32H();
+
+            base.LoadData(reader);
+        }
     }
 
     public class BZNCraft : BZNGameObject
@@ -909,6 +1252,14 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok = reader.ReadToken();
+            if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse abandoned/LONG");
+            abandoned = tok.GetUInt32();
+
+            base.LoadData(reader);
+        }
     }
 
     public class BZNHoverCraft : BZNCraft
@@ -917,6 +1268,10 @@ namespace BinaryBZNFile
         public override void LoadData(IRawBZN bzn, ref int idx, int version, bool bzn64 = false)
         {
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            base.LoadData(reader);
         }
     }
 
@@ -937,6 +1292,14 @@ namespace BinaryBZNFile
             }
 
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok = reader.ReadToken();
+            if (!tok.Validate("undefptr", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse undefptr/LONG");
+            undefptr = tok.GetUInt32H();
+
+            base.LoadData(reader);
         }
     }
 
@@ -976,6 +1339,40 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok;
+            
+            tok = reader.ReadToken();
+            if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+            undeffloat1 = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+            undeffloat2 = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+            undeffloat3 = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+            undeffloat4 = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undefraw", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse undefraw/VOID");
+            undefraw = tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+            undeffloat5 = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse undefbool/BOOL");
+            undefbool = tok.GetBoolean();
+
+            base.LoadData(reader);
+        }
     }
 
     public class BZNHowitzer : BZNTurretTank
@@ -984,6 +1381,10 @@ namespace BinaryBZNFile
         public override void LoadData(IRawBZN bzn, ref int idx, int version, bool bzn64 = false)
         {
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            base.LoadData(reader);
         }
     }
 
@@ -1005,6 +1406,11 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            throw new NotImplementedException();
+            //base.LoadData(reader);
+        }
     }
 
 
@@ -1025,6 +1431,11 @@ namespace BinaryBZNFile
             }
 
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            throw new NotImplementedException();
+            //base.LoadData(reader);
         }
     }
 
@@ -1049,18 +1460,25 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            throw new NotImplementedException();
+            //base.LoadData(reader);
+        }
     }
 
     public class BZNProducer : BZNHoverCraft
     {
-        public UInt32 timeDeploy { get; set; }
-        public UInt32 timeUndeploy { get; set; }
+        public float timeDeploy { get; set; }
+        public float timeUndeploy { get; set; }
         public UInt32 undefptr2 { get; set; }
         public UInt32 state { get; set; }
-        public UInt32 delayTimer { get; set; }
+        //public UInt32 delayTimer { get; set; }
+        public float delayTimer { get; set; }
         public float nextRepair { get; set; }
         public string buildClass { get; set; }
-        public UInt32 buildDoneTime { get; set; }
+        //public UInt32 buildDoneTime { get; set; }
+        public float buildDoneTime { get; set; }
 
         public BZNProducer() { }
         public override void LoadData(IRawBZN bzn, ref int idx, int version, bool bzn64 = false)
@@ -1094,6 +1512,54 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok;
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("timeDeploy", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse timeDeploy/FLOAT");
+            timeDeploy = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("timeUndeploy", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse timeUndeploy/FLOAT");
+            timeUndeploy = tok.GetSingle();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
+            undefptr2 = tok.GetUInt32H();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
+            state = tok.GetUInt32H();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("delayTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse delayTimer/FLOAT");
+            delayTimer = tok.GetSingle();//tok.GetUInt32();
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("nextRepair", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse nextRepair/FLOAT");
+            nextRepair = tok.GetSingle();
+
+            if (reader.N64)
+            {
+                tok = reader.ReadToken();
+                UInt16 buildClassItemID = tok.GetUInt16();
+                if (!ProcessedBZN.BZn64IdMap.ContainsKey(buildClassItemID)) throw new InvalidCastException(string.Format("Cannot convert n64 buildClass enumeration 0x{0:2X} to string buildClass", buildClassItemID));
+                buildClass = ProcessedBZN.BZn64IdMap[buildClassItemID];
+            }
+            else
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("buildClass", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse buildClass/ID");
+                buildClass = tok.GetString();
+            }
+
+            tok = reader.ReadToken();
+            if (!tok.Validate("buildDoneTime", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse buildDoneTime/FLOAT");
+            buildDoneTime = tok.GetSingle();
+            
+            base.LoadData(reader);
+        }
     }
 
     public class BZNRecycler : BZNProducer
@@ -1114,6 +1580,14 @@ namespace BinaryBZNFile
 
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok = reader.ReadToken();
+            if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
+            undefptr = tok.GetUInt32H();
+
+            base.LoadData(reader);
+        }
     }
 
     public class BZNFactory : BZNProducer
@@ -1122,6 +1596,10 @@ namespace BinaryBZNFile
         public override void LoadData(IRawBZN bzn, ref int idx, int version, bool bzn64 = false)
         {
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            base.LoadData(reader);
         }
     }
 
@@ -1132,11 +1610,15 @@ namespace BinaryBZNFile
         {
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            base.LoadData(reader);
+        }
     }
 
     public class BZNConstructionRig : BZNProducer
     {
-        public byte[] dropMat { get; set; }
+        public Matrix dropMat { get; set; }
         public string dropClass { get; set; }
 
         public BZNConstructionRig() { }
@@ -1144,7 +1626,7 @@ namespace BinaryBZNFile
         {
             if(bzn64)
             {
-                dropMat = bzn.fields[idx++].GetRawRef().Reverse().ToArray();
+                dropMat = new Matrix();// bzn.fields[idx++].GetRawRef().Reverse().ToArray();
                 UInt16 dropClassID = BitConverter.ToUInt16(bzn.fields[idx++].GetRawRef().Reverse().ToArray(), 0);
                 dropClass = ProcessedBZN.BZn64IdMap[dropClassID];
             }
@@ -1152,13 +1634,40 @@ namespace BinaryBZNFile
             {
                 if (version > 1030)
                 {
-                    dropMat = bzn.fields[idx++].GetRawRef().ToArray();
+                    dropMat = new Matrix();//bzn.fields[idx++].GetRawRef().ToArray();
                     dropClass = Encoding.ASCII.GetString(bzn.fields[idx++].GetRawRef());
                     dropClass = dropClass.IndexOf('\0') > -1 ? dropClass.Substring(0, dropClass.IndexOf('\0')) : dropClass;
                 }
             }
 
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            IBZNToken tok;
+
+            if (reader.N64 || reader.Version > 1030)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("dropMat", BinaryFieldType.DATA_MAT3DOLD)) throw new Exception("Failed to parse dropMat/MAT3DOLD");
+                dropMat = tok.GetMatrix();
+            }
+
+            if (reader.N64)
+            {
+                tok = reader.ReadToken();
+                UInt16 dropClassItemID = tok.GetUInt16();
+                if (!ProcessedBZN.BZn64IdMap.ContainsKey(dropClassItemID)) throw new InvalidCastException(string.Format("Cannot convert n64 dropClass enumeration 0x{0:2X} to string dropClass", dropClassItemID));
+                dropClass = ProcessedBZN.BZn64IdMap[dropClassItemID];
+            }
+            else if(reader.Version > 1030)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("dropClass", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse dropClass/ID");
+                dropClass = tok.GetString();
+            }
+
+            base.LoadData(reader);
         }
     }
 
@@ -1169,6 +1678,10 @@ namespace BinaryBZNFile
         {
             base.LoadData(bzn, ref idx, version, bzn64);
         }
+        public override void LoadData(BZNReader reader)
+        {
+            base.LoadData(reader);
+        }
     }
 
     public class BZNWeaponPowerup : BZNPowerUp
@@ -1177,6 +1690,10 @@ namespace BinaryBZNFile
         public override void LoadData(IRawBZN bzn, ref int idx, int version, bool bzn64 = false)
         {
             base.LoadData(bzn, ref idx, version, bzn64);
+        }
+        public override void LoadData(BZNReader reader)
+        {
+            base.LoadData(reader);
         }
     }
     
