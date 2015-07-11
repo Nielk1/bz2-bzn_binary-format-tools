@@ -42,10 +42,17 @@ namespace BattlezoneBZNTools
             //Console.WriteLine();
 
             IBZNToken VersionToken = ReadToken();
-            IBZNToken BinaryToken = ReadToken();
-
             this._Version = VersionToken.GetInt32();
-            this.inBinary = BinaryToken.GetBoolean();
+
+            if (n64Data || Version > 1022)
+            {
+                IBZNToken BinaryToken = ReadToken();
+                this.inBinary = BinaryToken.GetBoolean();
+            }
+            else
+            {
+                this.inBinary = false;
+            }
 
             //Console.WriteLine();
             //Console.WriteLine("Version: {0}", this.Version);
@@ -80,7 +87,7 @@ namespace BattlezoneBZNTools
             return ReadStringValueSub(filestream, rawLine);
         }
 
-        private IBZNStringToken ReadStringValueSub(Stream filestream, string rawLine)
+        private IBZNToken ReadStringValueSub(Stream filestream, string rawLine)
         {
             string[] line = rawLine.Split(' ');
 
@@ -93,10 +100,10 @@ namespace BattlezoneBZNTools
                 {
                     int count = 1;
 
-                    IBZNStringToken[][] values = new IBZNStringToken[count][];
+                    IBZNToken[][] values = new IBZNToken[count][];
                     for (int subSectionCounter = 0; subSectionCounter < count; subSectionCounter++)
                     {
-                        values[subSectionCounter] = new IBZNStringToken[ComplexStringTokenSizeMap[name]];
+                        values[subSectionCounter] = new IBZNToken[ComplexStringTokenSizeMap[name]];
                         for (int constructCounter = 0; constructCounter < ComplexStringTokenSizeMap[name]; constructCounter++)
                         {
                             string rawLineInner = ReadLine(filestream).TrimEnd('\r', '\n').TrimStart();
@@ -104,7 +111,7 @@ namespace BattlezoneBZNTools
                         }
                     }
 
-                    return new BZNTokenStringComplex(name, values);
+                    return new BZNTokenNestedString(name, values);
                 }
                 else
                 {
@@ -112,7 +119,7 @@ namespace BattlezoneBZNTools
 
                     //Console.WriteLine("ASCII\t\"{0}\"\tValidation: {1}", value, name);
 
-                    return new BZNTokenString(name, value);
+                    return new BZNTokenString(name, new string[] { value });
                 }
             }
             else if (line[2] == "=")
@@ -121,14 +128,14 @@ namespace BattlezoneBZNTools
                 //bool isArray = true;
                 int count = int.Parse(line[1].Substring(1, line[1].Length - 2));
 
-                if (count == 0) return new BZNTokenStringArray(name, new string[0]);
+                if (count == 0) return new BZNTokenString(name, new string[0]);
                 
                 if (ComplexStringTokenSizeMap.ContainsKey(name))
                 {
-                    IBZNStringToken[][] values = new IBZNStringToken[count][];
+                    IBZNToken[][] values = new IBZNToken[count][];
                     for (int subSectionCounter = 0; subSectionCounter < count; subSectionCounter++)
                     {
-                        values[subSectionCounter] = new IBZNStringToken[ComplexStringTokenSizeMap[name]];
+                        values[subSectionCounter] = new IBZNToken[ComplexStringTokenSizeMap[name]];
                         for (int constructCounter = 0; constructCounter < ComplexStringTokenSizeMap[name]; constructCounter++)
                         {
                             string rawLineInner = ReadLine(filestream).TrimEnd('\r', '\n').TrimStart();
@@ -136,7 +143,7 @@ namespace BattlezoneBZNTools
                         }
                     }
 
-                    return new BZNTokenStringComplex(name, values);
+                    return new BZNTokenNestedString(name, values);
                 }
                 else
                 {
@@ -153,7 +160,7 @@ namespace BattlezoneBZNTools
                     //    Console.WriteLine("ASCII\t[{1}] \"{0}\"", values[x], x);
                     //}
 
-                    return new BZNTokenStringArray(name, values);
+                    return new BZNTokenString(name, values);
                 }
             }
             else

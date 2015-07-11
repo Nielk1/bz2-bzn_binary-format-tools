@@ -26,7 +26,7 @@ namespace BattlezoneBZNTools
             }
 
             tok = reader.ReadToken();
-            if (!tok.Validate("undefptr", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse undefptr/LONG");
+            if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/LONG");
             UInt32 undefptr = tok.GetUInt32H();
 
             tok = reader.ReadToken();

@@ -59,9 +59,8 @@
     <Compile Include="GameObject\ClassRecycler.cs" />
     <Compile Include="GameObject\ClassScavenger.cs" />
     <Compile Include="GameObject\ClassScrapSilo.cs" />
-    <Compile Include="Reader\BZNTokenStringArray.cs" />
-    <Compile Include="Reader\BZNTokenStringComplex.cs" />
     <Compile Include="Reader\BZNTokenString.cs" />
+    <Compile Include="Reader\BZNTokenNestedString.cs" />
     <Compile Include="GameObject\ClassTug.cs" />
     <Compile Include="GameObject\ClassTurretTank.cs" />
     <Compile Include="Reader\BZNValidationToken.cs" />
@@ -69,6 +68,14 @@
     <Compile Include="Reader\IBZNToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="clsmap.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="n64map.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

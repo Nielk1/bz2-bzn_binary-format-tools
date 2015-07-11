@@ -10,17 +10,31 @@ namespace BattlezoneBZNTools.GameObject
     {
         public UInt32 scrapHeld { get; set; }
 
-        public ClassScavenger() { }
+        public ClassScavenger(string PrjID, bool isUser) : base(PrjID, isUser) { }
         public override void LoadData(BZNReader reader)
         {
             if (!reader.N64)
             {
-                IBZNToken tok = reader.ReadToken();
-                if (!tok.Validate("scrapHeld", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse scrapHeld/LONG");
-                scrapHeld = tok.GetUInt32();
+                if (reader.Version > 1034)
+                {
+                    IBZNToken tok = reader.ReadToken();
+                    if (!tok.Validate("scrapHeld", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse scrapHeld/LONG");
+                    scrapHeld = tok.GetUInt32();
+                }
             }
 
             base.LoadData(reader);
+        }
+        public override string GetBZ1ASCII()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("scrapHeld [1] =");
+            sb.AppendLine(scrapHeld.ToString());
+
+            sb.Append(base.GetBZ1ASCII());
+
+            return sb.ToString();
         }
     }
 }

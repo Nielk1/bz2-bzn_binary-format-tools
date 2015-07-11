@@ -5,63 +5,63 @@ using System.Text;
 
 namespace BattlezoneBZNTools.Reader
 {
-    public class BZNTokenString : IBZNToken, IBZNStringToken
+    public class BZNTokenString : IBZNToken
     {
-        private string value;
+        private string[] values;
         private string name;
 
-        public BZNTokenString(string name, string value)
+        public BZNTokenString(string name, string[] values)
         {
             this.name = name;
-            this.value = value;
+            this.values = values;
         }
 
         public bool GetBoolean(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return bool.Parse(value);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return bool.Parse(values[index]);
         }
 
         public Int32 GetInt32(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return Int32.Parse(value);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return Int32.Parse(values[index]);
         }
 
         public UInt32 GetUInt32(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return UInt32.Parse(value);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return UInt32.Parse(values[index]);
         }
 
         public UInt32 GetUInt32H(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return UInt32.Parse(value, System.Globalization.NumberStyles.HexNumber);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return UInt32.Parse(values[index], System.Globalization.NumberStyles.HexNumber);
         }
 
         public Int16 GetInt16(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return Int16.Parse(value);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return Int16.Parse(values[index]);
         }
 
         public UInt16 GetUInt16(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return UInt16.Parse(value);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return UInt16.Parse(values[index]);
         }
 
         public float GetSingle(int index = 0)
         {
-            if (index > 0) throw new ArgumentOutOfRangeException();
-            return Single.Parse(value);
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            return Single.Parse(values[index]);
         }
 
         public string GetString(int index = 0)
         {
             if (index > 0) throw new ArgumentOutOfRangeException();
-            return value;
+            return values[0];
         }
 
         public Vector3D GetVector3D(int index = 0)

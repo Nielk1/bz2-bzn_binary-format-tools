@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BB244241-7077-4B45-AFCA-FAF4DEB7848B}</ProjectGuid>
+    <ProjectGuid>{123839EE-638A-442A-9275-78FFB1639043}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>N64BZNParser</RootNamespace>
-    <AssemblyName>N64BZNParser</AssemblyName>
+    <RootNamespace>BZn64ToBZ1</RootNamespace>
+    <AssemblyName>BZn64ToBZ1</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,9 +45,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BinaryBZNFile\BinaryBZNFile.csproj">
-      <Project>{ee2533a6-61fb-42c4-b835-75234ca99666}</Project>
-      <Name>BinaryBZNFile</Name>
+    <ProjectReference Include="..\BattlezoneBZNTools\BattlezoneBZNTools.csproj">
+      <Project>{69c910bd-e2e5-4db3-9a49-8e19ca3c499b}</Project>
+      <Name>BattlezoneBZNTools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

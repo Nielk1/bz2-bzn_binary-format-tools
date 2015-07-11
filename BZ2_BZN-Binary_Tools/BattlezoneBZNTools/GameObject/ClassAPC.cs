@@ -11,7 +11,8 @@ namespace BattlezoneBZNTools.GameObject
         public UInt32 soldierCount { get; set; }
         public UInt32 state { get; set; }
 
-        public ClassAPC() { }
+        public ClassAPC(string PrjID, bool isUser) : base(PrjID, isUser) { }
+
         public override void LoadData(BZNReader reader)
         {
             IBZNToken tok;
@@ -21,10 +22,25 @@ namespace BattlezoneBZNTools.GameObject
             soldierCount = tok.GetUInt32();
 
             tok = reader.ReadToken();
-            if (!tok.Validate("state", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse state/LONG");
+            if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
             state = tok.GetUInt32();
 
             base.LoadData(reader);
+        }
+
+        public override string GetBZ1ASCII()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("soldierCount [1] =");
+            sb.AppendLine(soldierCount.ToString());
+
+            sb.AppendLine("state [1] =");
+            sb.AppendLine(state.ToString());
+
+            sb.Append(base.GetBZ1ASCII());
+
+            return sb.ToString();
         }
     }
 }

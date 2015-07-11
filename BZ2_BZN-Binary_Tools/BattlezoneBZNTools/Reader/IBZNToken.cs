@@ -23,9 +23,4 @@ namespace BattlezoneBZNTools.Reader
         bool IsValidationOnly();
         bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN);
     }
-
-    public interface IBZNStringToken : IBZNToken
-    {
-
-    }
 }

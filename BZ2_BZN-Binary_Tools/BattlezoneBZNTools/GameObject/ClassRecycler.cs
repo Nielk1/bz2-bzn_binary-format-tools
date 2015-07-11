@@ -10,7 +10,7 @@ namespace BattlezoneBZNTools.GameObject
     {
         public UInt32 undefptr { get; set; }
 
-        public ClassRecycler() { }
+        public ClassRecycler(string PrjID, bool isUser) : base(PrjID, isUser) { }
         public override void LoadData(BZNReader reader)
         {
             IBZNToken tok = reader.ReadToken();
@@ -18,6 +18,17 @@ namespace BattlezoneBZNTools.GameObject
             undefptr = tok.GetUInt32H();
 
             base.LoadData(reader);
+        }
+        public override string GetBZ1ASCII()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("undefptr [1] =");
+            sb.AppendLine(string.Format("{0:X8}", undefptr.ToString()));
+
+            sb.Append(base.GetBZ1ASCII());
+
+            return sb.ToString();
         }
     }
 }

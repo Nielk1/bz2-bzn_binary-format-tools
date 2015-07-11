@@ -8,6 +8,9 @@ namespace BattlezoneBZNTools.GameObject
 {
     public class ClassGameObject
     {
+        protected string PrjID;
+        protected bool isUser;
+
         public float illumination { get; set; }
         public Vector3D pos { get; set; }
         public Euler euler { get; set; }
@@ -35,7 +38,12 @@ namespace BattlezoneBZNTools.GameObject
         public string curPilot { get; set; }
         public Int32 perceivedTeam { get; set; }
 
-        public ClassGameObject() { }
+        public ClassGameObject(string PrjID, bool isUser)
+        {
+            this.PrjID = PrjID;
+            this.isUser = isUser;
+        }
+
         public virtual void LoadData(BZNReader reader)
         {
             IBZNToken tok;
@@ -75,15 +83,15 @@ namespace BattlezoneBZNTools.GameObject
                 float euler_k_i = tok.GetSingle();
 
                 tok = reader.ReadToken();
-                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's EC3D");
+                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
                 Vector3D euler_v = tok.GetVector3D();
 
                 tok = reader.ReadToken();
-                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's EC3D");
+                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
                 Vector3D euler_omega = tok.GetVector3D();
 
                 tok = reader.ReadToken();
-                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's EC3D");
+                if (!tok.Validate(null, BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
                 Vector3D euler_Accel = tok.GetVector3D();
 
                 euler = new Euler()
@@ -227,14 +235,24 @@ namespace BattlezoneBZNTools.GameObject
             {
                 tok = reader.ReadToken();
                 UInt16 curPilotID = tok.GetUInt16();
-                if (!BZNFile.BZn64IdMap.ContainsKey(curPilotID)) throw new InvalidCastException(string.Format("Cannot convert n64 curPilotID enumeration 0x{0:2X} to string curPilotID", curPilotID));
+                if (!BZNFile.BZn64IdMap.ContainsKey(curPilotID)) throw new InvalidCastException(string.Format("Cannot convert n64 curPilotID enumeration 0x(0:X2} to string curPilotID", curPilotID));
                 curPilot = BZNFile.BZn64IdMap[curPilotID];
             }
             else
             {
-                tok = reader.ReadToken();
-                if (!tok.Validate("curPilot", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse curPilot/ID");
-                curPilot = tok.GetString();
+                if (reader.Version > 1022)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("curPilot", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse curPilot/ID");
+                    curPilot = tok.GetString();
+                }
+                else
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("hasPilot", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse hasPilot/BOOL");
+                    bool hasPilot = tok.GetBoolean();
+                    curPilot = hasPilot ? isUser ? PrjID[0] + "suser" : PrjID[0] + "spilo" : string.Empty;
+                }
             }
 
             if (reader.N64)
@@ -256,6 +274,98 @@ namespace BattlezoneBZNTools.GameObject
                     perceivedTeam = -1;
                 }
             }
+        }
+
+        public virtual string GetBZ1ASCII()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("illumination [1] =");
+            sb.AppendLine(illumination.ToString());
+            sb.AppendLine("pos [1] =");
+            sb.AppendLine("  x [1] =");
+            sb.AppendLine(pos.x.ToString());
+            sb.AppendLine("  y [1] =");
+            sb.AppendLine(pos.y.ToString());
+            sb.AppendLine("  z [1] =");
+            sb.AppendLine(pos.z.ToString());
+            sb.AppendLine("euler =");
+            sb.AppendLine(" mass [1] =");
+            sb.AppendLine(euler.mass.ToString());
+            sb.AppendLine(" mass_inv [1] =");
+            sb.AppendLine(euler.mass_inv.ToString());
+            sb.AppendLine(" v_mag [1] =");
+            sb.AppendLine(euler.v_mag.ToString());
+            sb.AppendLine(" v_mag_inv [1] =");
+            sb.AppendLine(euler.v_mag_inv.ToString());
+            sb.AppendLine(" I [1] =");
+            sb.AppendLine(euler.I.ToString());
+            sb.AppendLine(" k_i [1] =");
+            sb.AppendLine(euler.k_i.ToString());
+            sb.AppendLine(" v [1] =");
+            sb.AppendLine("  x [1] =");
+            sb.AppendLine(euler.v.x.ToString());
+            sb.AppendLine("  y [1] =");
+            sb.AppendLine(euler.v.y.ToString());
+            sb.AppendLine("  z [1] =");
+            sb.AppendLine(euler.v.z.ToString());
+            sb.AppendLine(" omega [1] =");
+            sb.AppendLine("  x [1] =");
+            sb.AppendLine(euler.omega.x.ToString());
+            sb.AppendLine("  y [1] =");
+            sb.AppendLine(euler.omega.x.ToString());
+            sb.AppendLine("  z [1] =");
+            sb.AppendLine(euler.omega.x.ToString());
+            sb.AppendLine(" Accel [1] =");
+            sb.AppendLine("  x [1] =");
+            sb.AppendLine(euler.Accel.x.ToString());
+            sb.AppendLine("  y [1] =");
+            sb.AppendLine(euler.Accel.x.ToString());
+            sb.AppendLine("  z [1] =");
+            sb.AppendLine(euler.Accel.x.ToString());
+            sb.AppendLine("seqNo [1] =");
+            sb.AppendLine(seqNo.ToString());
+            sb.AppendLine("name = " + name);
+            sb.AppendLine("isObjective [1] =");
+            sb.AppendLine(isObjective.ToString());
+            sb.AppendLine("isSelected [1] =");
+            sb.AppendLine(isSelected.ToString());
+            sb.AppendLine("isVisible [1] =");
+            sb.AppendLine(string.Format("{0:x0}", isVisible));
+            sb.AppendLine("seen [1] =");
+            sb.AppendLine(seen.ToString());
+            sb.AppendLine("healthRatio [1] =");
+            sb.AppendLine(healthRatio.ToString());
+            sb.AppendLine("curHealth [1] =");
+            sb.AppendLine(curHealth.ToString());
+            sb.AppendLine("maxHealth [1] =");
+            sb.AppendLine(maxHealth.ToString());
+            sb.AppendLine("ammoRatio [1] =");
+            sb.AppendLine(ammoRatio.ToString());
+            sb.AppendLine("curAmmo [1] =");
+            sb.AppendLine(curAmmo.ToString());
+            sb.AppendLine("maxAmmo [1] =");
+            sb.AppendLine(maxAmmo.ToString());
+            sb.AppendLine("priority [1] =");
+            sb.AppendLine(priority.ToString());
+            sb.AppendLine(string.Format("what = {0:X8}", what));
+            sb.AppendLine("who [1] =");
+            sb.AppendLine(who.ToString());
+            sb.AppendLine(string.Format("where = {0:X8}", where));
+            sb.AppendLine("param [1] =");
+            sb.AppendLine(param.ToString());
+            sb.AppendLine("aiProcess [1] =");
+            sb.AppendLine(aiProcess.ToString());
+            sb.AppendLine("isCargo [1] =");
+            sb.AppendLine(isCargo.ToString());
+            sb.AppendLine("independence [1] =");
+            sb.AppendLine(independence.ToString());
+            sb.AppendLine("curPilot [1] =");
+            sb.AppendLine(curPilot);
+            sb.AppendLine("perceivedTeam [1] =");
+            sb.AppendLine(perceivedTeam.ToString());
+
+            return sb.ToString();
         }
     }
 }

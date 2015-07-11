@@ -5,12 +5,12 @@ using System.Text;
 
 namespace BattlezoneBZNTools.Reader
 {
-    public class BZNTokenStringComplex : IBZNToken, IBZNStringToken
+    public class BZNTokenNestedString : IBZNToken
     {
         private string name;
-        private IBZNStringToken[][] values;
+        private IBZNToken[][] values;
 
-        public BZNTokenStringComplex(string name, IBZNStringToken[][] values)
+        public BZNTokenNestedString(string name, IBZNToken[][] values)
         {
             this.name = name;
             this.values = values;
@@ -56,7 +56,7 @@ namespace BattlezoneBZNTools.Reader
         public Vector3D GetVector3D(int index = 0)
         {
             if (index >= values.Length) throw new ArgumentOutOfRangeException();
-            IBZNStringToken[] subToks = values[index];
+            IBZNToken[] subToks = values[index];
 
             if (!subToks[0].Validate("x")) throw new Exception("Failed to parse x");
             if (!subToks[1].Validate("y")) throw new Exception("Failed to parse y");
@@ -68,7 +68,7 @@ namespace BattlezoneBZNTools.Reader
         public Vector2D GetVector2D(int index = 0)
         {
             if (index >= values.Length) throw new ArgumentOutOfRangeException();
-            IBZNStringToken[] subToks = values[index];
+            IBZNToken[] subToks = values[index];
 
             if (!subToks[0].Validate("x")) throw new Exception("Failed to parse x");
             if (!subToks[1].Validate("z")) throw new Exception("Failed to parse z");
@@ -78,7 +78,7 @@ namespace BattlezoneBZNTools.Reader
 
         public Matrix GetMatrix(int index = 0)
         {
-            IBZNStringToken[] subToks = values[index];
+            IBZNToken[] subToks = values[index];
             if (!subToks[00].Validate("right_x")) throw new Exception("Failed to parse right_x");
             if (!subToks[01].Validate("right_y")) throw new Exception("Failed to parse right_y");
             if (!subToks[02].Validate("right_z")) throw new Exception("Failed to parse right_z");
@@ -103,7 +103,7 @@ namespace BattlezoneBZNTools.Reader
 
         public Euler GetEuler(int index = 0)
         {
-            IBZNStringToken[] subToks = values[index];
+            IBZNToken[] subToks = values[index];
             if (!subToks[0].Validate("mass")) throw new Exception("Failed to parse mass");
             if (!subToks[1].Validate("mass_inv")) throw new Exception("Failed to parse mass_inv");
             if (!subToks[2].Validate("v_mag")) throw new Exception("Failed to parse v_mag");
