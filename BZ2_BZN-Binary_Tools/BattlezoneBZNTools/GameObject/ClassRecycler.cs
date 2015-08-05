@@ -23,8 +23,7 @@ namespace BattlezoneBZNTools.GameObject
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine("undefptr [1] =");
-            sb.AppendLine(string.Format("{0:X8}", undefptr.ToString()));
+            sb.AppendLine(string.Format("undefptr = {0:X8}", undefptr));
 
             sb.Append(base.GetBZ1ASCII());
 

@@ -75,7 +75,7 @@ namespace BattlezoneBZNTools
             }
             else
             {
-                missionSave = false;
+                missionSave = true;
                 TerrainName = "UNKNOWN_BZn64";
             }
 
@@ -91,6 +91,11 @@ namespace BattlezoneBZNTools
             {
                 GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader);
                 //Console.WriteLine("{0}\t{1}", GameObjects[gameObjectCounter].seqno, GameObjects[gameObjectCounter].PrjID);
+            }
+
+            if(N64)
+            {
+                seq_count = GameObjects.Max(dr => dr.seqno) + 1;
             }
 
             //foreach(BZNGameObjectWrapper obj in GameObjects)
@@ -112,8 +117,16 @@ namespace BattlezoneBZNTools
             //Console.WriteLine();
 
             tok = reader.ReadToken();
-            if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
-            MissionClass = tok.GetString();
+            if (reader.N64)
+            {
+                if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
+                MissionClass = string.Format("BZn64Mission_{0,4:X4}", tok.GetUInt16());
+            }
+            else
+            {
+                if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
+                MissionClass = tok.GetString();
+            }
 
             //Console.WriteLine("MissionClass: \"{0}\"", MissionClass);
 

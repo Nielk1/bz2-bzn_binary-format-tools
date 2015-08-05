@@ -128,6 +128,8 @@ namespace BattlezoneBZNTools.Reader
             };
         }
 
+        public byte[] GetRaw(int index = 0, int length = 1) { throw new InvalidOperationException(); }
+
         public bool IsValidationOnly() { return false; }
 
         public override string ToString()

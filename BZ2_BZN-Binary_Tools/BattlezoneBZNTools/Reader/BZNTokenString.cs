@@ -84,6 +84,17 @@ namespace BattlezoneBZNTools.Reader
             throw new InvalidOperationException();
         }
 
+        public byte[] GetRaw(int index = 0, int length = 1) {
+            if (index + length > values[0].Length / 2) throw new ArgumentOutOfRangeException();
+            char[] rawDataArray = values[0].Skip(index * 2).Take(length * 2).ToArray();
+            byte[] dataOut = new byte[rawDataArray.Length / 2];
+            for(int x=0;x<dataOut.Length;x++)
+            {
+                dataOut[x] = byte.Parse("" + rawDataArray[x * 2 + 0] + rawDataArray[x * 2 + 1]);
+            }
+            return dataOut;
+        }
+
         public bool IsValidationOnly() { return false; }
 
         public override string ToString()

@@ -40,7 +40,17 @@ namespace BattlezoneBZNTools.Reader
             return BitConverter.ToUInt32(data, index * sizeof(UInt32));
         }
 
-        public UInt32 GetUInt32H(int index = 0) { return GetUInt32(); }
+        public UInt32 GetUInt32H(int index = 0)
+        {
+            return GetUInt32(index);
+        }
+
+        public UInt32 GetUInt32N64Fix(int index = 0)
+        {
+            if (index >= data.Length / sizeof(UInt32)) throw new ArgumentOutOfRangeException();
+            //if (n64Data) return BitConverter.ToUInt32(data.Skip(index * sizeof(UInt32)).Take(sizeof(UInt32)).Reverse().ToArray(), 0);
+            return BitConverter.ToUInt32(data, index * sizeof(UInt32));
+        }
 
         public Int16 GetInt16(int index = 0)
         {
@@ -96,6 +106,12 @@ namespace BattlezoneBZNTools.Reader
         public Euler GetEuler(int index = 0)
         {
             throw new NotImplementedException();
+        }
+
+        public byte[] GetRaw(int index = 0, int length = 1)
+        {
+            if (index + length > data.Length) throw new ArgumentOutOfRangeException();
+            return data.Skip(index).Take(length).ToArray();
         }
 
         public bool IsValidationOnly() { return false; }

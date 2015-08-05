@@ -11,7 +11,7 @@ namespace BattlezoneBZNTools.GameObject
         public float timeDeploy { get; set; }
         public float timeUndeploy { get; set; }
         public UInt32 undefptr2 { get; set; }
-        public UInt32 state { get; set; }
+        public byte[] state { get; set; }
         //public UInt32 delayTimer { get; set; }
         public float delayTimer { get; set; }
         public float nextRepair { get; set; }
@@ -38,7 +38,7 @@ namespace BattlezoneBZNTools.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
-            state = tok.GetUInt32H();
+            state = tok.GetRaw(0, 4);
 
             tok = reader.ReadToken();
             if (!tok.Validate("delayTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse delayTimer/FLOAT");
@@ -91,11 +91,9 @@ namespace BattlezoneBZNTools.GameObject
             sb.AppendLine("timeUndeploy [1] =");
             sb.AppendLine(timeUndeploy.ToString());
 
-            sb.AppendLine("undefptr [1] =");
-            sb.AppendLine(string.Format("{0:X8}", undefptr2.ToString()));
+            sb.AppendLine(string.Format("undefptr = {0:X8}", undefptr2));
 
-            sb.AppendLine("state [1] =");
-            sb.AppendLine(string.Format("{0:X8}", state.ToString()));
+            sb.AppendLine("state = " + BitConverter.ToString(state.Reverse().ToArray()).Replace("-", string.Empty));
 
             sb.AppendLine("delayTimer [1] =");
             sb.AppendLine(delayTimer.ToString());

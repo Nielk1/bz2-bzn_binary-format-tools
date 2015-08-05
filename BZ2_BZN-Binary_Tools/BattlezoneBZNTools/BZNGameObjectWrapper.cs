@@ -56,8 +56,16 @@ namespace BattlezoneBZNTools
             team = tok.GetUInt32();
 
             tok = reader.ReadToken();
-            if (!tok.Validate("label", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse label/CHAR");
-            label = tok.GetString();
+            if (reader.N64)
+            {
+                if (!tok.Validate("label", BinaryFieldType.DATA_SHORT)) throw new Exception("Failed to parse label/CHAR");
+                label = string.Format("bzn64label_{0,4:X4}", tok.GetUInt16());
+            }
+            else
+            {
+                if (!tok.Validate("label", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse label/CHAR");
+                label = tok.GetString();
+            }
 
             tok = reader.ReadToken();
             if (!tok.Validate("isUser", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse isUser/LONG");

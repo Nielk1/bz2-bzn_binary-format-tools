@@ -19,6 +19,7 @@ namespace BattlezoneBZNTools.Reader
         Vector2D GetVector2D(int index = 0);
         Matrix GetMatrix(int index = 0);
         Euler GetEuler(int index = 0);
+        byte[] GetRaw(int index = 0, int length = 1);
 
         bool IsValidationOnly();
         bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN);

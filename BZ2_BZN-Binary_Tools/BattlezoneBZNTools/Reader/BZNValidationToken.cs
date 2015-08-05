@@ -26,6 +26,7 @@ namespace BattlezoneBZNTools.Reader
         public Vector2D GetVector2D(int index = 0) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
         public Matrix GetMatrix(int index = 0) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
         public Euler GetEuler(int index = 0) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
+        public byte[] GetRaw(int index = 0, int length = 1) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
 
         public bool IsValidationOnly() { return true; }
 

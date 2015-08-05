@@ -9,7 +9,7 @@ namespace BattlezoneBZNTools.GameObject
     public class ClassAPC : ClassHoverCraft
     {
         public UInt32 soldierCount { get; set; }
-        public UInt32 state { get; set; }
+        public byte[] state { get; set; }
 
         public ClassAPC(string PrjID, bool isUser) : base(PrjID, isUser) { }
 
@@ -23,7 +23,7 @@ namespace BattlezoneBZNTools.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
-            state = tok.GetUInt32();
+            state = tok.GetRaw(0, 4);
 
             base.LoadData(reader);
         }
@@ -35,8 +35,7 @@ namespace BattlezoneBZNTools.GameObject
             sb.AppendLine("soldierCount [1] =");
             sb.AppendLine(soldierCount.ToString());
 
-            sb.AppendLine("state [1] =");
-            sb.AppendLine(state.ToString());
+            sb.AppendLine("state = " + BitConverter.ToString(state.Reverse().ToArray()).Replace("-", string.Empty));
 
             sb.Append(base.GetBZ1ASCII());
 

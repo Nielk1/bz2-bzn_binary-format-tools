@@ -116,7 +116,8 @@ namespace BattlezoneBZNTools.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("seqNo", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse seqNo/SHORT");
-            seqNo = tok.GetUInt16();
+            //seqNo = tok.GetUInt16();
+            seqNo = tok.GetUInt32();
 
             if (reader.N64)
             {
@@ -148,7 +149,7 @@ namespace BattlezoneBZNTools.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("seen", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse seen/LONG");
-            seen = tok.GetUInt32H();
+            seen = tok.GetUInt32();
 
             if (reader.N64)
             {
@@ -327,9 +328,9 @@ namespace BattlezoneBZNTools.GameObject
             sb.AppendLine(seqNo.ToString());
             sb.AppendLine("name = " + name);
             sb.AppendLine("isObjective [1] =");
-            sb.AppendLine(isObjective.ToString());
+            sb.AppendLine(isObjective.ToString().ToLowerInvariant());
             sb.AppendLine("isSelected [1] =");
-            sb.AppendLine(isSelected.ToString());
+            sb.AppendLine(isSelected.ToString().ToLowerInvariant());
             sb.AppendLine("isVisible [1] =");
             sb.AppendLine(string.Format("{0:x0}", isVisible));
             sb.AppendLine("seen [1] =");
@@ -355,9 +356,9 @@ namespace BattlezoneBZNTools.GameObject
             sb.AppendLine("param [1] =");
             sb.AppendLine(param.ToString());
             sb.AppendLine("aiProcess [1] =");
-            sb.AppendLine(aiProcess.ToString());
+            sb.AppendLine(aiProcess.ToString().ToLowerInvariant());
             sb.AppendLine("isCargo [1] =");
-            sb.AppendLine(isCargo.ToString());
+            sb.AppendLine(isCargo.ToString().ToLowerInvariant());
             sb.AppendLine("independence [1] =");
             sb.AppendLine(independence.ToString());
             sb.AppendLine("curPilot [1] =");
