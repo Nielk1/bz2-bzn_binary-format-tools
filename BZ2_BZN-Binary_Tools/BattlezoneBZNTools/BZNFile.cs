@@ -93,7 +93,7 @@ namespace BattlezoneBZNTools
                 //Console.WriteLine("{0}\t{1}", GameObjects[gameObjectCounter].seqno, GameObjects[gameObjectCounter].PrjID);
             }
 
-            if(N64)
+            if (N64)
             {
                 seq_count = GameObjects.Max(dr => dr.seqno) + 1;
             }
@@ -219,16 +219,16 @@ namespace BattlezoneBZNTools
 
         private void LoadMappings()
         {
-            if(ClassLabelMap == null)
-            try
-            {
-                ClassLabelMap = new Dictionary<string, string>();
-                File.ReadAllLines("clsmap.dat").Where(dr => dr.Contains('\t')).ToList().ForEach(dr => ClassLabelMap.Add(dr.Split('\t')[0], dr.Split('\t')[1]));
-            }
-            catch
-            {
-                #region ClassLabelMap
-                ClassLabelMap = new Dictionary<string, string>
+            if (ClassLabelMap == null)
+                try
+                {
+                    ClassLabelMap = new Dictionary<string, string>();
+                    File.ReadAllLines("clsmap.dat").Where(dr => dr.Contains('\t')).ToList().ForEach(dr => ClassLabelMap.Add(dr.Split('\t')[0], dr.Split('\t')[1]));
+                }
+                catch
+                {
+                    #region ClassLabelMap
+                    ClassLabelMap = new Dictionary<string, string>
                 {
                     {"abbar7", "i76building"},
                     {"abbarr", "barracks"},
@@ -297,7 +297,7 @@ namespace BattlezoneBZNTools
                     {"bvtank", "wingman"},
                     {"bvturr", "turrettank"},
                     {"bvwalk", "walker"},
-            
+
                     {"savmf", "factory"},
                     {"sbbarr", "barracks"},
                     {"sbcafe", "i76building"},
@@ -421,13 +421,13 @@ namespace BattlezoneBZNTools
                     {"avcnst_n64_3", "constructionrig"},
                     {"avcnst_n64_4", "constructionrig"},
                     {"avcnst_n64_5", "constructionrig"},
-            
+
                     {"avmuf_n64_1", "factory"},
                     {"avmuf_n64_2", "factory"},
                     {"avmuf_n64_3", "factory"},
                     {"avmuf_n64_4", "factory"},
                     {"avmuf_n64_5", "factory"},
-            
+
                     {"avrecy_n64_1", "recycler"},
                     {"avrecy_n64_2", "recycler"},
                     {"avrecy_n64_3", "recycler"},
@@ -437,15 +437,15 @@ namespace BattlezoneBZNTools
                     {"avrecy_n64_7", "recycler"},
                     {"avrecy_n64_8", "recycler"},
                     {"avrecy_n64_9", "recycler"},
-            
+
                     {"bvrecy_n64_1", "recycler"},
                     {"bvrecy_n64_2", "recycler"},
                     {"bvrecy_n64_3", "recycler"},
-            
+
                     {"svmuf_n64_1", "factory"},
                     {"svmuf_n64_2", "factory"},
                     {"svmuf_n64_3", "factory"},
-            
+
                     {"svrecy_n64_1", "recycler"},
                     {"svrecy_n64_2", "recycler"},
                     {"svrecy_n64_3", "recycler"},
@@ -453,26 +453,26 @@ namespace BattlezoneBZNTools
                     {"svrecy_n64_5", "recycler"},
                     {"svrecy_n64_6", "recycler"},
                     {"svrecy_n64_7", "recycler"},
-            
+
                     {"svslf_n64_ammo_hull_only", "armory"},
 
                     {"svscav_n64_1", "scavenger"},
 
                     {"svmammoth", "wingman"},
                 };
-                #endregion
-            }
+                    #endregion
+                }
 
             if (BZn64IdMap == null)
-            try
-            {
-                BZn64IdMap = new Dictionary<UInt16, string>();
-                File.ReadAllLines("n64map.dat").Where(dr => dr.Contains('\t')).ToList().ForEach(dr => BZn64IdMap.Add(UInt16.Parse(dr.Split('\t')[0], System.Globalization.NumberStyles.HexNumber), dr.Split('\t')[1]));
-            }
-            catch
-            {
-                #region BZn64IdMap
-                BZn64IdMap = new Dictionary<UInt16, string>
+                try
+                {
+                    BZn64IdMap = new Dictionary<UInt16, string>();
+                    File.ReadAllLines("n64map.dat").Where(dr => dr.Contains('\t')).ToList().ForEach(dr => BZn64IdMap.Add(UInt16.Parse(dr.Split('\t')[0], System.Globalization.NumberStyles.HexNumber), dr.Split('\t')[1]));
+                }
+                catch
+                {
+                    #region BZn64IdMap
+                    BZn64IdMap = new Dictionary<UInt16, string>
                 {
                     {0x0000, string.Empty},
                     {0x0001, "asuser"},
@@ -653,8 +653,8 @@ namespace BattlezoneBZNTools
                     {0x01BD, "svmammoth"},
                     {0x01C0, "svslf_n64_ammo_hull_only"},
                 };
-                #endregion
-            }
+                    #endregion
+                }
         }
 
         public static BZNFile OpenBZ1(Stream stream)
@@ -665,6 +665,74 @@ namespace BattlezoneBZNTools
         public static BZNFile OpenBZn64(Stream stream)
         {
             return new BZNFile(stream, true, true);
+        }
+
+        public string GetBZ1ASCII()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("version [1] =");
+            sb.AppendLine("1045");
+            sb.AppendLine("binarySave [1] =");
+            sb.AppendLine("false");
+            sb.AppendLine(string.Format("msn_filename = {0}", msn_filename));
+            sb.AppendLine("seq_count [1] =");
+            sb.AppendLine(seq_count.ToString());
+            sb.AppendLine("missionSave [1] =");
+            sb.AppendLine(missionSave.ToString().ToLowerInvariant());
+            sb.AppendLine(string.Format("TerrainName = {0}", TerrainName));
+            sb.AppendLine("size [1] =");
+            sb.AppendLine(GameObjects.Length.ToString());
+            foreach (BZNGameObjectWrapper obj in GameObjects)
+            {
+                sb.Append(obj.GetBZ1ASCII());
+            }
+            sb.AppendLine(string.Format("name = {0}", MissionClass));
+            sb.AppendLine(string.Format("sObject = {0:X8}", sObject));
+            sb.AppendLine("[AiMission]");
+            sb.AppendLine("[AOIs]");
+            sb.AppendLine("size [1] =");
+            sb.AppendLine(AOIs.Length.ToString());
+            foreach (BZNAOI aoi in AOIs)
+            {
+                sb.AppendLine("[AOI]");
+                sb.AppendLine(string.Format("undefptr = {0:X8}", aoi.undefptr));
+                sb.AppendLine("team[1] =");
+                sb.AppendLine(aoi.team.ToString());
+                sb.AppendLine("interesting[1] =");
+                sb.AppendLine(aoi.interesting.ToString().ToLowerInvariant());
+                sb.AppendLine("inside[1] =");
+                sb.AppendLine(aoi.inside.ToString().ToLowerInvariant());
+                sb.AppendLine("value[1] =");
+                sb.AppendLine(aoi.value.ToString());
+                sb.AppendLine("force[1] =");
+                sb.AppendLine(aoi.force.ToString());
+            }
+            sb.AppendLine("[AiPaths]");
+
+            sb.AppendLine("count [1] =");
+            sb.AppendLine(AiPaths.Length.ToString());
+            foreach (BZNAiPath AiPath in AiPaths)
+            {
+                sb.AppendLine("[AiPath]");
+                sb.AppendLine(string.Format("old_ptr = {0:X8}", AiPath.old_ptr));
+                sb.AppendLine("size [1] =");
+                sb.AppendLine(AiPath.label.Length.ToString());
+                sb.AppendLine(string.Format("label = {0}", AiPath.label));
+                sb.AppendLine("pointCount [1] =");
+                sb.AppendLine(AiPath.points.Length.ToString());
+                sb.AppendLine(string.Format("points [{0}] =", AiPath.points.Length));
+                for (int pointCounter = 0; pointCounter < AiPath.points.Length; pointCounter++)
+                {
+                    sb.AppendLine("  x [1] =");
+                    sb.AppendLine(AiPath.points[pointCounter].x.ToString());
+                    sb.AppendLine("  z [1] =");
+                    sb.AppendLine(AiPath.points[pointCounter].z.ToString());
+                }
+                sb.AppendLine(string.Format("pathType = {0:X8}", AiPath.pathType));
+            }
+
+            return sb.ToString();
         }
     }
 }
