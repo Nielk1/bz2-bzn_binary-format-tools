@@ -217,7 +217,7 @@ namespace BZNParser.Battlezone
                 }
                 else
                 {
-                    if (reader.HasBinary)
+                    if (reader.InBinary)
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate(null, BinaryFieldType.DATA_CHAR))
@@ -242,7 +242,7 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            if (!reader.HasBinary)
+            if (!reader.InBinary)
             {
                 tok = reader.ReadToken();
                 if (!tok.IsValidationOnly() || !tok.Validate("AiMission", BinaryFieldType.DATA_UNKNOWN))
@@ -251,7 +251,7 @@ namespace BZNParser.Battlezone
 
             // if reader.SaveType != 0
 
-            if (!reader.HasBinary)
+            if (!reader.InBinary)
             {
                 tok = reader.ReadToken();
                 if (!tok.IsValidationOnly() || !tok.Validate("AOIs", BinaryFieldType.DATA_UNKNOWN))
@@ -265,7 +265,7 @@ namespace BZNParser.Battlezone
 
             for (int i = 0; i < CountAOIs; i++)
             {
-                if (!reader.HasBinary)
+                if (!reader.InBinary)
                 {
                     tok = reader.ReadToken();
                     if (!tok.IsValidationOnly() || !tok.Validate("AOI", BinaryFieldType.DATA_UNKNOWN))
@@ -323,7 +323,7 @@ namespace BZNParser.Battlezone
                 //tok.GetUInt32();
             }
 
-            if (!reader.HasBinary)
+            if (!reader.InBinary)
             {
                 tok = reader.ReadToken();
                 if (!tok.IsValidationOnly() || !tok.Validate("AiPaths", BinaryFieldType.DATA_UNKNOWN))
@@ -337,7 +337,7 @@ namespace BZNParser.Battlezone
 
             for (int i = 0; i < CountPaths; i++)
             {
-                if (!reader.HasBinary && reader.Format == BZNFormat.Battlezone)
+                if (!reader.InBinary && reader.Format == BZNFormat.Battlezone)
                 {
                     tok = reader.ReadToken();
                     if (!tok.IsValidationOnly() || !tok.Validate("AiPath", BinaryFieldType.DATA_UNKNOWN))

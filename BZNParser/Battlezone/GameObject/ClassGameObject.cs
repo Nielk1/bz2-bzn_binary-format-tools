@@ -288,7 +288,7 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041) // avoid bz2001.bzn
             {
-                if (reader.Version < 1145 || !reader.HasBinary)
+                if (reader.Version < 1145 || !reader.InBinary)
                 {
                     tok = reader.ReadToken();
                     if (tok.Validate("groupNumber", BinaryFieldType.DATA_LONG))
@@ -481,7 +481,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
             // not sure at all that this IF handles binary properly
-            if (!reader.HasBinary && reader.Format == BZNFormat.Battlezone2)
+            if (!reader.InBinary && reader.Format == BZNFormat.Battlezone2)
             {
                 // not sure when this reads if ever
                 tok = reader.ReadToken();

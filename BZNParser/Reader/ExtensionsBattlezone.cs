@@ -36,7 +36,7 @@ namespace BZNParser.Reader
         public static string ReadBZ2InputString(this BZNStreamReader reader, string name)
         {
             IBZNToken tok;
-            if (reader.HasBinary)
+            if (reader.InBinary)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate(null, BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse ?/CHAR");
@@ -58,7 +58,7 @@ namespace BZNParser.Reader
         public static string ReadBZ2StringInSized(this BZNStreamReader reader, string name, int bufferSize)
         {
             IBZNToken tok;
-            if (reader.HasBinary)
+            if (reader.InBinary)
             {
                 UInt32 length = reader.ReadCompressedNumberFromBinary();
 
@@ -176,7 +176,7 @@ namespace BZNParser.Reader
                 {
                     if (!tok.Validate("what", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse what/CHAR");
                 }
-                if (reader.HasBinary)
+                if (reader.InBinary)
                 {
                     what = tok.GetUInt8();
                 }
@@ -226,7 +226,7 @@ namespace BZNParser.Reader
         {
             if (reader.SaveType == 0)
             {
-                if (reader.HasBinary)
+                if (reader.InBinary)
                 {
                     IBZNToken tok = reader.ReadToken();
                     if (!tok.Validate(null, BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");

@@ -8,7 +8,6 @@ namespace BZNParser
 {
     internal class Program
     {
-        static public HashSet<string> TmpBZNs = new HashSet<string>();
         record struct BznType(int version, bool binary, BZNFormat format);
         static void Main(string[] args)
         {
@@ -86,11 +85,11 @@ namespace BZNParser
                 }
             }
 
-            HashSet<string> Success = new HashSet<string>();
+            /*HashSet<string> Success = new HashSet<string>();
             if (File.Exists("success.txt"))
                 foreach (string line in File.ReadAllLines("success.txt"))
                     Success.Add(line);
-            Dictionary<BznType, List<(string, bool)>> Files = new Dictionary<BznType, List<(string, bool)>>();
+            Dictionary<BznType, List<(string, bool)>> Files = new Dictionary<BznType, List<(string, bool)>>();*/
 
             foreach (string filename in Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\bz2r_res", "*.bzn", SearchOption.AllDirectories)
                 .Concat(Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\maps", "*.bzn", SearchOption.AllDirectories))
@@ -115,8 +114,8 @@ namespace BZNParser
             //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)
             //    .Concat(Directory.EnumerateFiles(@"C:\Users\Nielk1\Documents\My Games\Battlezone Combat Commander\saved", "*.sav", SearchOption.AllDirectories)))
             {
-                if (Success.Contains(filename))
-                    continue;
+                //if (Success.Contains(filename))
+                //    continue;
 
                 Console.WriteLine(filename);
 
@@ -150,10 +149,10 @@ namespace BZNParser
                                         }
                                         finally
                                         {
-                                            BznType bznType = new BznType(reader.Version, reader.HasBinary, reader.Format);
+                                            /*BznType bznType = new BznType(reader.Version, reader.HasBinary, reader.Format);
                                             if (!Files.ContainsKey(bznType))
                                                 Files[bznType] = new List<(string, bool)>();
-                                            Files[bznType].Add((filename, success));
+                                            Files[bznType].Add((filename, success));*/
                                         }
                                     }
                                     break;
@@ -167,7 +166,7 @@ namespace BZNParser
                 }
             }
             //Console.ReadKey(true);
-            using (var writer = File.CreateText("files.txt"))
+            /*using (var writer = File.CreateText("files.txt"))
             {
                 foreach (KeyValuePair<BznType, List<(string, bool)>> entry in Files.OrderBy(dr => dr.Key.version).ThenBy(dr => dr.Key.version).ThenBy(dr => dr.Key.format))
                 {
@@ -176,7 +175,7 @@ namespace BZNParser
                         writer.WriteLine($"{entry.Key.version}\t{entry.Key.binary}\t{entry.Key.format}\t{item.Item2}\t{item.Item1}");
                     }
                 }
-            }
+            }*/
         }
     }
 }

@@ -9,6 +9,12 @@ namespace BZNParser.Reader
     public class BZNStreamReader : IDisposable
     {
         /// <summary>
+        /// Value used to indicate that the BZN file does not contain binary data.
+        /// This is should be a very high number so a basic offset check can be used to determine if binary data is being read or not.
+        /// </summary>
+        const long MAGIC_NO_BINARY = long.MaxValue;
+
+        /// <summary>
         /// Lookup for complex variables in ASCII BZN files, the value is the number of sub-tokens that make up the complex variable.
         /// </summary>
         private static readonly Dictionary<string, int> ComplexStringTokenSizeMap = new Dictionary<string, int>
@@ -27,18 +33,21 @@ namespace BZNParser.Reader
         };
 
         public Stream BaseStream { get; private set; } // Underlying Stream
-        private bool inBinary; // Are we currently reading binary tokens?
 
         /// <summary>
         /// BZN file started in binary.
         /// Only used for Battlezone N64 files.
         /// </summary>
-        public bool StartBinary { get; private set; }
+        public bool StartBinary { get { return binaryDataStartOffset == 0; } }
         /// <summary>
         /// BZN file has binary fields.
         /// Normal BZNs always start in ASCII mode and switch to binary mode later.
         /// </summary>
-        public bool HasBinary { get; private set; }
+        public bool HasBinary { get { return binaryDataStartOffset != MAGIC_NO_BINARY; } }
+        /// <summary>
+        /// Stream is currently in binary mode.
+        /// </summary>
+        public bool InBinary { get { return BaseStream.Position >= binaryDataStartOffset; } }
         /// <summary>
         /// BZN file is big endian.
         /// This applies to Battlezone N64 files.
@@ -82,14 +91,9 @@ namespace BZNParser.Reader
         public BZNFormat Format { get; set; }
 
         /// <summary>
-        /// Pre-read tokens used to analyze the file.
-        /// Store with their start and end offsets to fake-seek the stream.
+        /// Where binary fields start.
         /// </summary>
-        private List<(long Position, IBZNToken Token, long TailPosition)> TokenBuffer = new List<(long, IBZNToken, long TailPosition)>();
-        /// <summary>
-        /// End offset of header fields.
-        /// </summary>
-        private long EndOfHeaderOffset = 0;
+        private long binaryDataStartOffset = MAGIC_NO_BINARY;
 
         public BZNStreamReader(Stream stream)
         {
@@ -101,13 +105,11 @@ namespace BZNParser.Reader
 
             long position = stream.Position;
             BinaryReader reader = new BinaryReader(stream);
-            //using (BinaryReader reader = new BinaryReader(stream))
             {
                 // assume BZNs always start with a version, check for the string format
                 char[] versionname = reader.ReadChars(13);
-                //HasBinary = StartBinary = inBinary = !versionname.SequenceEqual(@"version [1] =".ToCharArray());
-                //HasBinary = StartBinary = inBinary = !versionname.SequenceEqual(@"version [1] =".ToCharArray()) && !versionname.SequenceEqual(@"aversion [1] ".ToCharArray());
-                HasBinary = StartBinary = inBinary = !versionname.All(c => !char.IsControl(c));
+                if(!versionname.All(c => !char.IsControl(c)))
+                    binaryDataStartOffset = 0;
 
                 stream.Position = position;
 
@@ -118,7 +120,7 @@ namespace BZNParser.Reader
                 SizeSize = 2; // BZ
 
                 // we are starting in binary, so check for BigEndian since this could be an n64 file
-                if (inBinary)
+                if (StartBinary)
                 {
                     byte[] First2Bytes = new byte[2];
                     reader.Read(First2Bytes, 0, 2);
@@ -136,24 +138,21 @@ namespace BZNParser.Reader
                 long tmpPosition = stream.Position;
                 IBZNToken VersionToken = ReadToken();
                 Version = VersionToken.GetInt32();
-                TokenBuffer.Add((tmpPosition, VersionToken, stream.Position));
 
                 tmpPosition = position = stream.Position;
                 IBZNToken SaveTypeToken = ReadToken();
-                if (!inBinary && SaveTypeToken.Validate("saveType"))
+                if (!InBinary && SaveTypeToken.Validate("saveType"))
                 {
                     SaveType = SaveTypeToken.GetInt32();
                     TypeSize = 1; // BZ2 has saveType flag, BZ1 does not
                     TypeSizeSet = true;
-                    TokenBuffer.Add((tmpPosition, SaveTypeToken, stream.Position));
                     Format = BZNFormat.Battlezone2;
                 }
-                else if (!inBinary && SaveTypeToken.Validate("saveGameDesc"))
+                else if (!InBinary && SaveTypeToken.Validate("saveGameDesc"))
                 {
                     TypeSize = 4; // Star Trek Armada, 3 bytes are garbage
                     TypeSizeSet = true;
                     SizeSize = 4;
-                    TokenBuffer.Add((tmpPosition, SaveTypeToken, stream.Position));
                     Format = BZNFormat.StarTrekArmada;
                 }
                 else
@@ -168,16 +167,16 @@ namespace BZNParser.Reader
                     IBZNToken BinaryToken = ReadToken();
                     if (BinaryToken.Validate("binarySave"))
                     {
-                        HasBinary = inBinary = BinaryToken.GetBoolean();
-                        TokenBuffer.Add((tmpPosition, BinaryToken, stream.Position));
+                        if (BinaryToken.GetBoolean())
+                            binaryDataStartOffset = stream.Position;
                     }
                     else if (BinaryToken.Validate("BinaryMode"))
                     {
-                        HasBinary = inBinary = BinaryToken.GetBoolean();
+                        if (BinaryToken.GetBoolean())
+                            binaryDataStartOffset = stream.Position;
                         TypeSize = 4; // Star Trek Armada, 3 bytes are garbage
                         TypeSizeSet = true;
                         SizeSize = 4;
-                        TokenBuffer.Add((tmpPosition, BinaryToken, stream.Position));
                         Format = BZNFormat.StarTrekArmada2;
                     }
                     else
@@ -191,9 +190,6 @@ namespace BZNParser.Reader
                 {
                     // interrogate, might need this to repeat earlier if the file starts binary but unsure
                 }
-
-                EndOfHeaderOffset = stream.Position;
-
                 // check for special case BZ2's bz2001.bzn
                 // we might be the "bz2001.bzn" file from BZ2 that is not in the BZ1 patch continuum but we register as a BZ1 type BZN
                 if (Format == BZNFormat.Battlezone && !HasBinary)
@@ -229,26 +225,13 @@ namespace BZNParser.Reader
         /// <returns></returns>
         public IBZNToken ReadToken()
         {
-            if (BaseStream.Position < EndOfHeaderOffset)
+            if (InBinary)
             {
-                // return buffered tokens we used to analyze the file
-                foreach (var pair in TokenBuffer)
-                {
-                    if (pair.Position == BaseStream.Position)
-                    {
-                        BaseStream.Position = pair.TailPosition;
-                        return pair.Token;
-                    }
-                }
-            }
-
-            if (!inBinary)
-            {
-                return ReadStringToken(BaseStream);
+                return ReadBinaryToken(BaseStream);
             }
             else
             {
-                return ReadBinaryToken(BaseStream);
+                return ReadStringToken(BaseStream);
             }
         }
 

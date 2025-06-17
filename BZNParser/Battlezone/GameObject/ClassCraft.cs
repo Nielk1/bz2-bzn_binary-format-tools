@@ -132,7 +132,7 @@ namespace BZNParser.Battlezone.GameObject
                         throw new Exception("Failed to parse addAmmo/FLOAT");
                     float addAmmo = (uint)tok.GetSingle();
 
-                    if (reader.HasBinary)
+                    if (reader.InBinary)
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate(null, BinaryFieldType.DATA_CHAR))

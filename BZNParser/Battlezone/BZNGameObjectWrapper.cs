@@ -40,7 +40,7 @@ namespace BZNParser.Battlezone
             if (ClassLabelTempLookup == null)
                 ClassLabelTempLookup = new Dictionary<string, string>();
             IBZNToken tok;
-            if (!reader.HasBinary)
+            if (!reader.InBinary)
             {
                 tok = reader.ReadToken();
                 if (!tok.IsValidationOnly() || !tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN))
@@ -105,11 +105,11 @@ namespace BZNParser.Battlezone
 
             if (reader.Format == BZNFormat.Battlezone2)
             {
-                if (reader.HasBinary)
+                if (reader.InBinary)
                 {
                     seqNo = reader.ReadCompressedNumberFromBinary();
                 }
-                else if (reader.Version >= 1145 && reader.HasBinary && false)// && omitBinarySaveHeadsers)
+                else if (reader.Version >= 1145 && reader.InBinary && false)// && omitBinarySaveHeadsers)
                 {
                     tok = reader.ReadToken();
                     if (tok.Validate("seqno", BinaryFieldType.DATA_SHORT))
@@ -429,7 +429,7 @@ namespace BZNParser.Battlezone
             {
                 if (countLeft == 0)
                 {
-                    if (reader.HasBinary)
+                    if (reader.InBinary)
                     {
                         return true; // TODO figure out how to determine we're at the end of the ODF section in binary mode, maybe test parse the next section?
                     }
