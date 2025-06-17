@@ -125,8 +125,6 @@ namespace BZNParser
                     {
                         using (BZNStreamReader reader = new BZNStreamReader(file))
                         {
-                            Console.WriteLine(reader.Format);
-
                             switch (reader.Format)
                             {
                                 case BZNFormat.Battlezone:

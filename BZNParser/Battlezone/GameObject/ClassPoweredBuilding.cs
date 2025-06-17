@@ -22,19 +22,21 @@ namespace BZNParser.Battlezone.GameObject
             //TapHelper::Save((this + 2060), a2); // used by PoweredBuilding and Turret (gun tower) to save lung data
             if (reader.Version >= 1062)
             {
-                //v2 = *(this + 16);
-                //if (v2 > 0)
-                //    (a2->vftable->read_long)(a2, this + 32, 4 * v2, "powerHandle");
+                // we don't know how many taps there are without the ODF, so just try to read forever
                 long pos = reader.BaseStream.Position;
                 tok = reader.ReadToken();
                 if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
                 {
                     UInt32 powerHandle = tok.GetUInt32();
+                    try
+                    {
+                        UInt32 powerHandle2 = tok.GetUInt32(1);
+                    }
+                    catch { }
                 }
                 else
                 {
                     reader.BaseStream.Position = pos;
-                    //throw new Exception("Failed to parse powerHandle/LONG");
                 }
             }
 

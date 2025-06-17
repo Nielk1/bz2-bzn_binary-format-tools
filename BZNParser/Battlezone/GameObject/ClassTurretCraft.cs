@@ -92,6 +92,8 @@ namespace BZNParser.Battlezone.GameObject
 
                 if (reader.Version >= 1158)
                 {
+                    // saveClass must have a CHAR token as its first token if it's in binary mode, meaning the above loop consuming all LONGs is fine
+                    // if the version was lower we might have had a LONG conflict
                     string saveClass = reader.ReadGameObjectClass_BZ2("saveClass");
 
                     //if (*(this + 376))
@@ -132,6 +134,8 @@ namespace BZNParser.Battlezone.GameObject
 
                 if (reader.Version >= 1193)
                 {
+                    // because the version needs of this are even higher than that of the above we know the above will have to have run if this will run
+                    // so we know the powerHandle loop is safe since it will trip into a CHAR if it overruns due to the above.
                     tok = reader.ReadToken();
                     if (!tok.Validate("scriptPowerOverride", BinaryFieldType.DATA_LONG))
                         throw new Exception("Failed to parse scriptPowerOverride/LONG");
