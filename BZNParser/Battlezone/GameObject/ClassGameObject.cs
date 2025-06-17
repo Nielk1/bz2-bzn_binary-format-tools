@@ -101,9 +101,12 @@ namespace BZNParser.Battlezone.GameObject
                 if (reader.Version > 1030)
                     if (reader.Version < 1145)
                     {
-                        tok = reader.ReadToken();
-                        if (!tok.Validate(null, BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse ?/LONG");
-                        UInt32 odfLength = tok.GetUInt32();
+                        /*if (reader.InBinary)
+                        {
+                            tok = reader.ReadToken();
+                            if (!tok.Validate(null, BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse ?/LONG");
+                            UInt32 odfLength = tok.GetUInt32();
+                        }*/
 
                         tok = reader.ReadToken();
                         if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
@@ -111,9 +114,9 @@ namespace BZNParser.Battlezone.GameObject
                     }
                     else
                     {
-                        tok = reader.ReadToken();
-                        if (!tok.Validate(null, BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse ?/CHAR");
-                        byte odfLength = tok.GetUInt8();
+                        //tok = reader.ReadToken();
+                        //if (!tok.Validate(null, BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse ?/CHAR");
+                        //byte odfLength = tok.GetUInt8();
 
                         tok = reader.ReadToken();
                         if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
@@ -256,11 +259,30 @@ namespace BZNParser.Battlezone.GameObject
 
             //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2011)
             //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 1049)
-            if (reader.Format == BZNFormat.Battlezone && reader.Version >= 1049)
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            {
+                // not sure if this is on the n64 build
+                if ((reader.Version >= 1046 && reader.Version < 2000) || reader.Version >= 2010)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("isCritical", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isCritical/BOOL");
+                    //isCritical = tok.GetBoolean();
+                }
+            }
+
+            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
             {
                 tok = reader.ReadToken();
-                if (!tok.Validate("isCritical", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isCritical/BOOL");
-                //isCritical = tok.GetBoolean();
+                if (!tok.Validate("liveColor", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse liveColor/UNKNOWN");
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("deadColor", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse deadColor/UNKNOWN");
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("teamNumber", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse teamNumber/UNKNOWN");
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("teamSlot", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse teamSlot/UNKNOWN");
             }
 
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
@@ -270,7 +292,8 @@ namespace BZNParser.Battlezone.GameObject
                 isObjective = tok.GetBoolean();
 
                 // I seriously don't understand why this is a thing, it must be wrong, but this is where we get into BZ98R or 1.5 (unclear)
-                if (reader.Version != 2004 && reader.Version != 2003)
+                // code says it should always be read in???
+                if (/*reader.Version != 2004 &&*/ reader.Version != 2003)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("isSelected", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isSelected/BOOL");
@@ -361,12 +384,12 @@ namespace BZNParser.Battlezone.GameObject
                 //[10:05:31 PM] Kenneth Miller: (version 1033 was where they were removed from the mission)
                 if (reader.Version < 1033)
                 {
-                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
-                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
-                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
-                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
-                    tok = reader.ReadToken(); // float (-HUGE_NUMBER)
-                    tok = reader.ReadToken(); // float
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER) // playerShot
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER) // playerCollide
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER) // friendShot
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER) // friendCollide
+                    tok = reader.ReadToken(); // float (-HUGE_NUMBER) // enemyShot
+                    tok = reader.ReadToken(); // float                // groundCollide
                 }
             }
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
@@ -418,6 +441,24 @@ namespace BZNParser.Battlezone.GameObject
                         if (!tok.Validate("addHealth", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse addHealth/FLOAT");
                         //addHealth = tok.GetUInt32();
                     }
+                }
+            }
+
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            {
+                if (reader.Version < 1015)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("heatRatio", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse heatRatio/FLOAT");
+                    float heatRatio = tok.GetSingle();
+
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("curHeat", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse curHeat/LONG");
+                    Int32 curHeat = tok.GetInt32();
+
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("maxHeat", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse maxHeat/LONG");
+                    Int32 maxHeat = tok.GetInt32();
                 }
             }
 
@@ -489,26 +530,68 @@ namespace BZNParser.Battlezone.GameObject
             }
 
             // start read of AiCmdInfo
-            if (reader.Format != BZNFormat.Battlezone2 || reader.SaveType == 0) // not sure how BZ1 handles this, but BZ2 it has to be a BZN
+            if (reader.Format == BZNFormat.Battlezone2)
             {
-                reader.GetAiCmdInfo(); // TODO get return value
-                // end read of AiCmdInfo
+                if (reader.SaveType == 0)
+                {
+                    reader.GetAiCmdInfo(); // TODO get return value
+                    // end read of AiCmdInfo
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
-                aiProcess = tok.GetBoolean();
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
+                    aiProcess = tok.GetBoolean();
+                }
+                else
+                {
+                    // savegame
+                }
             }
-            else
+            else if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                // savegame
+                if (reader.SaveType == 0)
+                {
+                    if (reader.Version == 1001)
+                    {
+                        // curCmd
+                        reader.GetAiCmdInfo(); // TODO get return value
+                    }
+
+                    // nextCmd
+                    reader.GetAiCmdInfo(); // TODO get return value
+
+                    // end read of AiCmdInfo
+                    
+                    // aiProcess?
+                    tok = reader.ReadToken();
+                    if (reader.Version == 1001)
+                    {
+                        if (!tok.Validate("undefptr", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
+                        aiProcess = tok.GetUInt32H() != 0;
+                    }
+                    else
+                    {
+                        if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
+                        aiProcess = tok.GetBoolean();
+                    }
+                }
+                else
+                {
+                    // savegame
+                    //curCmd
+                    //nextCmd
+                    //aiProcess
+                }
             }
 
             if (reader.Format == BZNFormat.Battlezone
              || reader.Format == BZNFormat.BattlezoneN64)
             {
-                tok = reader.ReadToken();
-                if (!tok.Validate("isCargo", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isCargo/BOOL");
-                isCargo = tok.GetBoolean();
+                if (reader.Version > 1007)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("isCargo", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isCargo/BOOL");
+                    isCargo = tok.GetBoolean();
+                }
             }
             else if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -524,13 +607,16 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            if (/*reader.HasBinary ||*/ reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                tok = reader.ReadToken();
-                if (!tok.Validate("independence", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse independence/LONG");
-                independence = tok.GetUInt32();
+                if (reader.Version > 1016)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("independence", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse independence/LONG");
+                    independence = tok.GetUInt32();
+                }
             }
-            if (/*!reader.HasBinary &&*/ reader.Format == BZNFormat.Battlezone2)
+            if (reader.Format == BZNFormat.Battlezone2)
             {
                 if (reader.Version < 1145)
                 {
@@ -549,27 +635,27 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            if (reader.Format == BZNFormat.BattlezoneN64)
+            if (reader.Format == BZNFormat.BattlezoneN64 && reader.Version > 1016) // unsure of this version check
             {
                 tok = reader.ReadToken();
                 UInt16 curPilotID = tok.GetUInt16();
                 if (!BZNFile.BZn64IdMap.ContainsKey(curPilotID)) throw new InvalidCastException(string.Format("Cannot convert n64 curPilotID enumeration 0x(0:X2} to string curPilotID", curPilotID));
                 curPilot = BZNFile.BZn64IdMap[curPilotID];
             }
-            if (reader.Format == BZNFormat.Battlezone)
+            if (reader.Format == BZNFormat.Battlezone && reader.Version > 1016)
             {
-                if (reader.Version > 1022)
-                {
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("curPilot", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse curPilot/ID");
-                    curPilot = tok.GetString();
-                }
-                else
+                if (reader.Version < 1030)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("hasPilot", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse hasPilot/BOOL");
                     bool hasPilot = tok.GetBoolean();
                     curPilot = hasPilot ? isUser ? PrjID[0] + "suser" : PrjID[0] + "spilo" : string.Empty;
+                }
+                else
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("curPilot", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse curPilot/ID");
+                    curPilot = tok.GetString();
                 }
             }
             if (reader.Format == BZNFormat.Battlezone2)
@@ -595,7 +681,7 @@ namespace BZNParser.Battlezone.GameObject
             }
             if (reader.Format == BZNFormat.Battlezone)
             {
-                if (reader.Version > 1030)
+                if (reader.Version > 1031)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("perceivedTeam", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse perceivedTeam/LONG");

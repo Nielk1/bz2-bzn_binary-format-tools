@@ -14,6 +14,32 @@ namespace BZNParser.Battlezone.GameObject
 
         public override void LoadData(BZNStreamReader reader)
         {
+            if (reader.Version > 1001 && reader.Version < 1026)
+            {
+                // junk hovercraft params
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+                reader.ReadToken();
+            }
+
             base.LoadData(reader);
         }
     }

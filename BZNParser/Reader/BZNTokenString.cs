@@ -46,6 +46,12 @@ namespace BZNParser.Reader
             return UInt32.Parse(values[index], System.Globalization.NumberStyles.HexNumber);
         }
 
+        public UInt32 GetUInt32Raw(int index = 0)
+        {
+            // can't be BigEndian as we're text which doesn't exist on IsBigEndian platforms (thank god or the string token parser would need to know the bit order for these edge cases)
+            return BitConverter.ToUInt32(GetRaw(index * 4, 4));
+        }
+
         public Int16 GetInt16(int index = 0)
         {
             if (index >= values.Length) throw new ArgumentOutOfRangeException();
@@ -167,8 +173,8 @@ namespace BZNParser.Reader
                 return true;
 
             // malformed extra line/space
-            if (this.name.Trim() == name)
-                return true;
+            //if (this.name.Trim() == name)
+            //    return true;
 
             // typo
             if (MatchesAllButOne(name, this.name))

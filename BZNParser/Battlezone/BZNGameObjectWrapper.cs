@@ -62,6 +62,10 @@ namespace BZNParser.Battlezone
                     throw new Exception("Failed to parse PrjID/ID");
                 //if (!tok.Validate("PrjID", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse PrjID/ID");
                 PrjID = tok.GetString();
+                if (reader.Version == 1001)
+                {
+                    PrjID = PrjID.Split('\0')[0];
+                }
             }
             else if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -131,7 +135,7 @@ namespace BZNParser.Battlezone
                     seqNo = tok.GetUInt32H();
                 }
             }
-            else
+            else if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("seqno", BinaryFieldType.DATA_SHORT))
@@ -238,35 +242,49 @@ namespace BZNParser.Battlezone
                 }
                 //else{}
             }
-            else
+            else if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("isUser", BinaryFieldType.DATA_LONG))
                     throw new Exception("Failed to parse isUser/LONG");
                 isUser = tok.GetUInt32();
             }
-
-            tok = reader.ReadToken();
+            
             if (reader.Format == BZNFormat.BattlezoneN64 || reader.Format == BZNFormat.Battlezone)
-                if (!tok.Validate("obj_addr", BinaryFieldType.DATA_PTR))
-                    throw new Exception("Failed to parse obj_addr/PTR");
-            if (reader.Format == BZNFormat.Battlezone2)
+            {
+                if (reader.Version < 1002)
+                {
+                    obj_addr = reader.ReadBZ1_PtrDepricated("obj_addr"); // string name unconfirmed
+                }
+                else
+                {
+                    obj_addr = reader.ReadBZ1_Ptr("obj_addr");
+                }
+            }
+            else if (reader.Format == BZNFormat.Battlezone2)
+            {
+                tok = reader.ReadToken();
                 if (!tok.Validate("objAddr", BinaryFieldType.DATA_PTR))
                     throw new Exception("Failed to parse objAddr/PTR");
-            obj_addr = tok.GetUInt32H();
+                obj_addr = tok.GetUInt32H();
+            }
 
-            tok = reader.ReadToken();
             if (reader.Format == BZNFormat.Battlezone2)
             {
+                tok = reader.ReadToken();
                 if (!tok.Validate("transform", BinaryFieldType.DATA_MAT3D))
                     throw new Exception("Failed to parse transform/MAT3D");
                 transform = tok.GetMatrix();
             }
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (!tok.Validate("transform", BinaryFieldType.DATA_MAT3DOLD))
-                    throw new Exception("Failed to parse transform/MAT3DOLD");
-                transform = tok.GetMatrixOld();
+                if (reader.Version > 1001)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("transform", BinaryFieldType.DATA_MAT3DOLD))
+                        throw new Exception("Failed to parse transform/MAT3DOLD");
+                    transform = tok.GetMatrixOld();
+                }
             }
 
             // other save types here
@@ -317,7 +335,7 @@ namespace BZNParser.Battlezone
                 gameObject = (info?.Invoke(new object[] { PrjID, isUser != 0, mapKey })) as ClassGameObject;
             }
 
-            if (ValidClassLabels.Count == 1)
+            if (ValidClassLabels != null && ValidClassLabels.Count == 1)
             {
                 string label = ValidClassLabels.First();
                 Type t = ClassLabelMap[label];
@@ -361,7 +379,7 @@ namespace BZNParser.Battlezone
                     classLableTempHolder = kv.Key;
                     if (!LongTermClassLabelLookupCache.ContainsKey(PrjID.ToLowerInvariant()) || LongTermClassLabelLookupCache[PrjID.ToLowerInvariant()].Contains(classLableTempHolder))
                     {
-                        if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Contains(classLableTempHolder))
+                        if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Count == 0 || ValidClassLabels.Contains(classLableTempHolder))
                             try
                             {
                                 ConstructorInfo? info = kv.Value.GetConstructor(new Type[] { typeof(string), typeof(bool), typeof(string) });

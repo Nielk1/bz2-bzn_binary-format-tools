@@ -11,6 +11,22 @@ namespace BZNParser.Battlezone.GameObject
         public ClassHoverCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public override void LoadData(BZNStreamReader reader)
         {
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            {
+                if (reader.Version <= 1010)
+                {
+                    // any producer
+                    if (ClassLabel == "armory"
+                      || ClassLabel == "constructionrig"
+                      || ClassLabel == "factory"
+                      || ClassLabel == "recycler")
+                    {
+                        base.LoadData(reader);
+                        return;
+                    }
+                }
+            }
+
             if (reader.Format == BZNFormat.Battlezone && reader.Version > 1001 && reader.Version < 1026)
             {
                 IBZNToken tok = reader.ReadToken();

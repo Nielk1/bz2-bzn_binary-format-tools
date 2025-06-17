@@ -22,7 +22,7 @@ namespace BZNParser.Battlezone.GameObject
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
-                undefptr = tok.GetUInt32H();
+                undefptr = tok.GetUInt32H(); // cargo
             }
             else if (reader.Format == BZNFormat.Battlezone2)
             {

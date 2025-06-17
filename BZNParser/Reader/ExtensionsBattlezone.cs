@@ -11,6 +11,38 @@ namespace BZNParser.Reader
 {
     static class ExtensionsBattlezone
     {
+        public static UInt32 ReadBZ1_PtrDepricated(this BZNStreamReader reader, string name)
+        {
+            IBZNToken tok;
+
+            if (reader.InBinary)
+            {
+                // untested
+                tok = reader.ReadToken();
+                if (!tok.Validate(name, BinaryFieldType.DATA_VOID))
+                    throw new Exception($"Failed to parse {name ?? "???"}/PTR");
+                return tok.GetUInt32H();
+            }
+            else
+            {
+                // untested
+                tok = reader.ReadToken();
+                if (!tok.Validate(name, BinaryFieldType.DATA_VOID))
+                    throw new Exception($"Failed to parse {name ?? "???"}/PTR");
+                //return tok.GetUInt32H();
+                return tok.GetUInt32Raw(); // might be only version 1001 of BZ1
+            }
+        }
+        public static UInt32 ReadBZ1_Ptr(this BZNStreamReader reader, string name)
+        {
+            IBZNToken tok;
+            
+            tok = reader.ReadToken();
+            if (!tok.Validate(name, BinaryFieldType.DATA_PTR))
+                throw new Exception($"Failed to parse {name ?? "???"}/PTR");
+            return tok.GetUInt32H();
+        }
+
         public static UInt32 ReadCompressedNumberFromBinary(this BZNStreamReader reader)
         {
             IBZNToken tok;
@@ -193,14 +225,19 @@ namespace BZNParser.Reader
             //if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
                 tok = reader.ReadToken();
-                //if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
-                //    if (!tok.Validate("where", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse where/VOID");
-                //if (reader.Format == BZNFormat.Battlezone2)
-                if (!tok.Validate("where", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse where/PTR");
+                if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
+                {
+                    if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
+                }
+                else
+                {
+                    if (!tok.Validate("where", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse where/PTR");
+                }
                 where = tok.GetUInt32H();
 
                 tok = reader.ReadToken();
-                if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2016)
+                //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2016)
+                if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2012)
                 {
                     if (!tok.Validate("param", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse param/ID");
                     string tmp = tok.GetString();

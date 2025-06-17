@@ -8,10 +8,16 @@ namespace BZNParser.Battlezone.GameObject
 {
     // BZCC Done
 
-    [ObjectClass(BZNFormat.Battlezone, "i76building")] // unsure
-    [ObjectClass(BZNFormat.Battlezone, "i76building2")] // unsure
+    [ObjectClass(BZNFormat.Battlezone, "i76building")] // is not in code in the main area but appears to be valid?
+    [ObjectClass(BZNFormat.Battlezone, "i76building2")] // is in code directly
     [ObjectClass(BZNFormat.Battlezone2, "i76building")]
     [ObjectClass(BZNFormat.Battlezone2, "i76sign")]
+
+    [ObjectClass(BZNFormat.Battlezone, "repairdepot")]
+
+    [ObjectClass(BZNFormat.BattlezoneN64, "i76building")] // is not in code in the main area but appears to be valid?
+    [ObjectClass(BZNFormat.BattlezoneN64, "i76building2")] // is in code directly
+    [ObjectClass(BZNFormat.BattlezoneN64, "repairdepot")]
     public class ClassBuilding : ClassGameObject
     {
         public ClassBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }

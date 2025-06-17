@@ -85,16 +85,21 @@ namespace BZNParser
                 }
             }
 
-            /*HashSet<string> Success = new HashSet<string>();
+            HashSet<string> Success = new HashSet<string>();
             if (File.Exists("success.txt"))
                 foreach (string line in File.ReadAllLines("success.txt"))
                     Success.Add(line);
-            Dictionary<BznType, List<(string, bool)>> Files = new Dictionary<BznType, List<(string, bool)>>();*/
+            Dictionary<BznType, List<(string, bool)>> Files = new Dictionary<BznType, List<(string, bool)>>();
 
             foreach (string filename in Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\bz2r_res", "*.bzn", SearchOption.AllDirectories)
                 .Concat(Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\maps", "*.bzn", SearchOption.AllDirectories))
                 .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\624970", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\GenerateMultiplayerDataExtract\GenerateMultiplayerDataExtract\bin\Debug\BZ98R", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"..\..\..\..\old\sample", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
                 )
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
             //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
             //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories)
             //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)))
@@ -114,8 +119,8 @@ namespace BZNParser
             //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)
             //    .Concat(Directory.EnumerateFiles(@"C:\Users\Nielk1\Documents\My Games\Battlezone Combat Commander\saved", "*.sav", SearchOption.AllDirectories)))
             {
-                //if (Success.Contains(filename))
-                //    continue;
+                if (Success.Contains(filename))
+                    continue;
 
                 Console.WriteLine(filename);
 
@@ -128,14 +133,13 @@ namespace BZNParser
                             switch (reader.Format)
                             {
                                 case BZNFormat.Battlezone:
-                                case BZNFormat.Battlezone2:
                                 case BZNFormat.BattlezoneN64:
                                     {
-                                        bool success = false;
+                                        //bool success = false;
                                         try
                                         {
-                                            new BZNFileBattlezone(reader, Hints: BZ2Hints);
-                                            success = true;
+                                            new BZNFileBattlezone(reader, Hints: null);
+                                            //success = true;
                                             File.AppendAllText("success.txt", $"{filename}\r\n");
                                         }
                                         catch (Exception ex)
@@ -143,7 +147,32 @@ namespace BZNParser
                                             Console.ForegroundColor = ConsoleColor.Red;
                                             Console.WriteLine($"Error: {ex.Message}");
                                             Console.ResetColor();
-                                            Console.ReadKey(true);
+                                            //Console.ReadKey(true);
+                                        }
+                                        finally
+                                        {
+                                            /*BznType bznType = new BznType(reader.Version, reader.HasBinary, reader.Format);
+                                            if (!Files.ContainsKey(bznType))
+                                                Files[bznType] = new List<(string, bool)>();
+                                            Files[bznType].Add((filename, success));*/
+                                        }
+                                    }
+                                    break;
+                                case BZNFormat.Battlezone2:
+                                    {
+                                        //bool success = false;
+                                        try
+                                        {
+                                            new BZNFileBattlezone(reader, Hints: BZ2Hints);
+                                            //success = true;
+                                            File.AppendAllText("success.txt", $"{filename}\r\n");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.ForegroundColor = ConsoleColor.Red;
+                                            Console.WriteLine($"Error: {ex.Message}");
+                                            Console.ResetColor();
+                                            //Console.ReadKey(true);
                                         }
                                         finally
                                         {

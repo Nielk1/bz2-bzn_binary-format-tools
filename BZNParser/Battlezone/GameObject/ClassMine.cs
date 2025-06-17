@@ -10,6 +10,16 @@ namespace BZNParser.Battlezone.GameObject
 
         public override void LoadData(BZNStreamReader reader)
         {
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            {
+                if (reader.Version >= 1038 && reader.SaveType != 0)
+                {
+                    IBZNToken tok = reader.ReadToken();
+                    if (!tok.Validate("lifeTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse lifeTimer/FLOAT");
+                    //lifeTimer = tok.GetSingle();
+                }
+            }
+
             if (reader.Format == BZNFormat.Battlezone2)
             {
                 IBZNToken tok = reader.ReadToken();

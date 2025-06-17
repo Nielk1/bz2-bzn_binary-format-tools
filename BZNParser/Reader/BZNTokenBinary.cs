@@ -45,6 +45,11 @@ namespace BZNParser.Reader
             return GetUInt32(index);
         }
 
+        public UInt32 GetUInt32Raw(int index = 0)
+        {
+            return GetUInt32(index);
+        }
+
         public UInt32 GetUInt32N64Fix(int index = 0)
         {
             if (index >= data.Length / sizeof(UInt32)) throw new ArgumentOutOfRangeException();

@@ -32,6 +32,7 @@ namespace BZNParser.Reader
         }
 
         public UInt32 GetUInt32H(int index = 0) { return GetUInt32(index); }
+        public UInt32 GetUInt32Raw(int index = 0) { return GetUInt32(index); }
 
         public Int16 GetInt16(int index = 0)
         {

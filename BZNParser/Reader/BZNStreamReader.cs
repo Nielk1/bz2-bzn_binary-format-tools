@@ -30,6 +30,7 @@ namespace BZNParser.Reader
             {"startMat", 12},
             {"saveMatrix", 12},
             {"buildMatrix", 12},
+            {"bumpers", 3}, // VEC3
         };
 
         public Stream BaseStream { get; private set; } // Underlying Stream
@@ -161,6 +162,8 @@ namespace BZNParser.Reader
                     stream.Position = position;
                 }
 
+                // TODO look into using BZ1's missionSave bool for SaveType, where True is 0 and False is 1.
+
                 if (Version > 1022)
                 {
                     tmpPosition = stream.Position;
@@ -264,6 +267,13 @@ namespace BZNParser.Reader
         private IBZNToken ReadStringValueToken(Stream filestream, string rawLine)
         {
             long pos = filestream.Position;
+
+            if (!rawLine.EndsWith(" =") && !rawLine.Contains(" = ") && rawLine.Contains('='))
+            {
+                // fucky wucky
+                rawLine = rawLine.Replace("=", " = ");
+            }
+
             string[] line = rawLine.Split(' ', 4);
 
             if (line[1] == "=")
@@ -432,10 +442,36 @@ namespace BZNParser.Reader
 
                 if (character == 0x0D)
                 {
-                    fileStream.ReadByte(); // 0x0A
+                    // 1022, 1033, 1037, 1038, 1048, 1105, 1108, 1018, 1128, 1034, 1135, 1137, 1143, 1045, 1148, 1149, 1154, 1169, 1171, 1179, 1180, 1182, 1183, 1186, 1187, 1188, 1192, 2016
+
+                    int nextBytes = fileStream.ReadByte(); // 0x0A
+
+                    if (nextBytes != 0x0A)
+                    {
+                        idx = -1;
+                        buffer += (char)character;
+
+                        continue;
+                    }
 
                     // Version 1180 line width 4095
                     // Version 1192 line width uncapped?
+                    if (Version <= 1180 && idx == 4095)
+                    {
+                        idx = -1;
+
+                        continue;
+                    }
+
+                    // 1171
+
+                    break;
+                }
+                else if (character == 0x0A)
+                {
+                    // 1045
+
+                    // strange, how is this even possible, maybe only BZ1?
                     if (Version <= 1180 && idx == 4095)
                     {
                         idx = -1;

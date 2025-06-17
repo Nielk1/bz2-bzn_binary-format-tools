@@ -17,7 +17,7 @@ namespace BZNParser.Battlezone.GameObject
         {
             IBZNToken tok = reader.ReadToken();
             if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
-            undefptr = tok.GetUInt32H();
+            undefptr = tok.GetUInt32H(); // dropObj
 
             base.LoadData(reader);
         }

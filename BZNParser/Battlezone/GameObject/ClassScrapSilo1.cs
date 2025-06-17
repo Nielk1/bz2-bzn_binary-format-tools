@@ -16,9 +16,12 @@ namespace BZNParser.Battlezone.GameObject
 
         public override void LoadData(BZNStreamReader reader)
         {
-            IBZNToken tok = reader.ReadToken();
-            if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/LONG");
-            undefptr = tok.GetUInt32H();
+            if (reader.Version > 1020)
+            {
+                IBZNToken tok = reader.ReadToken();
+                if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/LONG");
+                undefptr = tok.GetUInt32H(); // dropoff
+            }
 
             base.LoadData(reader);
         }

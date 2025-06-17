@@ -39,6 +39,8 @@ namespace BZNParser.Battlezone
             {
                 Console.WriteLine($"Version: {tok.GetUInt32()}");
             }*/
+            Console.WriteLine($"Format: {reader.Format}");
+
             Console.WriteLine($"Version: {tok.GetUInt32()}"); // don't bother validating first field maybe?
 
             if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041) // version is special case for bz2001.bzn
@@ -84,7 +86,15 @@ namespace BZNParser.Battlezone
                 Console.WriteLine($"msn_filename: \"{msnFilename}\"");
             }
 
-            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.Battlezone2)
+            if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1001)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("seq_count", BinaryFieldType.DATA_LONG))
+                    throw new Exception("Failed to parse seq_count/LONG");
+                Int32 seq_count = tok.GetInt32();
+                Console.WriteLine($"seq_count: {seq_count}");
+            }
+            else if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.Battlezone2)
             {
                 // Why does SeqCount exist if there's a GameObject counter too?
                 // It appears to be the next seqno so we can calculate it for BZN64 via MAX+1.
@@ -94,23 +104,35 @@ namespace BZNParser.Battlezone
                 Int32 seq_count = tok.GetInt32();
                 Console.WriteLine($"seq_count: {seq_count}");
 
+                //bool strangeDefaultBZ1BZN = false;
                 if (reader.Format == BZNFormat.Battlezone)
                 {
+                    var pos = reader.BaseStream.Position;
                     tok = reader.ReadToken();
                     if (!tok.Validate("missionSave", BinaryFieldType.DATA_BOOL))
                     {
-                        // we might be the "bz2001.bzn" file from BZ2 that is not in the BZ1 patch continuum but we register as a BZ1 type BZN
                         if (tok.Validate("saveType", BinaryFieldType.DATA_UNKNOWN))
                         {
                             Console.WriteLine($"saveType: {tok.GetUInt32()}");
                         }
                         else
                         {
+                            //if (reader.Version == 1001)
+                            //{
+                            //    reader.BaseStream.Position = pos;
+                            //    strangeDefaultBZ1BZN = true;
+                            //}
+                            //else
+                            //{
                             throw new Exception("Failed to parse missionSave/BOOL");
+                            //}
                         }
                     }
+                    //if (!strangeDefaultBZ1BZN)
+                    //{
                     bool missionSave = tok.GetBoolean();
                     Console.WriteLine($"missionSave: {missionSave}");
+                    //}
                 }
                 if (reader.Format == BZNFormat.Battlezone2)
                 {
@@ -121,6 +143,8 @@ namespace BZNParser.Battlezone
                     Console.WriteLine($"saveType (redundant?): {saveType2}");
                 }
 
+                //if (!strangeDefaultBZ1BZN)
+                //{
                 tok = reader.ReadToken();
                 if (reader.Format == BZNFormat.Battlezone || (reader.Format == BZNFormat.Battlezone2 && reader.Version < 1171))
                 {
@@ -147,6 +171,7 @@ namespace BZNParser.Battlezone
                 }
                 string TerrainName = tok.GetString();
                 Console.WriteLine($"TerrainName: {TerrainName}");
+                //}
             }
 
             // get count of GameObjects
@@ -181,18 +206,6 @@ namespace BZNParser.Battlezone
                 Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
             }
 
-            if (reader.Format == BZNFormat.Battlezone)
-            {
-                tok = reader.ReadToken();
-                if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
-                    throw new Exception("Failed to parse name/CHAR");
-                //tok.GetBytes();
-
-                tok = reader.ReadToken();
-                if (!tok.Validate("sObject", BinaryFieldType.DATA_PTR))
-                    throw new Exception("Failed to parse sObject/PTR");
-                //tok.GetUInt32H();
-            }
             if (reader.Format == BZNFormat.Battlezone2)
             {
                 if (reader.Version > 1165)
@@ -229,16 +242,41 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            // BZ1 sometimes has a bool here?
-            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1044)
+
+            if (reader.Format == BZNFormat.Battlezone)
             {
-                long pos = reader.BaseStream.Position;
                 tok = reader.ReadToken();
-                if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL))
+                if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
+                    throw new Exception("Failed to parse name/CHAR");
+                //tok.GetBytes(); // "AiMission"
+
+                // read the old sObject ptr, not sure what can be done with it
+                if (reader.Version < 1002)
                 {
-                    // unknown what this is or why it happens
-                    //throw new Exception("Failed to parse undefboolBOOL");
-                    reader.BaseStream.Position = pos;
+                    UInt32 sObject = reader.ReadBZ1_PtrDepricated("sObject");
+                }
+                else
+                {
+                    //tok = reader.ReadToken();
+                    //if (!tok.Validate("sObject", BinaryFieldType.DATA_PTR))
+                    //    throw new Exception("Failed to parse sObject/PTR");
+                    ////tok.GetUInt32H();
+                    UInt32 sObject = reader.ReadBZ1_Ptr("sObject");
+                }
+
+                // BZ1 sometimes has a bool here?
+                // looks like it's based on what mission is used
+                // but it looks like AIMission starts with the header, so no idea what this extra bool is for
+                if (reader.Version == 1044)
+                {
+                    long pos = reader.BaseStream.Position;
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL))
+                    {
+                        // unknown what this is or why it happens
+                        //throw new Exception("Failed to parse undefboolBOOL");
+                        reader.BaseStream.Position = pos;
+                    }
                 }
             }
 
@@ -247,6 +285,14 @@ namespace BZNParser.Battlezone
                 tok = reader.ReadToken();
                 if (!tok.IsValidationOnly() || !tok.Validate("AiMission", BinaryFieldType.DATA_UNKNOWN))
                     throw new Exception("Failed to parse [AiMission]");
+            }
+
+            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("size", BinaryFieldType.DATA_LONG))
+                    throw new Exception("Failed to parse size/LONG");
+                Int32 UnknownSize = tok.GetInt32();
             }
 
             // if reader.SaveType != 0
@@ -462,6 +508,38 @@ namespace BZNParser.Battlezone
                             throw new Exception("Failed to parse PadData2/VOID");
                     }
                 }
+            }
+
+            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
+            {
+                if (!reader.InBinary)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.IsValidationOnly() || !tok.Validate("AiTasks", BinaryFieldType.DATA_UNKNOWN))
+                        throw new Exception("Failed to parse [AiTasks]");
+                }
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("count", BinaryFieldType.DATA_LONG))
+                    throw new Exception("Failed to parse count/LONG");
+                Int32 CountAiTasks = tok.GetInt32();
+
+                for (int i = 0; i < CountAiTasks; i++)
+                {
+                }
+
+                if (!reader.InBinary)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.IsValidationOnly() || !tok.Validate("Terrain", BinaryFieldType.DATA_UNKNOWN))
+                        throw new Exception("Failed to parse [Terrain]");
+                }
+
+                tok = reader.ReadToken();
+                string TerrainName = tok.GetString();
+                if (!tok.Validate("Name", BinaryFieldType.DATA_UNKNOWN))
+                    throw new Exception("Failed to parse Name/UNKNOWN");
+                Console.WriteLine($"TerrainName: {TerrainName}");
             }
 
             if (reader.BaseStream.Position < reader.BaseStream.Length)

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace BZNParser.Battlezone.GameObject
@@ -13,15 +14,15 @@ namespace BZNParser.Battlezone.GameObject
         public ClassCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public override void LoadData(BZNStreamReader reader)
         {
-            if (reader.Version == 1041 && ClassLabel == "turret") // version is special case for bz2001.bzn
+            // version is special case for bz2001.bzn
+            // this file is detected as a BZ2 file but has a few odd quirks here and there due to being so old
+            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && reader.Version == 1041)
             {
-                // add format to this if
                 base.LoadData(reader);
                 return;
             }
 
-            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" &&
-                 (reader.Version == 1105 || reader.Version == 1108))
+            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1105 || reader.Version == 1108))
             {
                 base.LoadData(reader);
                 return;
@@ -29,74 +30,109 @@ namespace BZNParser.Battlezone.GameObject
 
             IBZNToken tok;
 
+            if (reader.Format == BZNFormat.Battlezone && reader.Version < 1019)
+            {
+                // obsolete
+                if (reader.InBinary)
+                {
+                    tok = reader.ReadToken();
+                    tok = reader.ReadToken();
+                    tok = reader.ReadToken();
+                    tok = reader.ReadToken();
+                    tok = reader.ReadToken();
+                    tok = reader.ReadToken();
+
+                    tok = reader.ReadToken(); // seems it's actually 6 strings?
+
+                    //if(!tok.Validate(null, BinaryFieldType.DATA_VEC3D))
+                    //    throw new Exception("Failed to parse ???/VEC3D");
+                    // there are 6 vectors here, but we don't know what they are for and are probably able to be forgotten
+                }
+                else
+                {
+                    tok = reader.ReadToken(); // armor, 24 0x00s raw
+                    tok = reader.ReadToken(); // bumpers, 6 VEC3
+                }
+            }
+
             //if (reader.Format == BZNFormat.BattlezoneN64 || ((reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.Battlezone2) && reader.Version > 1022))
             //if (reader.Format == BZNFormat.BattlezoneN64 || ((reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.Battlezone2) && reader.Version >= 1037))
-            if (reader.Format == BZNFormat.BattlezoneN64 || ((reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.Battlezone2) && reader.Version >= 1034))
+            if (reader.Format == BZNFormat.BattlezoneN64
+            || (reader.Format == BZNFormat.Battlezone && reader.Version > 1027)
+            || (reader.Format == BZNFormat.Battlezone2))// && reader.Version >= 1034))
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
                     throw new Exception("Failed to parse abandoned/LONG");
                 abandoned = tok.GetInt32();
             }
-            if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1022)
+            if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1022 && reader.Version != 1001)
             {
+                // does this ever even happen?
                 tok = reader.ReadToken();//setAltitude [1] =
-                //1
+                                         //1
                 tok = reader.ReadToken();//accelDragStop [1] =
-                //3.5
+                                         //3.5
                 tok = reader.ReadToken();//accelDragFull [1] =
-                //1
+                                         //1
                 tok = reader.ReadToken();//alphaTrack [1] =
-                //20
+                                         //20
                 tok = reader.ReadToken();//alphaDamp [1] =
-                //5
+                                         //5
                 tok = reader.ReadToken();//pitchPitch [1] =
-                //0.25
+                                         //0.25
                 tok = reader.ReadToken();//pitchThrust [1] =
-                //0.1
+                                         //0.1
                 tok = reader.ReadToken();//rollStrafe [1] =
-                //0.1
+                                         //0.1
                 tok = reader.ReadToken();//rollSteer [1] =
-                //0.1
+                                         //0.1
                 tok = reader.ReadToken();//velocForward [1] =
-                //20
+                                         //20
                 tok = reader.ReadToken();//velocReverse [1] =
-                //15
+                                         //15
                 tok = reader.ReadToken();//velocStrafe [1] =
-                //20
+                                         //20
                 tok = reader.ReadToken();//accelThrust [1] =
-                //20
+                                         //20
                 tok = reader.ReadToken();//accelBrake [1] =
-                //75
+                                         //75
                 tok = reader.ReadToken();//omegaSpin [1] =
-                //4
+                                         //4
                 tok = reader.ReadToken();//omegaTurn [1] =
-                //1.5
+                                         //1.5
                 tok = reader.ReadToken();//alphaSteer [1] =
-                //5
+                                         //5
                 tok = reader.ReadToken();//accelJump [1] =
-                //20
+                                         //20
                 tok = reader.ReadToken();//thrustRatio [1] =
-                //1
+                                         //1
                 tok = reader.ReadToken();//throttle [1] =
-                //0
+                                         //0
                 tok = reader.ReadToken();//airBorne [1] =
-                //5.96046e-008
+                                         //5.96046e-008
             }
 
             //if (reader.Format == BZNFormat.Battlezone && (reader.Version >= 1032 && reader.Version <= 1033))
-            if (reader.Format == BZNFormat.Battlezone && (reader.Version >= 1030 && reader.Version <= 1033))
+            //if (reader.Format == BZNFormat.Battlezone && (reader.Version >= 1030 && reader.Version <= 1033))
+            /*if (reader.Format == BZNFormat.Battlezone && (reader.Version >= 1030 && reader.Version <= 1033))
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("????", BinaryFieldType.DATA_LONG))
                     throw new Exception("Failed to parse ????/LONG");
                 uint unknown = (uint)tok.GetUInt32H();
-            }
+            }*/
 
-            //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2011)
-            //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2004)
-            if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2003)
+            if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2000)
             {
+                if (reader.Version < 2002)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("cloakTransitionTime", BinaryFieldType.DATA_FLOAT))
+                        throw new Exception("Failed to parse cloakTransitionTime/FLOAT");
+                    float cloakTransitionTime = (uint)tok.GetSingle();
+                }
+                
                 tok = reader.ReadToken();
                 if (!tok.Validate("cloakState", BinaryFieldType.DATA_VOID))
                     throw new Exception("Failed to parse cloakState/VOID");

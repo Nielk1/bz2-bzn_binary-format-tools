@@ -21,37 +21,52 @@ namespace BZNParser.Battlezone.GameObject
         public ClassTurretTank1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public override void LoadData(BZNStreamReader reader)
         {
+            if (reader.Version < 1020 && ClassLabel == "howitzer")
+            {
+                base.LoadData(reader);
+                return;
+            }
+
             IBZNToken tok;
 
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                tok = reader.ReadToken();
-                if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                undeffloat1 = tok.GetSingle();
+                if (reader.Version > 1000)
+                {
+                    if (reader.Version != 1042)
+                    {
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+                        undeffloat1 = tok.GetSingle(); // omegaTurret
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                undeffloat2 = tok.GetSingle();
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+                        undeffloat2 = tok.GetSingle(); // alphaTurret
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                undeffloat3 = tok.GetSingle();
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+                        undeffloat3 = tok.GetSingle(); // timeDeploy
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                undeffloat4 = tok.GetSingle();
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+                        undeffloat4 = tok.GetSingle(); // timeUndeploy
+                    }
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("undefraw", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse undefraw/VOID");
-                undefraw = tok.GetUInt32();
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("undefraw", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse undefraw/VOID");
+                    undefraw = tok.GetUInt32(); // state
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                undeffloat5 = tok.GetSingle();
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+                    undeffloat5 = tok.GetSingle(); // delayTimer
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse undefbool/BOOL");
-                undefbool = tok.GetBoolean();
+                    if (reader.Version != 1042)
+                    {
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse undefbool/BOOL");
+                        undefbool = tok.GetBoolean(); // wantTurret
+                    }
+                }
             }
 
             base.LoadData(reader);
