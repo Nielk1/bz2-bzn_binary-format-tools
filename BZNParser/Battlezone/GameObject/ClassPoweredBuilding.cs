@@ -1,0 +1,58 @@
+﻿using BZNParser.Reader;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BZNParser.Battlezone.GameObject
+{
+    [ObjectClass(BZNFormat.Battlezone2, "commtower")]
+    [ObjectClass(BZNFormat.Battlezone2, "commbunker")]
+    [ObjectClass(BZNFormat.Battlezone2, "supplydepot")]
+    [ObjectClass(BZNFormat.Battlezone2, "barracks")]
+    [ObjectClass(BZNFormat.Battlezone2, "powered")]
+    [ObjectClass(BZNFormat.Battlezone2, "techcenter")]
+    public class ClassPoweredBuilding : ClassBuilding
+    {
+        public ClassPoweredBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public override void LoadData(BZNStreamReader reader)
+        {
+            IBZNToken tok;
+
+            //TapHelper::Save((this + 2060), a2); // used by PoweredBuilding and Turret (gun tower) to save lung data
+            if (reader.Version >= 1062)
+            {
+                //v2 = *(this + 16);
+                //if (v2 > 0)
+                //    (a2->vftable->read_long)(a2, this + 32, 4 * v2, "powerHandle");
+                long pos = reader.BaseStream.Position;
+                tok = reader.ReadToken();
+                if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
+                {
+                    UInt32 powerHandle = tok.GetUInt32();
+                }
+                else
+                {
+                    reader.BaseStream.Position = pos;
+                    //throw new Exception("Failed to parse powerHandle/LONG");
+                }
+            }
+
+            if (reader.SaveType != 0)
+            {
+                //(a2->vftable->read_long)(a2, this + 2052, 4, "terminalUser");
+                //(a2->vftable->out_bool)(a2, this + 2056, 1, "terminalRemote");
+            }
+
+            if (reader.Version >= 1193)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("scriptPowerOverride", BinaryFieldType.DATA_LONG))
+                    throw new Exception("Failed to parse scriptPowerOverride/LONG");
+                Int32 autoTarget = tok.GetInt32();
+            }
+
+            base.LoadData(reader);
+        }
+    }
+}

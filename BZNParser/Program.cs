@@ -1,0 +1,182 @@
+﻿using BZNParser.Battlezone;
+using BZNParser.Reader;
+using System;
+using System.Reflection.Metadata.Ecma335;
+using System.Reflection.PortableExecutable;
+
+namespace BZNParser
+{
+    internal class Program
+    {
+        static public HashSet<string> TmpBZNs = new HashSet<string>();
+        record struct BznType(int version, bool binary, BZNFormat format);
+        static void Main(string[] args)
+        {
+            BattlezoneBZNHints BZ2Hints = new BattlezoneBZNHints();
+            BZ2Hints.Strict = true;
+            BZ2Hints.ClassLabels = new Dictionary<string, HashSet<string>>();
+            if (File.Exists("ClassLabels_BZ2.txt"))
+            {
+                foreach (string line in File.ReadAllLines("ClassLabels_BZ2.txt"))
+                {
+                    string[] parts = line.Split(new char[] { '\t' }, 2);
+                    if (parts.Length == 2)
+                    {
+                        string key = parts[0].Trim();
+                        string value = parts[1].Trim();
+                        if (!BZ2Hints.ClassLabels.ContainsKey(key))
+                            BZ2Hints.ClassLabels[key] = new HashSet<string>();
+                        BZ2Hints.ClassLabels[key].Add(value);
+                    }
+                }
+
+                HashSet<string> ValidClassLabelsBZ2 = new HashSet<string>();
+                foreach (Type type in typeof(BZNFileBattlezone).Assembly.GetTypes())
+                {
+                    var attrs = type.GetCustomAttributes(typeof(ObjectClassAttribute), true);
+                    foreach (ObjectClassAttribute attr in attrs)
+                        if (attr.Format == BZNFormat.Battlezone2)
+                            ValidClassLabelsBZ2.Add(attr.ClassName);
+                }
+                foreach (string key in BZ2Hints.ClassLabels.Keys.ToList())
+                    if (ValidClassLabelsBZ2.Contains(key))
+                        BZ2Hints.ClassLabels[key].Add(key);
+                for (; ; )
+                {
+                    bool found = false;
+                    int size = 0;
+                    foreach (string key in BZ2Hints.ClassLabels.Keys.ToList())
+                    {
+                        HashSet<string> classLabels = BZ2Hints.ClassLabels[key];
+
+                        // these classLabels might be other ODF names instead of class labels, so lets expand them
+                        foreach (string item in classLabels.ToList()) // make a new list so we can alter it while looping
+                        {
+                            if (!ValidClassLabelsBZ2.Contains(item))
+                            {
+                                // if it's not a valid class label and is thus just an ODF name, remove it from the options
+                                // we will still try to walk it to valid classlabels below
+                                classLabels.Remove(item);
+                            }
+                            if (BZ2Hints.ClassLabels.ContainsKey(item))
+                            {
+                                HashSet<string> newClassLabels = BZ2Hints.ClassLabels[item];
+                                foreach (string newLabel in newClassLabels)
+                                {
+                                    if (!found && !classLabels.Contains(newLabel))
+                                    {
+
+                                    }
+                                    found = classLabels.Add(newLabel) || found;
+                                }
+                            }
+                        }
+
+                        //BZ2Hints.ClassLabels[key] = classLabels;
+                        size += classLabels.Count;
+                    }
+                    if (!found)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Cleaning BZ2 ClassLabels {size}");
+                    }
+                }
+            }
+
+            HashSet<string> Success = new HashSet<string>();
+            if (File.Exists("success.txt"))
+                foreach (string line in File.ReadAllLines("success.txt"))
+                    Success.Add(line);
+            Dictionary<BznType, List<(string, bool)>> Files = new Dictionary<BznType, List<(string, bool)>>();
+
+            foreach (string filename in Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\bz2r_res", "*.bzn", SearchOption.AllDirectories)
+                .Concat(Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\maps", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\624970", "*.bzn", SearchOption.AllDirectories))
+                )
+            //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories)
+            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)))
+            //string filename = @"..\..\..\sample\testbinarybz2.bzn";
+            //string filename = @"..\..\..\sample\n64\A68CC0.bin";
+            //string filename = @"..\..\..\sample\n64\A6DD20.bin";
+            //foreach (string filename in new string[] {
+            //    @"..\..\..\sample\testasciibz1.bzn",
+            //    @"..\..\..\sample\testasciibz2.bzn",
+            //    @"..\..\..\sample\testbinarybz1.bzn",
+            //    @"..\..\..\sample\testbinarybz2.bzn",
+            //}.Concat(Directory.EnumerateFiles(@"..\..\..\sample\n64", "*", SearchOption.AllDirectories)))
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample\n64", "*", SearchOption.AllDirectories))
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories)
+            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories))
+            //    .Concat(Directory.EnumerateFiles(@"C:\Users\Nielk1\Documents\My Games\Battlezone Combat Commander\saved", "*.sav", SearchOption.AllDirectories)))
+            //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)
+            //    .Concat(Directory.EnumerateFiles(@"C:\Users\Nielk1\Documents\My Games\Battlezone Combat Commander\saved", "*.sav", SearchOption.AllDirectories)))
+            {
+                if (Success.Contains(filename))
+                    continue;
+
+                Console.WriteLine(filename);
+
+                if (new FileInfo(filename).Length > 0)
+                {
+                    using (FileStream file = File.OpenRead(filename))
+                    {
+                        using (BZNStreamReader reader = new BZNStreamReader(file))
+                        {
+                            Console.WriteLine(reader.Format);
+
+                            switch (reader.Format)
+                            {
+                                case BZNFormat.Battlezone:
+                                case BZNFormat.Battlezone2:
+                                case BZNFormat.BattlezoneN64:
+                                    {
+                                        bool success = false;
+                                        try
+                                        {
+                                            new BZNFileBattlezone(reader, Hints: BZ2Hints);
+                                            success = true;
+                                            File.AppendAllText("success.txt", $"{filename}\r\n");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.ForegroundColor = ConsoleColor.Red;
+                                            Console.WriteLine($"Error: {ex.Message}");
+                                            Console.ResetColor();
+                                            Console.ReadKey(true);
+                                        }
+                                        finally
+                                        {
+                                            BznType bznType = new BznType(reader.Version, reader.HasBinary, reader.Format);
+                                            if (!Files.ContainsKey(bznType))
+                                                Files[bznType] = new List<(string, bool)>();
+                                            Files[bznType].Add((filename, success));
+                                        }
+                                    }
+                                    break;
+                                case BZNFormat.StarTrekArmada:
+                                case BZNFormat.StarTrekArmada2:
+                                    break;
+                            }
+                        }
+                    }
+                    //Console.ReadKey(true);
+                }
+            }
+            //Console.ReadKey(true);
+            using (var writer = File.CreateText("files.txt"))
+            {
+                foreach (KeyValuePair<BznType, List<(string, bool)>> entry in Files.OrderBy(dr => dr.Key.version).ThenBy(dr => dr.Key.version).ThenBy(dr => dr.Key.format))
+                {
+                    foreach ((string, bool) item in entry.Value.OrderBy(dr => dr))
+                    {
+                        writer.WriteLine($"{entry.Key.version}\t{entry.Key.binary}\t{entry.Key.format}\t{item.Item2}\t{item.Item1}");
+                    }
+                }
+            }
+        }
+    }
+}

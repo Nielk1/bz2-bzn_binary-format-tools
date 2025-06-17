@@ -1,0 +1,32 @@
+﻿using BZNParser.Reader;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BZNParser.Battlezone.GameObject
+{
+    [ObjectClass(BZNFormat.Battlezone2, "flag")]
+    public class ClassFlag : ClassPowerUp
+    {
+        public ClassFlag(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+
+        public override void LoadData(BZNStreamReader reader)
+        {
+            IBZNToken tok;
+
+            if (reader.Format == BZNFormat.Battlezone2)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("startMat", BinaryFieldType.DATA_MAT3D)) throw new Exception("Failed to parse startMat/MAT3D"); // type not confirmed
+                //startMat = tok.GetMatrix();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("holder", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse holder/LONG"); // type not confirmed
+                //state = tok.GetUInt32();
+            }
+
+            base.LoadData(reader);
+        }
+    }
+}
