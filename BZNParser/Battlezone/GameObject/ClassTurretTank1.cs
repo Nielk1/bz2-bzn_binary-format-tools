@@ -56,34 +56,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("undeffloat [1] =");
-            sb.AppendLine(undeffloat1.ToString());
-
-            sb.AppendLine("undeffloat [1] =");
-            sb.AppendLine(undeffloat2.ToString());
-
-            sb.AppendLine("undeffloat [1] =");
-            sb.AppendLine(undeffloat3.ToString());
-
-            sb.AppendLine("undeffloat [1] =");
-            sb.AppendLine(undeffloat4.ToString());
-
-            sb.AppendLine("undefraw [1] =");
-            sb.AppendLine(undefraw.ToString());
-
-            sb.AppendLine("undeffloat [1] =");
-            sb.AppendLine(undeffloat5.ToString());
-
-            sb.AppendLine("undefbool [1] =");
-            sb.AppendLine(undefbool.ToString());
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

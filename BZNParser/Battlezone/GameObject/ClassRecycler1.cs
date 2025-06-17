@@ -21,15 +21,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine(string.Format("undefptr = {0:X8}", undefptr));
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

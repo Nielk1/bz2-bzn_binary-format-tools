@@ -28,19 +28,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("soldierCount [1] =");
-            sb.AppendLine(soldierCount.ToString());
-
-            sb.AppendLine("state = " + BitConverter.ToString(state.Reverse().ToArray()).Replace("-", string.Empty));
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

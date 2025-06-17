@@ -15,22 +15,5 @@ namespace BZNParser.Battlezone.GameObject
         {
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            return base.GetBZ1ASCII();
-        }
-    }
-    [ObjectClass(BZNFormat.Battlezone2, "spawnpnt")]
-    public class ClassSpawnBuoy2 : ClassDummy
-    {
-        public ClassSpawnBuoy2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
-        {
-            base.LoadData(reader);
-        }
-        public override string GetBZ1ASCII()
-        {
-            return base.GetBZ1ASCII();
-        }
     }
 }

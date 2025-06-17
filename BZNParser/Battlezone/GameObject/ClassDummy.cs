@@ -24,14 +24,5 @@ namespace BZNParser.Battlezone.GameObject
             // Terrain doesn't call base data load
             //base.LoadData(reader);
         }
-
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

@@ -25,9 +25,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            return base.GetBZ1ASCII();
-        }
     }
 }

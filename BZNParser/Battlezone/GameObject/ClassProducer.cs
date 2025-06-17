@@ -81,35 +81,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("timeDeploy [1] =");
-            sb.AppendLine(timeDeploy.ToString());
-
-            sb.AppendLine("timeUndeploy [1] =");
-            sb.AppendLine(timeUndeploy.ToString());
-
-            sb.AppendLine(string.Format("undefptr = {0:X8}", undefptr2));
-
-            sb.AppendLine("state = " + BitConverter.ToString(state.Reverse().ToArray()).Replace("-", string.Empty));
-
-            sb.AppendLine("delayTimer [1] =");
-            sb.AppendLine(delayTimer.ToString());
-
-            sb.AppendLine("nextRepair [1] =");
-            sb.AppendLine(nextRepair.ToString());
-
-            sb.AppendLine("buildClass [1] =");
-            sb.AppendLine(buildClass.ToString());
-
-            sb.AppendLine("buildDoneTime [1] =");
-            sb.AppendLine(buildDoneTime.ToString());
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

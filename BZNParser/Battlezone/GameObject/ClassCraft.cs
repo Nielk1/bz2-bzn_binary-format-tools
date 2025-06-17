@@ -181,17 +181,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("abandoned [1] =");
-            sb.AppendLine(abandoned.ToString());
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

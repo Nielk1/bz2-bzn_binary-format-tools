@@ -25,9 +25,5 @@ namespace BZNParser.Battlezone.GameObject
         {
             return $"{base.ToString()} [{string.Join(',', Candidates.Select(dr => dr.Object.ToString()))}]";
         }
-        public override string GetBZ1ASCII()
-        {
-            return base.GetBZ1ASCII();
-        }
     }
 }

@@ -29,16 +29,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("scrapHeld [1] =");
-            sb.AppendLine(scrapHeld.ToString());
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

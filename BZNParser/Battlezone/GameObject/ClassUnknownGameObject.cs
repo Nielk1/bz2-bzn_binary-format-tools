@@ -15,14 +15,6 @@ namespace BZNParser.Battlezone.GameObject
         {
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
 
         internal void AddUnknownTokens(List<(long Offset, IBZNToken Token, long Next)> gameObjectTokens)
         {

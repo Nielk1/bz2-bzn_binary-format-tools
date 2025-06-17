@@ -61,42 +61,5 @@ namespace BZNParser.Battlezone.GameObject
 
             base.LoadData(reader);
         }
-        public override string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("dropMat [1] =");
-            sb.AppendLine("  right_x [1] =");
-            sb.AppendLine(dropMat.right.x.ToString());
-            sb.AppendLine("  right_y [1] =");
-            sb.AppendLine(dropMat.right.y.ToString());
-            sb.AppendLine("  right_z [1] =");
-            sb.AppendLine(dropMat.right.z.ToString());
-            sb.AppendLine("  up_x [1] =");
-            sb.AppendLine(dropMat.up.x.ToString());
-            sb.AppendLine("  up_y [1] =");
-            sb.AppendLine(dropMat.up.y.ToString());
-            sb.AppendLine("  up_z [1] =");
-            sb.AppendLine(dropMat.up.z.ToString());
-            sb.AppendLine("  front_x [1] =");
-            sb.AppendLine(dropMat.front.x.ToString());
-            sb.AppendLine("  front_y [1] =");
-            sb.AppendLine(dropMat.front.y.ToString());
-            sb.AppendLine("  front_z [1] =");
-            sb.AppendLine(dropMat.front.z.ToString());
-            sb.AppendLine("  posit_x [1] =");
-            sb.AppendLine(dropMat.posit.x.ToString());
-            sb.AppendLine("  posit_y [1] =");
-            sb.AppendLine(dropMat.posit.y.ToString());
-            sb.AppendLine("  posit_z [1] =");
-            sb.AppendLine(dropMat.posit.z.ToString());
-
-            sb.AppendLine("dropClass [1] =");
-            sb.AppendLine(dropClass.ToString());
-
-            sb.Append(base.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }

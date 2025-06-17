@@ -492,58 +492,5 @@ namespace BZNParser.Battlezone
             }
             return false;
         }
-
-        public string GetBZ1ASCII()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("[GameObject]");
-            sb.AppendLine("PrjID [1] =");
-            sb.AppendLine(PrjID);
-            sb.AppendLine("seqno [1] =");
-            sb.AppendLine(seqNo.ToString());
-            sb.AppendLine("pos [1] =");
-            sb.AppendLine("  x [1] =");
-            sb.AppendLine(pos.x.ToString());
-            sb.AppendLine("  y [1] =");
-            sb.AppendLine(pos.y.ToString());
-            sb.AppendLine("  z [1] =");
-            sb.AppendLine(pos.z.ToString());
-            sb.AppendLine("team [1] =");
-            sb.AppendLine(team.ToString());
-            sb.AppendLine("label = " + label);
-            sb.AppendLine("isUser [1] =");
-            sb.AppendLine(isUser.ToString());
-            sb.AppendLine(string.Format("obj_addr = {0:X8}", obj_addr));
-            sb.AppendLine("transform [1] =");
-            sb.AppendLine("  right_x [1] =");
-            sb.AppendLine(transform.right.x.ToString());
-            sb.AppendLine("  right_y [1] =");
-            sb.AppendLine(transform.right.y.ToString());
-            sb.AppendLine("  right_z [1] =");
-            sb.AppendLine(transform.right.z.ToString());
-            sb.AppendLine("  up_x [1] =");
-            sb.AppendLine(transform.up.x.ToString());
-            sb.AppendLine("  up_y [1] =");
-            sb.AppendLine(transform.up.y.ToString());
-            sb.AppendLine("  up_z [1] =");
-            sb.AppendLine(transform.up.z.ToString());
-            sb.AppendLine("  front_x [1] =");
-            sb.AppendLine(transform.front.x.ToString());
-            sb.AppendLine("  front_y [1] =");
-            sb.AppendLine(transform.front.y.ToString());
-            sb.AppendLine("  front_z [1] =");
-            sb.AppendLine(transform.front.z.ToString());
-            sb.AppendLine("  posit_x [1] =");
-            sb.AppendLine(transform.posit.x.ToString());
-            sb.AppendLine("  posit_y [1] =");
-            sb.AppendLine(transform.posit.y.ToString());
-            sb.AppendLine("  posit_z [1] =");
-            sb.AppendLine(transform.posit.z.ToString());
-
-            sb.Append(gameObject.GetBZ1ASCII());
-
-            return sb.ToString();
-        }
     }
 }
