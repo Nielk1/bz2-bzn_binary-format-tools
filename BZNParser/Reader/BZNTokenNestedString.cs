@@ -16,6 +16,10 @@ namespace BZNParser.Reader
             this.values = values;
         }
 
+        public int GetCount(int size)
+        {
+            throw new InvalidOperationException();
+        }
         public bool GetBoolean(int index = 0)
         {
             throw new InvalidOperationException();

@@ -193,7 +193,7 @@ namespace BZNParser.Battlezone.GameObject
                     UInt32 EffectsMask = tok.GetUInt32();
                 }
 
-                if (reader.Version == 1041 || reader.Version == 1070)
+                if (reader.Version == 1041 || reader.Version == 1047 || reader.Version == 1070)
                 {
                     // bz2001.bzn // 1041
                     tok = reader.ReadToken();
@@ -205,11 +205,11 @@ namespace BZNParser.Battlezone.GameObject
                     tok = reader.ReadToken();
                     if (tok.Validate("isSeen", BinaryFieldType.DATA_LONG))
                     {
-                        seen = tok.GetUInt32();
+                        seen = tok.GetUInt32H();
                     }
                     else if (tok.Validate("isSeen", BinaryFieldType.DATA_SHORT))
                     {
-                        seen = tok.GetUInt16();
+                        seen = tok.GetUInt16H();
                     }
                     else
                     {
@@ -293,7 +293,7 @@ namespace BZNParser.Battlezone.GameObject
 
                 // I seriously don't understand why this is a thing, it must be wrong, but this is where we get into BZ98R or 1.5 (unclear)
                 // code says it should always be read in???
-                if (/*reader.Version != 2004 &&*/ reader.Version != 2003)
+                //if (/*reader.Version != 2004 &&*/ reader.Version != 2003)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("isSelected", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isSelected/BOOL");
@@ -309,7 +309,7 @@ namespace BZNParser.Battlezone.GameObject
                 seen = tok.GetUInt32H();
             }
 
-            if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041) // avoid bz2001.bzn
+            if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041 && reader.Version != 1047) // avoid bz2001.bzn via != 1041
             {
                 if (reader.Version < 1145 || !reader.InBinary)
                 {
@@ -435,7 +435,7 @@ namespace BZNParser.Battlezone.GameObject
                     //maxHealth = tok.GetUInt32();
                     maxHealth = (uint)tok.GetSingle();
 
-                    if (reader.Version != 1041)
+                    if (reader.Version != 1041 && reader.Version != 1047)
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate("addHealth", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse addHealth/FLOAT");
@@ -513,7 +513,7 @@ namespace BZNParser.Battlezone.GameObject
                         if (!tok.Validate("addAmmo", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse addAmmo/FLOAT");
                         UInt32 addAmmo = (UInt32)tok.GetSingle();
                     }
-                    else if (reader.Version != 1041) // avoid bz2001.bzn
+                    else if (reader.Version != 1041 && reader.Version != 1047) // avoid bz2001.bzn != 1041
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate("addAmmo", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse addAmmo/LONG");

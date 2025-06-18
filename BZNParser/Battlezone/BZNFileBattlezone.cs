@@ -44,7 +44,7 @@ namespace BZNParser.Battlezone
 
             Console.WriteLine($"Version: {tok.GetUInt32()}"); // don't bother validating first field maybe?
 
-            if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041) // version is special case for bz2001.bzn
+            if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041 && reader.Version != 1047) // version is special case for bz2001.bzn
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("saveType", BinaryFieldType.DATA_UNKNOWN))
@@ -233,11 +233,11 @@ namespace BZNParser.Battlezone
                     if (!tok.Validate("groupTargets", BinaryFieldType.DATA_VOID))
                         throw new Exception("Failed to parse groupTargets/VOID");
                 }
-                if (reader.Version == 1100 || reader.Version == 1041 || reader.Version == 1070) // not sure what versions this happens
+                if (reader.Version == 1100 || reader.Version == 1041 || reader.Version == 1047 || reader.Version == 1070) // not sure what versions this happens
                 {
                     tok = reader.ReadToken();
-                    if (!tok.Validate("name", BinaryFieldType.DATA_UNKNOWN))
-                        throw new Exception("Failed to parse dllName/UNKNOWN");
+                    if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
+                        throw new Exception("Failed to parse dllName/CHAR");
                 }
                 else if (reader.Version < 1145)
                 {
@@ -551,41 +551,20 @@ namespace BZNParser.Battlezone
 
             if (reader.Format == BZNFormat.Battlezone2)
             {
-                if (reader.Version > 1124)
+                // SatellitePanel
+                if (reader.Version >= 1125 && reader.Version != 1169) // version 1169 check might instead need a dumb check
                 {
                     // 1188 1192
                     tok = reader.ReadToken();
                     if (!tok.Validate("hasEntered", BinaryFieldType.DATA_BOOL))
                         throw new Exception("Failed to parse hasEntered/BOOL");
 
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("ownerObj", BinaryFieldType.DATA_LONG))
-                        throw new Exception("Failed to parse ownerObj/LONG");
-                    //Int32 pathType = tok.GetUInt32H();
-
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("ownerObj", BinaryFieldType.DATA_LONG))
-                        throw new Exception("Failed to parse ownerObj/LONG");
-                    //Int32 pathType = tok.GetUInt32H();
-
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("ownerObj", BinaryFieldType.DATA_LONG))
-                        throw new Exception("Failed to parse ownerObj/LONG");
-                    //Int32 pathType = tok.GetUInt32H();
-                }
-
-                // code says this has to be SaveType != 0 to load, but they do always exist, very strange
-                if (reader.Version >= 1115)
-                {
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("PadData", BinaryFieldType.DATA_VOID))
-                        throw new Exception("Failed to parse PadData/VOID");
-
-                    if (reader.Version >= 1119)
+                    for (int i = 0; i < 3/*MAX_WORLDS*/; i++)
                     {
                         tok = reader.ReadToken();
-                        if (!tok.Validate("PadData2", BinaryFieldType.DATA_VOID))
-                            throw new Exception("Failed to parse PadData2/VOID");
+                        if (!tok.Validate("ownerObj", BinaryFieldType.DATA_LONG))
+                            throw new Exception("Failed to parse ownerObj/LONG");
+                        //Int32 pathType = tok.GetUInt32H();
                     }
                 }
             }
@@ -607,7 +586,28 @@ namespace BZNParser.Battlezone
                 for (int i = 0; i < CountAiTasks; i++)
                 {
                 }
+            }
 
+            if (reader.Format == BZNFormat.Battlezone2)
+            {
+                // code says this has to be SaveType != 0 to load, but they do always exist, very strange
+                if (reader.Version >= 1115)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("PadData", BinaryFieldType.DATA_VOID))
+                        throw new Exception("Failed to parse PadData/VOID");
+
+                    if (reader.Version >= 1119)
+                    {
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("PadData2", BinaryFieldType.DATA_VOID))
+                            throw new Exception("Failed to parse PadData2/VOID");
+                    }
+                }
+            }
+
+            if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
+            {
                 if (reader.Version == 1001)
                 {
                     if (!reader.InBinary)

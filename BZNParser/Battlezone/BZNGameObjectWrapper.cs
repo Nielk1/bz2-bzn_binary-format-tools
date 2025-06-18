@@ -375,7 +375,7 @@ namespace BZNParser.Battlezone
                 string classLableTempHolder = null;
                 bool firstParseSuccess = false;
 
-                foreach (var kv in ClassLabelMap)
+                foreach (var kv in ClassLabelMap.OrderBy(dr => dr.Key))
                 {
                     classLableTempHolder = kv.Key;
                     if (!LongTermClassLabelLookupCache.ContainsKey(PrjID.ToLowerInvariant()) || LongTermClassLabelLookupCache[PrjID.ToLowerInvariant()].Contains(classLableTempHolder))
@@ -469,8 +469,8 @@ namespace BZNParser.Battlezone
                         }
                         else if (reader.Format == BZNFormat.Battlezone2)
                         {
-                            // 1123 1124 1128 1141 1143
-                            if (reader.Version <= 1143 && tok.Validate("dllName", BinaryFieldType.DATA_UNKNOWN)) return true;
+                            // 1123 1124 1128 1141 1143 1151
+                            if (reader.Version <= 1151 && tok.Validate("dllName", BinaryFieldType.DATA_UNKNOWN)) return true;
                             // 1171, 1187, 1188, 1192
                             if (tok.Validate("groupTargets", BinaryFieldType.DATA_UNKNOWN)) return true;
                             return false;

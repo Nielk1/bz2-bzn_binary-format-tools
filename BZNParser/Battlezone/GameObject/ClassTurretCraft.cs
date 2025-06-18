@@ -24,18 +24,51 @@ namespace BZNParser.Battlezone.GameObject
                     if (reader.Version >= 1072)
                     {
                         // we don't know how many taps there are without the ODF, so just try to read forever
-                        for (; ; )
+                        List<UInt32> powerHandles = new List<uint>();
+                        if (!reader.InBinary)
                         {
-                            long pos = reader.BaseStream.Position;
-                            tok = reader.ReadToken();
-                            if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
+                            for (; ; )
                             {
-                                UInt32 powerHandle = tok.GetUInt32();
+                                long pos = reader.BaseStream.Position;
+                                tok = reader.ReadToken();
+                                if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
+                                {
+                                    UInt32 powerHandle = tok.GetUInt32();
+                                }
+                                else
+                                {
+                                    reader.BaseStream.Position = pos;
+                                    break;
+                                }
                             }
-                            else
+                        }
+                        else
+                        {
+                            long pos2 = 0;
+                            for (; ; )
                             {
-                                reader.BaseStream.Position = pos;
-                                break;
+                                long pos = reader.BaseStream.Position;
+                                tok = reader.ReadToken();
+                                if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
+                                {
+                                    UInt32 powerHandle = tok.GetUInt32();
+                                    powerHandles.Add(powerHandle);
+                                    pos2 = pos;
+                                }
+                                else
+                                {
+                                    if (tok.Validate("illumination", BinaryFieldType.DATA_FLOAT))
+                                    {
+                                        reader.BaseStream.Position = pos2;
+                                        powerHandles.Remove(powerHandles.Last());
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        reader.BaseStream.Position = pos;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -47,11 +80,10 @@ namespace BZNParser.Battlezone.GameObject
                         if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
                         {
                             UInt32 powerHandle = tok.GetUInt32();
-                            try
+                            if (tok.GetCount(4) > 1)
                             {
                                 UInt32 powerHandle2 = tok.GetUInt32(1);
                             }
-                            catch { }
                         }
                         else
                         {

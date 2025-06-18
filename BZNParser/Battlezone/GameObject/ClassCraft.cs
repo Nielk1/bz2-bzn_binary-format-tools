@@ -7,6 +7,7 @@ using System.Text;
 
 namespace BZNParser.Battlezone.GameObject
 {
+    [ObjectClass(BZNFormat.Battlezone, "craft")]
     public class ClassCraft : ClassGameObject
     {
         public Int32 abandoned { get; set; }
@@ -22,13 +23,26 @@ namespace BZNParser.Battlezone.GameObject
                 return;
             }
 
-            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1105 || reader.Version == 1108))
+            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1108))
             {
                 base.LoadData(reader);
                 return;
             }
 
             IBZNToken tok;
+
+            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1047 || reader.Version == 1105))
+            {
+                long pos = reader.BaseStream.Position;
+                tok = reader.ReadToken();
+                if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
+                {
+                    reader.BaseStream.Position = pos;
+                    base.LoadData(reader);
+                    return;
+                }
+                reader.BaseStream.Position = pos;
+            }
 
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1019)
             {
@@ -187,15 +201,17 @@ namespace BZNParser.Battlezone.GameObject
                     else
                     {
                         tok = reader.ReadToken();
-                        if (!tok.Validate("curPilot", BinaryFieldType.DATA_CHAR))
+                        if (reader.Version == 1145 || reader.Version == 1147 || reader.Version == 1149 || reader.Version == 1151)
                         {
-                            curPilot = null;
-                            //throw new Exception("Failed to parse curPilot/CHAR");
+                            if (!tok.Validate("config", BinaryFieldType.DATA_CHAR))
+                                throw new Exception("Failed to parse curPilot/CHAR");
                         }
                         else
                         {
-                            curPilot = tok.GetString();
+                            if (!tok.Validate("curPilot", BinaryFieldType.DATA_CHAR))
+                                throw new Exception("Failed to parse curPilot/CHAR");
                         }
+                        curPilot = tok.GetString();
                     }
 
                     if (reader.Version >= 1195)

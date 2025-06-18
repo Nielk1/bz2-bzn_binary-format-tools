@@ -14,6 +14,7 @@ namespace BZNParser.Reader
             this.name = name;
         }
 
+        public int GetCount(int size) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
         public bool GetBoolean(int index = 0) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
         public Int32 GetInt32(int index = 0) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }
         public UInt32 GetUInt32(int index = 0) { throw new InvalidOperationException("Validation Tokens have no data, check IsValidationOnly() before processing"); }

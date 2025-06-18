@@ -19,6 +19,11 @@ namespace BZNParser.Reader
             this.IsBigEndian = IsBigEndian;
         }
 
+        public int GetCount(int size)
+        {
+            return data.Length / size;
+        }
+
         public bool GetBoolean(int index = 0)
         {
             if (index >= data.Length / sizeof(bool)) throw new ArgumentOutOfRangeException();

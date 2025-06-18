@@ -26,22 +26,31 @@ namespace BZNParser.Battlezone.GameObject
             }
             if (reader.Format == BZNFormat.Battlezone2)
             {
-                tok = reader.ReadToken();
-                if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID"); // type not confirmed
-                //state = tok.GetUInt32H();
-
-                /*if (a2[2].vftable)
+                if (reader.Version == 1047)
                 {
-                    (a2->vftable->field_8)(a2, this + 2140, 4, "animMode");
-                    (a2->vftable->field_8)(a2, this + 2144, 4, "animStance");
-                    (a2->vftable->out_bool)(a2, this + 2200, 1, "fixedRate");
-                    (a2->vftable->out_float)(a2, this + 2188, 4, "forceFps");
-                    (a2->vftable->out_float)(a2, this + 2192, 4, "forceDir");
-                    (a2->vftable->out_bool)(a2, this + 2201, 1, "wasFlying");
-                    (a2->vftable->out_bool)(a2, this + 2202, 1, "Alive");
-                    (a2->vftable->out_float)(a2, this + 2196, 4, "Dying_Timer");
-                    (a2->vftable->out_bool)(a2, this + 2203, 1, "Explosion");
-                }*/
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("nextScream", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse nextScream/FLOAT");
+                    nextScream = tok.GetSingle();
+                }
+                else
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID"); // type not confirmed
+                                                                                                                              //state = tok.GetUInt32H();
+
+                    /*if (a2[2].vftable)
+                    {
+                        (a2->vftable->field_8)(a2, this + 2140, 4, "animMode");
+                        (a2->vftable->field_8)(a2, this + 2144, 4, "animStance");
+                        (a2->vftable->out_bool)(a2, this + 2200, 1, "fixedRate");
+                        (a2->vftable->out_float)(a2, this + 2188, 4, "forceFps");
+                        (a2->vftable->out_float)(a2, this + 2192, 4, "forceDir");
+                        (a2->vftable->out_bool)(a2, this + 2201, 1, "wasFlying");
+                        (a2->vftable->out_bool)(a2, this + 2202, 1, "Alive");
+                        (a2->vftable->out_float)(a2, this + 2196, 4, "Dying_Timer");
+                        (a2->vftable->out_bool)(a2, this + 2203, 1, "Explosion");
+                    }*/
+                }
             }
 
             base.LoadData(reader);

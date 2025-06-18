@@ -165,7 +165,7 @@ namespace BZNParser.Reader
 
             IBZNToken tok;
 
-            if (reader.Version <= 1124) // <= 1124 <= 1112 <= 1108 <= 1105?  < 1103
+            if (reader.Version <= 1128) // <= 1128 <= 1124 <= 1112 <= 1108 <= 1105?  < 1103
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate(name, BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");

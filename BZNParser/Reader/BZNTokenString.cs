@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BZNParser.Reader
 {
@@ -14,6 +15,11 @@ namespace BZNParser.Reader
         {
             this.name = name;
             this.values = values;
+        }
+
+        public int GetCount(int size)
+        {
+            return values.Length;
         }
 
         public bool GetBoolean(int index = 0)

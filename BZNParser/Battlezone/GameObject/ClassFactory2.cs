@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
         {
             IBZNToken tok;
 
-            if (reader.Version == 1100)
+            if (reader.Version == 1100 || reader.Version == 1105)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("buildDoneTime", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse buildDoneTime/FLOAT");

@@ -96,6 +96,8 @@ namespace BZNParser.Reader
         /// </summary>
         private long binaryDataStartOffset = MAGIC_NO_BINARY;
 
+        public bool QuoteStrings { get; private set; }
+
         public BZNStreamReader(Stream stream)
         {
             long startPosition = stream.Position;
@@ -213,6 +215,11 @@ namespace BZNParser.Reader
                     }
                 }
 
+                if (Format == BZNFormat.Battlezone2 && Version == 1160)
+                {
+                    QuoteStrings = true;
+                }
+
                 stream.Position = startPosition;
             }
         }
@@ -313,6 +320,12 @@ namespace BZNParser.Reader
                         return new BZNTokenString(name, new string[] { string.Empty });
 
                     string value = line[2];
+                    if (QuoteStrings)
+                    {
+                        value = value.Trim();
+                        if (value.StartsWith('"') && value.EndsWith('"'))
+                            value = value.Substring(1, value.Length - 2);
+                    }
 
                     return new BZNTokenString(name, new string[] { value });
                 }

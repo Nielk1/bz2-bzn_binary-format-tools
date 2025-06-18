@@ -35,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
 
                 if (reader.Version >= 1147)
                 {
-                    if (reader.Version == 1154 || reader.Version == 1148 || reader.Version == 1149)
+                    if (reader.Version == 1147 || reader.Version == 1148 || reader.Version == 1149 || reader.Version == 1151 || reader.Version == 1154)
                     {
                         saveClass = reader.ReadGameObjectClass_BZ2("config");
                     }
