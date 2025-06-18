@@ -78,7 +78,8 @@ namespace BZNParser.Battlezone
                 //    byte odfLength = tok.GetUInt8();
                 //}
 
-                if (reader.Version < 1145)
+                //if (reader.Version < 1145)
+                if (reader.Version < 1155)
                 {
                     PrjID = reader.ReadGameObjectClass_BZ2("config");
                 }
@@ -323,7 +324,7 @@ namespace BZNParser.Battlezone
             }
             else
             {
-                mapKey = BZNFile.ClassLabelMapBZ1.ContainsKey(PrjID.ToLowerInvariant()) ? BZNFile.ClassLabelMapBZ1[PrjID.ToLowerInvariant()] : null;
+                //mapKey = BZNFile.ClassLabelMapBZ1.ContainsKey(PrjID.ToLowerInvariant()) ? BZNFile.ClassLabelMapBZ1[PrjID.ToLowerInvariant()] : null;
             }
             if (ClassLabelTempLookup != null && ClassLabelTempLookup.ContainsKey(PrjID.ToLowerInvariant()))
                 mapKey = ClassLabelTempLookup[PrjID.ToLowerInvariant()];
@@ -468,8 +469,8 @@ namespace BZNParser.Battlezone
                         }
                         else if (reader.Format == BZNFormat.Battlezone2)
                         {
-                            // 1123 1124 1128 1141
-                            if (reader.Version <= 1141 && tok.Validate("dllName", BinaryFieldType.DATA_UNKNOWN)) return true;
+                            // 1123 1124 1128 1141 1143
+                            if (reader.Version <= 1143 && tok.Validate("dllName", BinaryFieldType.DATA_UNKNOWN)) return true;
                             // 1171, 1187, 1188, 1192
                             if (tok.Validate("groupTargets", BinaryFieldType.DATA_UNKNOWN)) return true;
                             return false;

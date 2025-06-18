@@ -11,6 +11,36 @@ namespace BZNParser
         record struct BznType(int version, bool binary, BZNFormat format);
         static void Main(string[] args)
         {
+            BattlezoneBZNHints BZ1Hints = new BattlezoneBZNHints();
+            BZ1Hints.Strict = true;
+            BZ1Hints.ClassLabels = new Dictionary<string, HashSet<string>>();
+            if (File.Exists("ClassLabels_BZ1.txt"))
+            {
+                HashSet<string> ValidClassLabelsBZ1 = new HashSet<string>();
+                foreach (Type type in typeof(BZNFileBattlezone).Assembly.GetTypes())
+                {
+                    var attrs = type.GetCustomAttributes(typeof(ObjectClassAttribute), true);
+                    foreach (ObjectClassAttribute attr in attrs)
+                        if (attr.Format == BZNFormat.Battlezone || attr.Format == BZNFormat.BattlezoneN64)
+                            ValidClassLabelsBZ1.Add(attr.ClassName);
+                }
+
+                foreach (string line in File.ReadAllLines("ClassLabels_BZ1.txt"))
+                {
+                    string[] parts = line.Split(new char[] { '\t' }, 2);
+                    if (parts.Length == 2)
+                    {
+                        string key = parts[0].Trim();
+                        string value = parts[1].Trim();
+                        if (!ValidClassLabelsBZ1.Contains(value))
+                            continue;
+                        if (!BZ1Hints.ClassLabels.ContainsKey(key))
+                            BZ1Hints.ClassLabels[key] = new HashSet<string>();
+                        BZ1Hints.ClassLabels[key].Add(value);
+                    }
+                }
+            }
+
             BattlezoneBZNHints BZ2Hints = new BattlezoneBZNHints();
             BZ2Hints.Strict = true;
             BZ2Hints.ClassLabels = new Dictionary<string, HashSet<string>>();
@@ -130,6 +160,9 @@ namespace BZNParser
                     {
                         using (BZNStreamReader reader = new BZNStreamReader(file))
                         {
+                            //if (reader.HasBinary)
+                            //    continue;
+
                             switch (reader.Format)
                             {
                                 case BZNFormat.Battlezone:
@@ -138,7 +171,7 @@ namespace BZNParser
                                         //bool success = false;
                                         try
                                         {
-                                            new BZNFileBattlezone(reader, Hints: null);
+                                            new BZNFileBattlezone(reader, Hints: BZ1Hints);
                                             //success = true;
                                             File.AppendAllText("success.txt", $"{filename}\r\n");
                                         }

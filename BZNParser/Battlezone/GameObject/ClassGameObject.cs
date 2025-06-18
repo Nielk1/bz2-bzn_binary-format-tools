@@ -270,7 +270,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
+            if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012 || reader.Version == 1017)) // TODO get range for these
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("liveColor", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse liveColor/UNKNOWN");
@@ -550,7 +550,7 @@ namespace BZNParser.Battlezone.GameObject
             {
                 if (reader.SaveType == 0)
                 {
-                    if (reader.Version == 1001)
+                    if (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012)
                     {
                         // curCmd
                         reader.GetAiCmdInfo(); // TODO get return value
@@ -562,16 +562,20 @@ namespace BZNParser.Battlezone.GameObject
                     // end read of AiCmdInfo
                     
                     // aiProcess?
-                    tok = reader.ReadToken();
-                    if (reader.Version == 1001)
+                    if (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012)
                     {
+                        tok = reader.ReadToken();
                         if (!tok.Validate("undefptr", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
                         aiProcess = tok.GetUInt32H() != 0;
                     }
                     else
                     {
-                        if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
-                        aiProcess = tok.GetBoolean();
+                        if (reader.Version != 1017 && reader.Version != 1018) // TODO get range for these
+                        {
+                            tok = reader.ReadToken();
+                            if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
+                            aiProcess = tok.GetBoolean();
+                        }
                     }
                 }
                 else

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,17 +64,20 @@ namespace BZNParser.Battlezone
                     throw new Exception("Failed to parse msn_filename/CHAR");
                 Console.WriteLine($"msn_filename: \"{tok.GetString()}\"");
             }
-            if (reader.Format == BZNFormat.Battlezone && reader.Version > 1022)
+            if (reader.Format == BZNFormat.Battlezone)
             {
-                tok = reader.ReadToken();
-                if (!tok.Validate("binarySave", BinaryFieldType.DATA_BOOL))
-                    throw new Exception("Failed to parse binarySave/BOOL");
-                Console.WriteLine($"binarySave: {tok.GetBoolean()}");
+                if (reader.Version > 1022)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("binarySave", BinaryFieldType.DATA_BOOL))
+                        throw new Exception("Failed to parse binarySave/BOOL");
+                    Console.WriteLine($"binarySave: {tok.GetBoolean()}");
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("msn_filename", BinaryFieldType.DATA_CHAR))
-                    throw new Exception("Failed to parse msn_filename/CHAR");
-                Console.WriteLine($"msn_filename: \"{tok.GetString()}\"");
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("msn_filename", BinaryFieldType.DATA_CHAR))
+                        throw new Exception("Failed to parse msn_filename/CHAR");
+                    Console.WriteLine($"msn_filename: \"{tok.GetString()}\"");
+                }
             }
             if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -104,36 +108,6 @@ namespace BZNParser.Battlezone
                 Int32 seq_count = tok.GetInt32();
                 Console.WriteLine($"seq_count: {seq_count}");
 
-                //bool strangeDefaultBZ1BZN = false;
-                if (reader.Format == BZNFormat.Battlezone)
-                {
-                    var pos = reader.BaseStream.Position;
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("missionSave", BinaryFieldType.DATA_BOOL))
-                    {
-                        if (tok.Validate("saveType", BinaryFieldType.DATA_UNKNOWN))
-                        {
-                            Console.WriteLine($"saveType: {tok.GetUInt32()}");
-                        }
-                        else
-                        {
-                            //if (reader.Version == 1001)
-                            //{
-                            //    reader.BaseStream.Position = pos;
-                            //    strangeDefaultBZ1BZN = true;
-                            //}
-                            //else
-                            //{
-                            throw new Exception("Failed to parse missionSave/BOOL");
-                            //}
-                        }
-                    }
-                    //if (!strangeDefaultBZ1BZN)
-                    //{
-                    bool missionSave = tok.GetBoolean();
-                    Console.WriteLine($"missionSave: {missionSave}");
-                    //}
-                }
                 if (reader.Format == BZNFormat.Battlezone2)
                 {
                     tok = reader.ReadToken();
@@ -142,36 +116,80 @@ namespace BZNParser.Battlezone
                     Int32 saveType2 = tok.GetInt32();
                     Console.WriteLine($"saveType (redundant?): {saveType2}");
                 }
+            }
 
-                //if (!strangeDefaultBZ1BZN)
-                //{
-                tok = reader.ReadToken();
-                if (reader.Format == BZNFormat.Battlezone || (reader.Format == BZNFormat.Battlezone2 && reader.Version < 1171))
+            //bool strangeDefaultBZ1BZN = false;
+            if (reader.Format == BZNFormat.Battlezone)
+            {
+                if (reader.Version < 1016)
                 {
-                    // BZ2: 1123 1124
+                    bool missionSave = false;
+                }
+                //if ((1017 <= reader.Version && reader.Version <= 1037) || reader.Version == 1043 || reader.Version == 1045 || reader.Version == 2003 || reader.Version == 2016)
+                else
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("missionSave", BinaryFieldType.DATA_BOOL))
+                        throw new Exception("Failed to parse missionSave/BOOL");
+                    bool missionSave = tok.GetBoolean();
+                    Console.WriteLine($"missionSave: {missionSave}");
+                }
+            }
+
+            if (reader.Format == BZNFormat.Battlezone)
+            {
+                if (reader.Version != 1001)
+                {
+                    tok = reader.ReadToken();
                     if (!tok.Validate("TerrainName", BinaryFieldType.DATA_CHAR))
                         throw new Exception("Failed to parse TerrainName/CHAR");
+                    string TerrainName = tok.GetString();
+                    Console.WriteLine($"TerrainName: {TerrainName}");
                 }
-                else if (reader.Format == BZNFormat.Battlezone2)
+            }
+            else if (reader.Format == BZNFormat.Battlezone2)
+            {
+                if (reader.Version < 1171)
                 {
-                    if (reader.Version == 1171)
+                    // BZ2: 1123 1124
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("TerrainName", BinaryFieldType.DATA_CHAR))
+                        throw new Exception("Failed to parse TerrainName/CHAR");
+                    string TerrainName = tok.GetString();
+                    Console.WriteLine($"TerrainName: {TerrainName}");
+                }
+                else if (reader.Version == 1171)
+                {
+                    // seems to be able to go either way
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("g_TerrainName", BinaryFieldType.DATA_CHAR))
                     {
-                        // seems to be able to go either way
-                        if (!tok.Validate("g_TerrainName", BinaryFieldType.DATA_CHAR))
-                        {
-                            if (!tok.Validate("TerrainName", BinaryFieldType.DATA_CHAR)) // saw this on a 1171 once, why?
-                                throw new Exception("Failed to parse g_TerrainName/CHAR");
-                        }
-                    }
-                    else
-                    {
-                        if (!tok.Validate("g_TerrainName", BinaryFieldType.DATA_CHAR))
+                        if (!tok.Validate("TerrainName", BinaryFieldType.DATA_CHAR)) // saw this on a 1171 once, why?
                             throw new Exception("Failed to parse g_TerrainName/CHAR");
                     }
+                    string TerrainName = tok.GetString();
+                    Console.WriteLine($"TerrainName: {TerrainName}");
                 }
-                string TerrainName = tok.GetString();
-                Console.WriteLine($"TerrainName: {TerrainName}");
-                //}
+                else
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("g_TerrainName", BinaryFieldType.DATA_CHAR))
+                        throw new Exception("Failed to parse g_TerrainName/CHAR");
+                    string TerrainName = tok.GetString();
+                    Console.WriteLine($"TerrainName: {TerrainName}");
+                }
+            }
+
+            if (reader.Format == BZNFormat.Battlezone)
+            {
+                if (reader.Version == 1011 || reader.Version == 1012)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("start_time", BinaryFieldType.DATA_FLOAT))
+                        throw new Exception("Failed to parse start_time/FLOAT");
+                    float start_time = tok.GetSingle();
+                    Console.WriteLine($"start_time: {start_time}");
+                }
             }
 
             // get count of GameObjects
@@ -257,10 +275,6 @@ namespace BZNParser.Battlezone
                 }
                 else
                 {
-                    //tok = reader.ReadToken();
-                    //if (!tok.Validate("sObject", BinaryFieldType.DATA_PTR))
-                    //    throw new Exception("Failed to parse sObject/PTR");
-                    ////tok.GetUInt32H();
                     UInt32 sObject = reader.ReadBZ1_Ptr("sObject");
                 }
 
@@ -277,6 +291,10 @@ namespace BZNParser.Battlezone
                         //throw new Exception("Failed to parse undefboolBOOL");
                         reader.BaseStream.Position = pos;
                     }
+                    else
+                    {
+                        // if this never happens now we can remove it
+                    }
                 }
             }
 
@@ -287,12 +305,74 @@ namespace BZNParser.Battlezone
                     throw new Exception("Failed to parse [AiMission]");
             }
 
-            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
+            if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("size", BinaryFieldType.DATA_LONG))
                     throw new Exception("Failed to parse size/LONG");
                 Int32 UnknownSize = tok.GetInt32();
+            }
+
+            if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1011 || reader.Version == 1012))
+            {
+                // this might also be due to the above count being 1 instead of 0, unknown, for now we're using the version
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
+                    throw new Exception("Failed to parse name/CHAR");
+                //tok.GetBytes(); // "AiMission"
+
+                // read the old sObject ptr, not sure what can be done with it
+                if (reader.Version < 1002)
+                {
+                    UInt32 sObject = reader.ReadBZ1_PtrDepricated("sObject");
+                }
+                else
+                {
+                    UInt32 sObject = reader.ReadBZ1_Ptr("sObject");
+                }
+
+                if (!reader.InBinary)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.IsValidationOnly() || !tok.Validate("UserProcess", BinaryFieldType.DATA_UNKNOWN))
+                        throw new Exception("Failed to parse [UserProcess]");
+                }
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR))
+                    throw new Exception("Failed to parse undefptr/PTR");
+                //tok.GetUInt32H();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("cycle", BinaryFieldType.DATA_UNKNOWN))
+                    throw new Exception("Failed to parse cycle/UNKNOWN");
+                //tok.GetUInt32H();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("cycleMax", BinaryFieldType.DATA_UNKNOWN))
+                    throw new Exception("Failed to parse cycleMax/UNKNOWN");
+                //tok.GetUInt32H();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("selectList", BinaryFieldType.DATA_UNKNOWN))
+                    throw new Exception("Failed to parse selectList/UNKNOWN");
+                //tok.GetUInt32H();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR))
+                    throw new Exception("Failed to parse undefptr/PTR");
+                //tok.GetUInt32H();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR))
+                    throw new Exception("Failed to parse undefptr/PTR");
+                //tok.GetUInt32H();
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("exited", BinaryFieldType.DATA_UNKNOWN))
+                    throw new Exception("Failed to parse exited/UNKNOWN");
+                //tok.GetUInt32H();
             }
 
             // if reader.SaveType != 0
@@ -510,7 +590,7 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
+            if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
             {
                 if (!reader.InBinary)
                 {
@@ -528,18 +608,21 @@ namespace BZNParser.Battlezone
                 {
                 }
 
-                if (!reader.InBinary)
+                if (reader.Version == 1001)
                 {
-                    tok = reader.ReadToken();
-                    if (!tok.IsValidationOnly() || !tok.Validate("Terrain", BinaryFieldType.DATA_UNKNOWN))
-                        throw new Exception("Failed to parse [Terrain]");
-                }
+                    if (!reader.InBinary)
+                    {
+                        tok = reader.ReadToken();
+                        if (!tok.IsValidationOnly() || !tok.Validate("Terrain", BinaryFieldType.DATA_UNKNOWN))
+                            throw new Exception("Failed to parse [Terrain]");
+                    }
 
-                tok = reader.ReadToken();
-                string TerrainName = tok.GetString();
-                if (!tok.Validate("Name", BinaryFieldType.DATA_UNKNOWN))
-                    throw new Exception("Failed to parse Name/UNKNOWN");
-                Console.WriteLine($"TerrainName: {TerrainName}");
+                    tok = reader.ReadToken();
+                    string TerrainName = tok.GetString();
+                    if (!tok.Validate("Name", BinaryFieldType.DATA_UNKNOWN))
+                        throw new Exception("Failed to parse Name/UNKNOWN");
+                    Console.WriteLine($"TerrainName: {TerrainName}");
+                }
             }
 
             if (reader.BaseStream.Position < reader.BaseStream.Length)
@@ -547,14 +630,17 @@ namespace BZNParser.Battlezone
                 if (reader.Format == BZNFormat.Battlezone)
                 {
                     // odd extra VEC2D at the end of the file with 0,0
-                    tok = reader.ReadToken();
-                    if (!tok.Validate(null, BinaryFieldType.DATA_VEC2D))
+                    tok = reader.ReadToken(); // returns null if the stream ends after chewing extra lines
+                    if (tok != null)
                     {
-                        throw new Exception("Tokens left after last known token");
+                        if (!tok.Validate(null, BinaryFieldType.DATA_VEC2D))
+                        {
+                            throw new Exception("Tokens left after last known token");
+                        }
+                        Vector2D point = tok.GetVector2D();
+                        if (point.x != 0 || point.z != 0)
+                            throw new Exception("Tokens left after last known token");
                     }
-                    Vector2D point = tok.GetVector2D();
-                    if (point.x != 0 || point.z != 0)
-                        throw new Exception("Tokens left after last known token");
                 }
 
                 if (reader.BaseStream.Position < reader.BaseStream.Length)

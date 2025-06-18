@@ -33,16 +33,16 @@ namespace BZNParser.Battlezone.GameObject
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1019)
             {
                 // obsolete
-                if (reader.InBinary)
+                if (reader.Version > 1001)
                 {
-                    tok = reader.ReadToken();
-                    tok = reader.ReadToken();
-                    tok = reader.ReadToken();
-                    tok = reader.ReadToken();
-                    tok = reader.ReadToken();
-                    tok = reader.ReadToken();
+                    tok = reader.ReadToken(); // energy0current
+                    tok = reader.ReadToken(); // energy0maximum
+                    tok = reader.ReadToken(); // energy1current
+                    tok = reader.ReadToken(); // energy1maximum
+                    tok = reader.ReadToken(); // energy2current
+                    tok = reader.ReadToken(); // energy2maximum
 
-                    tok = reader.ReadToken(); // seems it's actually 6 strings?
+                    tok = reader.ReadToken(); // bumpers
 
                     //if(!tok.Validate(null, BinaryFieldType.DATA_VEC3D))
                     //    throw new Exception("Failed to parse ???/VEC3D");
@@ -66,7 +66,7 @@ namespace BZNParser.Battlezone.GameObject
                     throw new Exception("Failed to parse abandoned/LONG");
                 abandoned = tok.GetInt32();
             }
-            if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1022 && reader.Version != 1001)
+            /*if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1022 && reader.Version != 1001)
             {
                 // does this ever even happen?
                 tok = reader.ReadToken();//setAltitude [1] =
@@ -111,7 +111,7 @@ namespace BZNParser.Battlezone.GameObject
                                          //0
                 tok = reader.ReadToken();//airBorne [1] =
                                          //5.96046e-008
-            }
+            }*/
 
             //if (reader.Format == BZNFormat.Battlezone && (reader.Version >= 1032 && reader.Version <= 1033))
             //if (reader.Format == BZNFormat.Battlezone && (reader.Version >= 1030 && reader.Version <= 1033))
@@ -123,6 +123,7 @@ namespace BZNParser.Battlezone.GameObject
                 uint unknown = (uint)tok.GetUInt32H();
             }*/
 
+            // guesses: omit version 2016, 2011
             if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2000)
             {
                 if (reader.Version < 2002)

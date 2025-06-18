@@ -10,13 +10,16 @@ namespace BZNParser.Battlezone.GameObject
 
     [ObjectClass(BZNFormat.Battlezone, "i76building")] // is not in code in the main area but appears to be valid?
     [ObjectClass(BZNFormat.Battlezone, "i76building2")] // is in code directly
+    [ObjectClass(BZNFormat.Battlezone, "i76sign")]
+
+    [ObjectClass(BZNFormat.BattlezoneN64, "i76building")] // is not in code in the main area but appears to be valid?
+    [ObjectClass(BZNFormat.BattlezoneN64, "i76building2")] // is in code directly
+    [ObjectClass(BZNFormat.BattlezoneN64, "i76sign")]
+
     [ObjectClass(BZNFormat.Battlezone2, "i76building")]
     [ObjectClass(BZNFormat.Battlezone2, "i76sign")]
 
     [ObjectClass(BZNFormat.Battlezone, "repairdepot")]
-
-    [ObjectClass(BZNFormat.BattlezoneN64, "i76building")] // is not in code in the main area but appears to be valid?
-    [ObjectClass(BZNFormat.BattlezoneN64, "i76building2")] // is in code directly
     [ObjectClass(BZNFormat.BattlezoneN64, "repairdepot")]
     public class ClassBuilding : ClassGameObject
     {
@@ -32,7 +35,14 @@ namespace BZNParser.Battlezone.GameObject
 
                 if (reader.Version >= 1147)
                 {
-                    saveClass = reader.ReadGameObjectClass_BZ2("saveClass");
+                    if (reader.Version == 1154 || reader.Version == 1148 || reader.Version == 1149)
+                    {
+                        saveClass = reader.ReadGameObjectClass_BZ2("config");
+                    }
+                    else
+                    {
+                        saveClass = reader.ReadGameObjectClass_BZ2("saveClass");
+                    }
 
                     if (!string.IsNullOrEmpty(saveClass))
                     {

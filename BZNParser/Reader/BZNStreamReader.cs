@@ -247,14 +247,21 @@ namespace BZNParser.Reader
         {
             if (filestream.Position >= filestream.Length) return null;
 
-            string rawLine = ReadStringLine(filestream);
-
-            if (rawLine.StartsWith("[") && rawLine.EndsWith("]"))
+            for (; filestream.Position < filestream.Length; )
             {
-                return new BZNTokenValidation(rawLine.Substring(1, rawLine.Length - 2));
-            }
+                string rawLine = ReadStringLine(filestream);
 
-            return ReadStringValueToken(filestream, rawLine);
+                if (rawLine.Length > 0)
+                {
+                    if (rawLine.StartsWith("[") && rawLine.EndsWith("]"))
+                    {
+                        return new BZNTokenValidation(rawLine.Substring(1, rawLine.Length - 2));
+                    }
+
+                    return ReadStringValueToken(filestream, rawLine);
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -292,7 +299,8 @@ namespace BZNParser.Reader
                         for (int constructCounter = 0; constructCounter < ComplexStringTokenSizeMap[name]; constructCounter++)
                         {
                             string rawLineInner = ReadStringLine(filestream).TrimEnd('\r', '\n').TrimStart();
-                            values[subSectionCounter][constructCounter] = ReadStringValueToken(filestream, rawLineInner);
+                            if (rawLineInner.Length != 0)
+                                values[subSectionCounter][constructCounter] = ReadStringValueToken(filestream, rawLineInner);
                         }
                     }
 
@@ -325,7 +333,8 @@ namespace BZNParser.Reader
                         for (int constructCounter = 0; constructCounter < ComplexStringTokenSizeMap[name]; constructCounter++)
                         {
                             string rawLineInner = ReadStringLine(filestream).TrimEnd('\r', '\n').TrimStart();
-                            values[subSectionCounter][constructCounter] = ReadStringValueToken(filestream, rawLineInner);
+                            if (rawLineInner.Length != 0)
+                                values[subSectionCounter][constructCounter] = ReadStringValueToken(filestream, rawLineInner);
                         }
                     }
 

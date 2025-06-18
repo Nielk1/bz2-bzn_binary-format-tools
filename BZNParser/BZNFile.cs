@@ -11,7 +11,7 @@ namespace BZNParser
 {
     internal class BZNFile
     {
-        public static Dictionary<string, string> ClassLabelMapBZ1 = new Dictionary<string, string>()
+        private static Dictionary<string, string> ClassLabelMapBZ1 = new Dictionary<string, string>()
         {
             { "abbar7", "i76building" },
             { "abbarr", "barracks" },

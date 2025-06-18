@@ -6,6 +6,7 @@ using System.Text;
 
 namespace BZNParser.Battlezone.GameObject
 {
+    [ObjectClass(BZNFormat.Battlezone, "powerup")]
     public class ClassPowerUp : ClassGameObject
     {
         public ClassPowerUp(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }

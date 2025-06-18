@@ -14,9 +14,7 @@ namespace BZNParser.Battlezone.GameObject
         {
             IBZNToken tok;
 
-            //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2016)
-            //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2011)
-            if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2004)
+            if (reader.Version >= 2004)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("portalState", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse portalState/LONG");
