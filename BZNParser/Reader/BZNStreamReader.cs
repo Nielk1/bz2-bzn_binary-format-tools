@@ -160,7 +160,7 @@ namespace BZNParser.Reader
                     if (!InBinary && SaveTypeToken.Validate("saveType"))
                     {
                         SaveType = SaveTypeToken.GetInt32();
-                        TypeSize = 1; // BZ2 has saveType flag, BZ1 does not
+                        TypeSize = 1;
                         TypeSizeSet = true;
                         Format = BZNFormat.Battlezone2;
                     }
@@ -235,6 +235,38 @@ namespace BZNParser.Reader
                                     Format = BZNFormat.Battlezone;
                                 }
                             }
+                            else if (tok.Validate("size"))
+                            {
+                                tok = ReadToken();
+                                if (tok.IsValidationOnly() && tok.Validate("GameObject"))
+                                {
+                                    // SaveType here is obviously 0
+                                    TypeSize = 2;
+                                    TypeSizeSet = true;
+                                    SizeSize = 2;
+                                    Format = BZNFormat.Battlezone;
+                                }
+                            }
+                            else if (tok.Validate("TerrainName"))
+                            {
+                                tok = ReadToken();
+                                if (tok.Validate("start_time"))
+                                {
+                                    tok = ReadToken();
+                                    if (tok.Validate("size"))
+                                    {
+                                        tok = ReadToken();
+                                        if (tok.IsValidationOnly() && tok.Validate("GameObject"))
+                                        {
+                                            // SaveType here is obviously 0
+                                            TypeSize = 2;
+                                            TypeSizeSet = true;
+                                            SizeSize = 2;
+                                            Format = BZNFormat.Battlezone;
+                                        }
+                                    }
+                                }
+                            }
                         }
                         else
                         {
@@ -257,7 +289,7 @@ namespace BZNParser.Reader
                             if (tok.Validate("saveType", BinaryFieldType.DATA_LONG))
                             {
                                 SaveType = tok.GetInt32();
-                                TypeSize = 1; // not sure if this is right
+                                TypeSize = 1;
                                 TypeSizeSet = true;
                                 SizeSize = 2;
                                 Format = BZNFormat.Battlezone2;

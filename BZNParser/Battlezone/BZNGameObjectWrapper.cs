@@ -406,7 +406,7 @@ namespace BZNParser.Battlezone
                     }
                     else
                     {
-                        reader.BaseStream.Position = Candidates[0].Next;
+                        reader.BaseStream.Position = Candidates.Min(dr => dr.Next);
                         return new MultiClass(PrjID, isUser != 0, Candidates);
                     }
                 }

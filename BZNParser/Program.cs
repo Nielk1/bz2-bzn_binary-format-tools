@@ -160,6 +160,7 @@ namespace BZNParser
                                             new BZNFileBattlezone(reader, Hints: BZ1Hints);
                                             //success = true;
                                             File.AppendAllText("success.txt", $"{filename}\r\n");
+                                            //File.AppendAllText($"{reader.Format.ToString()} {reader.Version.ToString("D4")}.txt", $"{filename}\r\n");
                                         }
                                         catch (Exception ex)
                                         {
@@ -186,6 +187,7 @@ namespace BZNParser
                                             new BZNFileBattlezone(reader, Hints: BZ2Hints);
                                             //success = true;
                                             File.AppendAllText("success.txt", $"{filename}\r\n");
+                                            //File.AppendAllText($"{reader.Format.ToString()} {reader.Version.ToString("D4")}.txt", $"{filename}\r\n");
                                         }
                                         catch (Exception ex)
                                         {
