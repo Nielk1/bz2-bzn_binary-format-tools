@@ -27,8 +27,8 @@ namespace BZNParser
 
                 foreach (string line in File.ReadAllLines("ClassLabels_BZ1.txt"))
                 {
-                    string[] parts = line.Split(new char[] { '\t' }, 2);
-                    if (parts.Length == 2)
+                    string[] parts = line.Split(new char[] { '\t' }, 3);
+                    if (parts.Length == 2 || parts.Length == 3)
                     {
                         string key = parts[0].Trim();
                         string value = parts[1].Trim();
@@ -48,8 +48,8 @@ namespace BZNParser
             {
                 foreach (string line in File.ReadAllLines("ClassLabels_BZ2.txt"))
                 {
-                    string[] parts = line.Split(new char[] { '\t' }, 2);
-                    if (parts.Length == 2)
+                    string[] parts = line.Split(new char[] { '\t' }, 3);
+                    if (parts.Length == 2 || parts.Length == 3)
                     {
                         string key = parts[0].Trim();
                         string value = parts[1].Trim();
@@ -121,33 +121,19 @@ namespace BZNParser
                     Success.Add(line);
             Dictionary<BznType, List<(string, bool)>> Files = new Dictionary<BznType, List<(string, bool)>>();
 
-            //foreach (string filename in Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\bz2r_res", "*.bzn", SearchOption.AllDirectories)
-            //    .Concat(Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\maps", "*.bzn", SearchOption.AllDirectories))
-            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\624970", "*.bzn", SearchOption.AllDirectories))
-            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\GenerateMultiplayerDataExtract\GenerateMultiplayerDataExtract\bin\Debug\BZ98R", "*.bzn", SearchOption.AllDirectories))
-            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
-            //    .Concat(Directory.EnumerateFiles(@"..\..\..\..\old\sample", "*.bzn", SearchOption.AllDirectories))
-            //    .Concat(Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
-            //    )
-            foreach (string filename in Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
+            foreach (string filename in Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\bz2r_res", "*.bzn", SearchOption.AllDirectories)
+                .Concat(Directory.EnumerateFiles(@"D:\Program Files (x86)\GOG Galaxy\Games\Battlezone Combat Commander\maps", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\624970", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\GenerateMultiplayerDataExtract\GenerateMultiplayerDataExtract\bin\Debug\BZ98R", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"..\..\..\..\old\sample", "*", SearchOption.AllDirectories))
+                .Concat(Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
+                )
             //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
-            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories)
-            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)))
-            //string filename = @"..\..\..\sample\testbinarybz2.bzn";
-            //string filename = @"..\..\..\sample\n64\A68CC0.bin";
-            //string filename = @"..\..\..\sample\n64\A6DD20.bin";
-            //foreach (string filename in new string[] {
-            //    @"..\..\..\sample\testasciibz1.bzn",
-            //    @"..\..\..\sample\testasciibz2.bzn",
-            //    @"..\..\..\sample\testbinarybz1.bzn",
-            //    @"..\..\..\sample\testbinarybz2.bzn",
-            //}.Concat(Directory.EnumerateFiles(@"..\..\..\sample\n64", "*", SearchOption.AllDirectories)))
-            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample\n64", "*", SearchOption.AllDirectories))
-            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories)
-            //    .Concat(Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories))
-            //    .Concat(Directory.EnumerateFiles(@"C:\Users\Nielk1\Documents\My Games\Battlezone Combat Commander\saved", "*.sav", SearchOption.AllDirectories)))
-            //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content", "*.bzn", SearchOption.AllDirectories)
-            //    .Concat(Directory.EnumerateFiles(@"C:\Users\Nielk1\Documents\My Games\Battlezone Combat Commander\saved", "*.sav", SearchOption.AllDirectories)))
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\..\old\sample", "*", SearchOption.AllDirectories))
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories))
+            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
             {
                 Console.WriteLine(filename);
 
@@ -181,6 +167,7 @@ namespace BZNParser
                                             Console.WriteLine($"Error: {ex.Message}");
                                             Console.ResetColor();
                                             //Console.ReadKey(true);
+                                            File.AppendAllText("failed.txt", $"{filename}\r\n");
                                         }
                                         finally
                                         {
@@ -206,6 +193,7 @@ namespace BZNParser
                                             Console.WriteLine($"Error: {ex.Message}");
                                             Console.ResetColor();
                                             //Console.ReadKey(true);
+                                            File.AppendAllText("failed.txt", $"{filename}\r\n");
                                         }
                                         finally
                                         {

@@ -17,7 +17,9 @@ namespace BZNParser.Reader
             this.values = values;
         }
 
-        public int GetCount(int size)
+        public bool IsBinary => false;
+
+        public int GetCount()
         {
             return values.Length;
         }

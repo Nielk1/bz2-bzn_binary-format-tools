@@ -306,7 +306,74 @@ namespace BZNParser.Battlezone.GameObject
 
                 tok = reader.ReadToken();
                 if (!tok.Validate("seen", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse seen/LONG");
-                seen = tok.GetUInt32(); // TODO check if this is sometimes hex, though we know for a fact it wasn't in misn0464.bzn
+                if (reader.Format == BZNFormat.Battlezone)
+                {
+                    try
+                    {
+                        seen = tok.GetUInt32H();
+                        if ((seen & 0xFFFF0000u) != 0)
+                        {
+                            bool HasSignBit = (seen & 0x80000000) != 0;
+                            bool HasOtherOverflowBits = (seen & 0x7FFF0000) != 0;
+                            if (HasSignBit && !HasOtherOverflowBits)
+                            {
+                                if (HasSignBit && !HasOtherOverflowBits)
+                                {
+                                    // issue was caused by a bad sign bit forcing a mis-write of the data as a decimal number instead of hex
+                                    // TODO note malformation
+                                    seen &= 0x0000FFFF;
+                                }
+                                else
+                                {
+                                    // issue is undetermined other than it being decimal instead of hex
+                                    // TODO note malformation
+                                }
+                            }
+                            else if (!tok.IsBinary && tok.GetString().Any(c => !"1234567890".Contains(c)))
+                            {
+                                // assume this is a decimal number instead of hex
+                                seen = tok.GetUInt32();
+                                HasSignBit = (seen & 0x80000000) != 0;
+                                HasOtherOverflowBits = (seen & 0x7FFF0000) != 0;
+                                if (HasSignBit && !HasOtherOverflowBits)
+                                {
+                                    // issue was caused by a bad sign bit forcing a mis-write of the data as a decimal number instead of hex
+                                    // TODO note malformation
+                                    seen &= 0x0000FFFF;
+                                }
+                                else
+                                {
+                                    // issue is undetermined other than it being decimal instead of hex
+                                    // TODO note malformation
+                                }
+                            }
+                            else
+                            {
+                                // TODO note malformation
+                            }
+                        }
+                    }
+                    catch (System.OverflowException)
+                    {
+                        // if we overflowed we have to assume the value might be improperly stored as a decimal instead of a hexadecimal string
+                        seen = tok.GetUInt32();
+
+                        //bool HasMalformation = (seen & 0xFFFF0000u) != 0;
+                        bool HasSignBit = (seen & 0x80000000) != 0;
+                        bool HasOtherOverflowBits = (seen & 0x7FFF0000) != 0;
+                        if (HasSignBit && ! HasOtherOverflowBits)
+                        {
+                            // issue was caused by a bad sign bit forcing a mis-write of the data as a decimal number instead of hex
+                            // TODO note malformation
+                            seen &= 0x0000FFFF;
+                        }
+                        else
+                        {
+                            // issue is undetermined other than it being decimal instead of hex
+                            // TODO note malformation
+                        }
+                    }
+                }
             }
 
             if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041 && reader.Version != 1047) // avoid bz2001.bzn via != 1041

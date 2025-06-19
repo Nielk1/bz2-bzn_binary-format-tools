@@ -18,10 +18,29 @@ namespace BZNParser.Reader
             this.data = data;
             this.IsBigEndian = IsBigEndian;
         }
-
-        public int GetCount(int size)
+        public bool IsBinary => true;
+        public int GetCount()
         {
-            return data.Length / size;
+            switch(type)
+            {
+                case BinaryFieldType.DATA_VOID: return data.Length / 4;
+                case BinaryFieldType.DATA_BOOL: return data.Length / 1;
+                case BinaryFieldType.DATA_CHAR: return data.Length / 1;
+                case BinaryFieldType.DATA_SHORT: return data.Length / 2;
+                case BinaryFieldType.DATA_LONG: return data.Length / 4;
+                case BinaryFieldType.DATA_FLOAT: return data.Length / 4;
+                case BinaryFieldType.DATA_DOUBLE: throw new NotImplementedException();
+                case BinaryFieldType.DATA_ID: return data.Length / 4;
+                case BinaryFieldType.DATA_PTR: return data.Length / 4;
+                case BinaryFieldType.DATA_VEC3D: throw new NotImplementedException();
+                case BinaryFieldType.DATA_VEC2D: throw new NotImplementedException();
+                case BinaryFieldType.DATA_MAT3DOLD: throw new NotImplementedException();
+                case BinaryFieldType.DATA_MAT3D: throw new NotImplementedException();
+                case BinaryFieldType.DATA_STRING: throw new NotImplementedException();
+                case BinaryFieldType.DATA_QUAT: throw new NotImplementedException();
+                case BinaryFieldType.DATA_UNKNOWN: throw new NotImplementedException();
+            }
+            throw new NotImplementedException();
         }
 
         public bool GetBoolean(int index = 0)

@@ -72,6 +72,7 @@ namespace BZNParser.Battlezone.GameObject
                 tok = reader.ReadToken();
                 if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
                     throw new Exception("Failed to parse abandoned/LONG");
+
                 abandoned = tok.GetInt32();
             }
             /*if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1022 && reader.Version != 1001)

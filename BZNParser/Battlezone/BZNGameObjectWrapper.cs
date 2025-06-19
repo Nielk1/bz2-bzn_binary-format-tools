@@ -30,7 +30,7 @@ namespace BZNParser.Battlezone
         private Dictionary<string, Type> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, Type> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, Type> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null, bool fake = false)
         {
             SuccessfulParses = SuccessfulParses ?? new HashSet<string>();
             FailedParses = FailedParses ?? new HashSet<string>();
@@ -285,6 +285,8 @@ namespace BZNParser.Battlezone
                 transform = tok.GetMatrixOld();
             }
 
+            if (fake)
+                return;
             // other save types here
 
             //Console.WriteLine($"DEBUG {new string('>', depth)} Trying to parse [{countLeft}] {PrjID} {reader.BaseStream.Position}");
@@ -364,16 +366,27 @@ namespace BZNParser.Battlezone
                             {
                                 ConstructorInfo? info = kv.Value.GetConstructor(new Type[] { typeof(string), typeof(bool), typeof(string) });
                                 tempGameObject = (info?.Invoke(new object[] { PrjID, isUser != 0, kv.Key })) as ClassGameObject;
-                                //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
                                 if (tempGameObject != null)
                                 {
+                                    //Console.ForegroundColor = ConsoleColor.Green;
+                                    //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
+                                    //Console.ResetColor();
                                     tempGameObject.LoadData(reader); ClassLabelTempLookup[PrjID.ToLowerInvariant()] = classLableTempHolder;
                                     firstParseSuccess = true;
                                     if (CheckNext(parent, reader, countLeft - 1, depth + 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints))
                                         Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.BaseStream.Position, classLableTempHolder));
                                 }
+                                else
+                                {
+                                    //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
+                                }
                             }
-                            catch { }
+                            catch
+                            {
+                                //Console.ForegroundColor = ConsoleColor.Red;
+                                //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {kv.Value.Name}");
+                                //Console.ResetColor();
+                            }
                         reader.BaseStream.Position = pos;
                     }
                 }
@@ -437,7 +450,8 @@ namespace BZNParser.Battlezone
                         return false;
                     }
                     reader.BaseStream.Position = pos;
-                    return true;
+                    //if (depth > 50)
+                    return true; // Maximum Depth
                     /*
                     if (reader.InBinary)
                     {
@@ -470,38 +484,60 @@ namespace BZNParser.Battlezone
                 }
                 else
                 {
-                    // technicly if an object ate 2 game objects this would be an invalid check, but that seems pretty unlikely
+                    // early aborts
                     if (!reader.InBinary)
                     {
                         long offset = reader.BaseStream.Position;
                         IBZNToken tok = reader.ReadToken();
                         reader.BaseStream.Position = offset;
-                        return tok.IsValidationOnly() && tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN);
+                        if (!tok.IsValidationOnly() || !tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN))
+                        {
+                            // next field isn't the start of a GameObject
+                            return false;
+                        }
+                        //if (depth > 50)
+                        return true; // Maximum Depth
+                    }
+                    else
+                    {
+                        long offset = reader.BaseStream.Position;
+                        try
+                        {
+                            BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints, fake: true);
+                        }
+                        catch
+                        {
+                            // next field isn't the start of a GameObject (since a shallow gameobject crashed)
+                            reader.BaseStream.Position = offset;
+                            return false;
+                        }
+                        reader.BaseStream.Position = offset;
+                        return true;
                     }
 
                     // just parse the next object and if it works, we're good
                     // (yes, this can become recursive and result in n! object building, but only if we're dealing with a lot of missing data)
                     // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
                     try
-                    {
-                        long offset = reader.BaseStream.Position;
-                        if(RecursiveObjectGenreationMemo.ContainsKey(offset))
                         {
-                            reader.BaseStream.Position = RecursiveObjectGenreationMemo[offset].Next;
-                            return RecursiveObjectGenreationMemo[offset].Object != null;
-                        }
+                            long offset = reader.BaseStream.Position;
+                            if (RecursiveObjectGenreationMemo.ContainsKey(offset))
+                            {
+                                reader.BaseStream.Position = RecursiveObjectGenreationMemo[offset].Next;
+                                return RecursiveObjectGenreationMemo[offset].Object != null;
+                            }
 
-                        BZNGameObjectWrapper? tmpWrap = null;
-                        try
-                        {
-                            tmpWrap = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints);
-                            SuccessfulParses?.Add(tmpWrap.PrjID);
+                            BZNGameObjectWrapper? tmpWrap = null;
+                            try
+                            {
+                                tmpWrap = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints);
+                                SuccessfulParses?.Add(tmpWrap.PrjID);
+                            }
+                            catch { }
+                            RecursiveObjectGenreationMemo[offset] = (tmpWrap, reader.BaseStream.Position);
+                            return tmpWrap != null;
                         }
                         catch { }
-                        RecursiveObjectGenreationMemo[offset] = (tmpWrap, reader.BaseStream.Position);
-                        return tmpWrap != null;
-                    }
-                    catch { }
                     return false;
                 }
             }

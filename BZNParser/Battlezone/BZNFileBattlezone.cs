@@ -581,19 +581,34 @@ namespace BZNParser.Battlezone
             if (reader.Format == BZNFormat.Battlezone2)
             {
                 // SatellitePanel
-                if (reader.Version >= 1125 && reader.Version != 1169) // version 1169 failed to read this, might need a walk back for malformed
+                if (reader.Version >= 1125) // version 1169 failed to read this, might need a walk back for malformed
                 {
+                    long pos = reader.BaseStream.Position;
+
                     // 1188 1192
                     tok = reader.ReadToken();
                     if (!tok.Validate("hasEntered", BinaryFieldType.DATA_BOOL))
-                        throw new Exception("Failed to parse hasEntered/BOOL");
-
-                    for (int i = 0; i < 3/*MAX_WORLDS*/; i++)
                     {
-                        tok = reader.ReadToken();
-                        if (!tok.Validate("ownerObj", BinaryFieldType.DATA_LONG))
-                            throw new Exception("Failed to parse ownerObj/LONG");
-                        //Int32 pathType = tok.GetUInt32H();
+                        if (tok.Validate("PadData", BinaryFieldType.DATA_VOID))
+                        {
+                            // SatellitePanel data is missing when it must exist, deal with damaged BZN?
+                            reader.BaseStream.Position = pos;
+                        }
+                        else
+                        {
+                            throw new Exception("Failed to parse hasEntered/BOOL");
+                        }
+                    }
+                    else
+                    {
+
+                        for (int i = 0; i < 3/*MAX_WORLDS*/; i++)
+                        {
+                            tok = reader.ReadToken();
+                            if (!tok.Validate("ownerObj", BinaryFieldType.DATA_LONG))
+                                throw new Exception("Failed to parse ownerObj/LONG");
+                            //Int32 pathType = tok.GetUInt32H();
+                        }
                     }
                 }
             }

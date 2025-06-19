@@ -177,7 +177,7 @@ namespace BZNParser.Reader
                         stream.Position = position;
                     }
 
-                    if (Version > 1022)
+                    //if (Version > 1022)
                     {
                         tmpPosition = stream.Position;
                         IBZNToken BinaryToken = ReadToken();
@@ -189,19 +189,22 @@ namespace BZNParser.Reader
                             long tmpPosition2 = stream.Position;
 
                             IBZNToken tok = ReadToken();
-                            if (tok.Validate("msn_filename"))
+                            if (tok.Validate("msn_filename", BinaryFieldType.DATA_CHAR))
                             {
                                 tok = ReadToken();
-                                if (tok.Validate("seq_count"))
+                                if (tok.Validate("seq_count", BinaryFieldType.DATA_LONG))
                                 {
                                     tok = ReadToken();
-                                    if (tok.Validate("missionSave"))
+                                    if (tok.Validate("missionSave", BinaryFieldType.DATA_BOOL))
                                     {
                                         //SaveType = tok.GetBoolean() ? 0 : 1; // TODO we had an impossible BZN so let's ignore this for the moment
-                                        TypeSize = 2;
-                                        TypeSizeSet = true;
-                                        SizeSize = 2;
-                                        Format = BZNFormat.Battlezone;
+                                        if (!InBinary || tok.GetUInt8() <= 1)
+                                        {
+                                            TypeSize = 2;
+                                            TypeSizeSet = true;
+                                            SizeSize = 2;
+                                            Format = BZNFormat.Battlezone;
+                                        }
                                     }
                                 }
                             }
@@ -216,6 +219,22 @@ namespace BZNParser.Reader
                             TypeSizeSet = true;
                             SizeSize = 4;
                             Format = BZNFormat.StarTrekArmada2;
+                        }
+                        else if (BinaryToken.Validate("seq_count", BinaryFieldType.DATA_LONG))
+                        {
+                            IBZNToken tok;
+                            tok = ReadToken();
+                            if (tok.Validate("missionSave", BinaryFieldType.DATA_BOOL))
+                            {
+                                //SaveType = tok.GetBoolean() ? 0 : 1; // TODO we had an impossible BZN so let's ignore this for the moment
+                                if (!InBinary || tok.GetUInt8() <= 1)
+                                {
+                                    TypeSize = 2;
+                                    TypeSizeSet = true;
+                                    SizeSize = 2;
+                                    Format = BZNFormat.Battlezone;
+                                }
+                            }
                         }
                         else
                         {

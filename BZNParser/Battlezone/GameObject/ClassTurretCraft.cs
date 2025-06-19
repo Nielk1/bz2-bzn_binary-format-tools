@@ -80,7 +80,7 @@ namespace BZNParser.Battlezone.GameObject
                         if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
                         {
                             UInt32 powerHandle = tok.GetUInt32();
-                            if (tok.GetCount(4) > 1)
+                            if (tok.GetCount() > 1)
                             {
                                 UInt32 powerHandle2 = tok.GetUInt32(1);
                             }

@@ -24,7 +24,9 @@ namespace BZNParser.Battlezone.GameObject
                 if (reader.Format == BZNFormat.Battlezone && reader.Version == 1045)
                 {
                     // This is due to bvapc26, assumed to be a tug,in "bdmisn26.bzn"
-                    if (!tok.Validate("state", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse state/PTR");
+                    if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR))
+                        if (!tok.Validate("state", BinaryFieldType.DATA_PTR))
+                            throw new Exception("Failed to parse undefptr/state/PTR");
                 }
                 else
                 {
