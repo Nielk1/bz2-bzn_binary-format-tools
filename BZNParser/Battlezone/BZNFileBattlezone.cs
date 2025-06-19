@@ -19,10 +19,12 @@ namespace BZNParser.Battlezone
     }
     public class BZNFileBattlezone
     {
+        private BattlezoneBZNHints? Hints;
         public BZNFileBattlezone(BZNStreamReader reader, BattlezoneBZNHints? Hints = null)
         {
+            this.Hints = Hints;
+
             IBZNToken tok;
-            tok = reader.ReadToken();
             //if(!tok.Validate("version", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse version/UNKNOWN");
             //Console.WriteLine($"Version: {tok.GetUInt32()}");
             /*if (!tok.Validate("version", BinaryFieldType.DATA_UNKNOWN))
@@ -42,7 +44,11 @@ namespace BZNParser.Battlezone
             }*/
             Console.WriteLine($"Format: {reader.Format}");
 
-            Console.WriteLine($"Version: {tok.GetUInt32()}"); // don't bother validating first field maybe?
+            if (reader.Format != BZNFormat.BattlezoneN64)
+            {
+                tok = reader.ReadToken();
+                Console.WriteLine($"Version: {tok.GetUInt32()}"); // don't bother validating first field maybe?
+            }
 
             if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041 && reader.Version != 1047) // version is special case for bz2001.bzn
             {
@@ -52,18 +58,18 @@ namespace BZNParser.Battlezone
                 Console.WriteLine($"saveType: {tok.GetUInt32()}");
             }
 
-            if (reader.Format == BZNFormat.BattlezoneN64)
-            {
-                tok = reader.ReadToken();
-                if (!tok.Validate("binarySave", BinaryFieldType.DATA_BOOL))
-                    throw new Exception("Failed to parse binarySave/BOOL");
-                Console.WriteLine($"binarySave: {tok.GetBoolean()}");
-
-                tok = reader.ReadToken();
-                if (!tok.Validate("msn_filename", BinaryFieldType.DATA_CHAR))
-                    throw new Exception("Failed to parse msn_filename/CHAR");
-                Console.WriteLine($"msn_filename: \"{tok.GetString()}\"");
-            }
+            //if (reader.Format == BZNFormat.BattlezoneN64)
+            //{
+            //    tok = reader.ReadToken();
+            //    if (!tok.Validate("binarySave", BinaryFieldType.DATA_BOOL))
+            //        throw new Exception("Failed to parse binarySave/BOOL");
+            //    Console.WriteLine($"binarySave: {tok.GetBoolean()}");
+            //
+            //    tok = reader.ReadToken();
+            //    if (!tok.Validate("msn_filename", BinaryFieldType.DATA_CHAR))
+            //        throw new Exception("Failed to parse msn_filename/CHAR");
+            //    Console.WriteLine($"msn_filename: \"{tok.GetString()}\"");
+            //}
             if (reader.Format == BZNFormat.Battlezone)
             {
                 if (reader.Version > 1022)
@@ -90,7 +96,7 @@ namespace BZNParser.Battlezone
                 Console.WriteLine($"msn_filename: \"{msnFilename}\"");
             }
 
-            if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1001)
+            if (reader.Format == BZNFormat.BattlezoneN64 || (reader.Format == BZNFormat.Battlezone && reader.Version <= 1001))
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("seq_count", BinaryFieldType.DATA_LONG))
@@ -119,9 +125,9 @@ namespace BZNParser.Battlezone
             }
 
             //bool strangeDefaultBZ1BZN = false;
-            if (reader.Format == BZNFormat.Battlezone)
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version < 1016)
+                if (reader.Format == BZNFormat.Battlezone && reader.Version < 1016)
                 {
                     bool missionSave = false;
                 }
@@ -136,9 +142,9 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            if (reader.Format == BZNFormat.Battlezone)
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version != 1001)
+                if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1001)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("TerrainName", BinaryFieldType.DATA_CHAR))
@@ -220,9 +226,16 @@ namespace BZNParser.Battlezone
             for (int gameObjectCounter = 0; gameObjectCounter < CountItems; gameObjectCounter++)
             {
                 //GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader, (gameObjectCounter + 1) == CountItems);
-                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, 0, RecursiveObjectGenreationMemo, null, ClassLabelMap: ClassLabelMap, Hints: Hints);
+                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(this, reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, 0, RecursiveObjectGenreationMemo, null, ClassLabelMap: ClassLabelMap, Hints: Hints);
                 Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
             }
+
+            TailParse(reader);
+        }
+
+        public void TailParse(BZNStreamReader reader)
+        {
+            IBZNToken tok;
 
             if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -238,6 +251,7 @@ namespace BZNParser.Battlezone
                     tok = reader.ReadToken();
                     if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
                         throw new Exception("Failed to parse dllName/CHAR");
+                    Console.WriteLine($"Mission: {tok.GetString()}");
                 }
                 else if (reader.Version < 1145)
                 {
@@ -245,6 +259,7 @@ namespace BZNParser.Battlezone
                     tok = reader.ReadToken();
                     if (!tok.Validate("dllName", BinaryFieldType.DATA_CHAR))
                         throw new Exception("Failed to parse dllName/CHAR");
+                    Console.WriteLine($"Mission: {tok.GetString()}");
                 }
                 else
                 {
@@ -257,16 +272,23 @@ namespace BZNParser.Battlezone
                     tok = reader.ReadToken();
                     if (!tok.Validate("dllName", BinaryFieldType.DATA_CHAR))
                         throw new Exception("Failed to parse dllName/CHAR");
+                    Console.WriteLine($"Mission: {tok.GetString()}");
                 }
             }
+            if (reader.Format == BZNFormat.BattlezoneN64)
+            {
+                tok = reader.ReadToken();
+                string mission = string.Format("BZn64Mission_{0,4:X4}", tok.GetUInt16());
+                Console.WriteLine($"Mission: {mission}");
 
-
+                UInt32 sObject = reader.ReadBZ1_PtrDepricated("sObject");
+            }
             if (reader.Format == BZNFormat.Battlezone)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
                     throw new Exception("Failed to parse name/CHAR");
-                //tok.GetBytes(); // "AiMission"
+                Console.WriteLine($"Mission: {tok.GetString()}");
 
                 // read the old sObject ptr, not sure what can be done with it
                 if (reader.Version < 1002)
@@ -478,9 +500,9 @@ namespace BZNParser.Battlezone
                     }
                 }
 
-                if (reader.Format == BZNFormat.Battlezone)
+                if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
                 {
-                    if (reader.Version >= 2016)
+                    if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version >= 2016)
                     {
                         // 2016
                         tok = reader.ReadToken();
@@ -511,22 +533,29 @@ namespace BZNParser.Battlezone
                     }
                 }
 
-                tok = reader.ReadToken();
-                if (!tok.Validate("size", BinaryFieldType.DATA_LONG))
-                    throw new Exception("Failed to parse size/LONG");
-                int labelSize = tok.GetInt32();
-
                 string? label = null;
-                if (labelSize > 0)
+                if (reader.Format == BZNFormat.BattlezoneN64)
                 {
                     tok = reader.ReadToken();
-                    if (!tok.Validate("label", BinaryFieldType.DATA_CHAR))
-                        throw new Exception("Failed to parse label/CHAR");
-                    label = tok.GetString();
-                    if (label.Length > labelSize)
-                        label = label.Substring(0, labelSize);
+                    label = string.Format("bzn64path_{0,4:X4}", tok.GetUInt16());
                 }
+                else
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("size", BinaryFieldType.DATA_LONG))
+                        throw new Exception("Failed to parse size/LONG");
+                    int labelSize = tok.GetInt32();
 
+                    if (labelSize > 0)
+                    {
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("label", BinaryFieldType.DATA_CHAR))
+                            throw new Exception("Failed to parse label/CHAR");
+                        label = tok.GetString();
+                        if (label.Length > labelSize)
+                            label = label.Substring(0, labelSize);
+                    }
+                }
                 Console.WriteLine($"AiPath[{i.ToString().PadLeft(CountPaths.ToString().Length)}]: {(label ?? string.Empty)}");
 
                 tok = reader.ReadToken();
@@ -552,7 +581,7 @@ namespace BZNParser.Battlezone
             if (reader.Format == BZNFormat.Battlezone2)
             {
                 // SatellitePanel
-                if (reader.Version >= 1125 && reader.Version != 1169) // version 1169 check might instead need a dumb check
+                if (reader.Version >= 1125) // version 1169 check might instead need a dumb check
                 {
                     // 1188 1192
                     tok = reader.ReadToken();

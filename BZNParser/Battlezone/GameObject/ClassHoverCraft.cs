@@ -12,7 +12,7 @@ namespace BZNParser.Battlezone.GameObject
         public ClassHoverCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public override void LoadData(BZNStreamReader reader)
         {
-            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            if (reader.Format == BZNFormat.Battlezone)
             {
                 if (reader.Version <= 1010)
                 {

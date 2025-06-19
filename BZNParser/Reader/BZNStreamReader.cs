@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -139,54 +140,67 @@ namespace BZNParser.Reader
                 }
 
                 long tmpPosition = stream.Position;
-                IBZNToken VersionToken = ReadToken();
-                Version = VersionToken.GetInt32();
+                if (Format == BZNFormat.BattlezoneN64)
+                {
+                    IBZNToken SeqNoToken = ReadToken(); // 4 byte number
 
-                tmpPosition = position = stream.Position;
-                IBZNToken SaveTypeToken = ReadToken();
-                if (!InBinary && SaveTypeToken.Validate("saveType"))
-                {
-                    SaveType = SaveTypeToken.GetInt32();
-                    TypeSize = 1; // BZ2 has saveType flag, BZ1 does not
-                    TypeSizeSet = true;
-                    Format = BZNFormat.Battlezone2;
-                }
-                else if (!InBinary && SaveTypeToken.Validate("saveGameDesc"))
-                {
-                    TypeSize = 4; // Star Trek Armada, 3 bytes are garbage
-                    TypeSizeSet = true;
-                    SizeSize = 4;
-                    Format = BZNFormat.StarTrekArmada;
+                    IBZNToken MissionSaveToken = ReadToken();
+                    bool MissionSave = MissionSaveToken.GetBoolean();
+                    SaveType = MissionSave ? 0 : 1;
+
+                    IBZNToken TerrainOrMissionName = ReadToken(); // long, probably 64 bytes of text
                 }
                 else
                 {
-                    // we didn't read a saveType, walk back
-                    stream.Position = position;
-                }
+                    IBZNToken VersionToken = ReadToken();
+                    Version = VersionToken.GetInt32();
 
-                // TODO look into using BZ1's missionSave bool for SaveType, where True is 0 and False is 1.
-
-                if (Version > 1022)
-                {
-                    tmpPosition = stream.Position;
-                    IBZNToken BinaryToken = ReadToken();
-                    if (BinaryToken.Validate("binarySave"))
+                    tmpPosition = position = stream.Position;
+                    IBZNToken SaveTypeToken = ReadToken();
+                    if (!InBinary && SaveTypeToken.Validate("saveType"))
                     {
-                        if (BinaryToken.GetBoolean())
-                            binaryDataStartOffset = stream.Position;
+                        SaveType = SaveTypeToken.GetInt32();
+                        TypeSize = 1; // BZ2 has saveType flag, BZ1 does not
+                        TypeSizeSet = true;
+                        Format = BZNFormat.Battlezone2;
                     }
-                    else if (BinaryToken.Validate("BinaryMode"))
+                    else if (!InBinary && SaveTypeToken.Validate("saveGameDesc"))
                     {
-                        if (BinaryToken.GetBoolean())
-                            binaryDataStartOffset = stream.Position;
                         TypeSize = 4; // Star Trek Armada, 3 bytes are garbage
                         TypeSizeSet = true;
                         SizeSize = 4;
-                        Format = BZNFormat.StarTrekArmada2;
+                        Format = BZNFormat.StarTrekArmada;
                     }
                     else
                     {
+                        // we didn't read a saveType, walk back
                         stream.Position = position;
+                    }
+
+                    // TODO look into using BZ1's missionSave bool for SaveType, where True is 0 and False is 1.
+
+                    if (Version > 1022)
+                    {
+                        tmpPosition = stream.Position;
+                        IBZNToken BinaryToken = ReadToken();
+                        if (BinaryToken.Validate("binarySave"))
+                        {
+                            if (BinaryToken.GetBoolean())
+                                binaryDataStartOffset = stream.Position;
+                        }
+                        else if (BinaryToken.Validate("BinaryMode"))
+                        {
+                            if (BinaryToken.GetBoolean())
+                                binaryDataStartOffset = stream.Position;
+                            TypeSize = 4; // Star Trek Armada, 3 bytes are garbage
+                            TypeSizeSet = true;
+                            SizeSize = 4;
+                            Format = BZNFormat.StarTrekArmada2;
+                        }
+                        else
+                        {
+                            stream.Position = position;
+                        }
                     }
                 }
 
@@ -468,13 +482,13 @@ namespace BZNParser.Reader
 
                     int nextBytes = fileStream.ReadByte(); // 0x0A
 
-                    if (nextBytes != 0x0A)
-                    {
-                        idx = -1;
-                        buffer += (char)character;
-
-                        continue;
-                    }
+                    //if (nextBytes != 0x0A)
+                    //{
+                    //    idx = -1;
+                    //    buffer += (char)character;
+                    //
+                    //    continue;
+                    //}
 
                     // Version 1180 line width 4095
                     // Version 1192 line width uncapped?

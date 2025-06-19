@@ -24,14 +24,14 @@ namespace BZNParser.Battlezone.GameObject
         {
             IBZNToken tok;
 
-            if (reader.Version < 1011)
+            if (reader.Format == BZNFormat.Battlezone && reader.Version < 1011)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("setAltitude", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse setAltitude/FLOAT");
                 float setAltitude = tok.GetSingle();
             }
 
-            if (reader.Version != 1042)
+            if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1042)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("timeDeploy", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse timeDeploy/FLOAT");
@@ -48,7 +48,7 @@ namespace BZNParser.Battlezone.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
-            state = tok.GetBytes(0, 4);
+            state = tok.GetBytes(0, 4); // probably need to reverse for n64
 
             tok = reader.ReadToken();
             if (!tok.Validate("delayTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse delayTimer/FLOAT");
@@ -58,7 +58,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("nextRepair", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse nextRepair/FLOAT");
             nextRepair = tok.GetSingle();
 
-            if (reader.Version >= 1006)
+            if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version >= 1006)
             {
                 if (reader.Format == BZNFormat.BattlezoneN64)
                 {
@@ -77,6 +77,7 @@ namespace BZNParser.Battlezone.GameObject
                 tok = reader.ReadToken();
                 if (!tok.Validate("buildDoneTime", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse buildDoneTime/FLOAT");
                 buildDoneTime = tok.GetSingle();
+                // BZn64 might be invalid when it has CDCDCDCA here.
 
                 if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1026)
                 {

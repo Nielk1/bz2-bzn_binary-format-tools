@@ -30,7 +30,7 @@ namespace BZNParser.Battlezone
         private Dictionary<string, Type> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, Type> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, Type> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null)
         {
             SuccessfulParses = SuccessfulParses ?? new HashSet<string>();
             FailedParses = FailedParses ?? new HashSet<string>();
@@ -251,9 +251,9 @@ namespace BZNParser.Battlezone
                 isUser = tok.GetUInt32();
             }
             
-            if (reader.Format == BZNFormat.BattlezoneN64 || reader.Format == BZNFormat.Battlezone)
+            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version < 1002)
+                if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version < 1002)
                 {
                     obj_addr = reader.ReadBZ1_PtrDepricated("obj_addr"); // string name unconfirmed
                 }
@@ -277,25 +277,22 @@ namespace BZNParser.Battlezone
                     throw new Exception("Failed to parse transform/MAT3D");
                 transform = tok.GetMatrix();
             }
-            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            if ((reader.Format == BZNFormat.Battlezone && reader.Version > 1001) || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version > 1001)
-                {
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("transform", BinaryFieldType.DATA_MAT3DOLD))
-                        throw new Exception("Failed to parse transform/MAT3DOLD");
-                    transform = tok.GetMatrixOld();
-                }
+                tok = reader.ReadToken();
+                if (!tok.Validate("transform", BinaryFieldType.DATA_MAT3DOLD))
+                    throw new Exception("Failed to parse transform/MAT3DOLD");
+                transform = tok.GetMatrixOld();
             }
 
             // other save types here
 
             //Console.WriteLine($"DEBUG {new string('>', depth)} Trying to parse [{countLeft}] {PrjID} {reader.BaseStream.Position}");
-            gameObject = ParseGameObject(reader, countLeft, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints);
+            gameObject = ParseGameObject(parent, reader, countLeft, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints);
             //Console.WriteLine($"DEBUG {new string('<', depth)} return [{countLeft}] {PrjID} {reader.BaseStream.Position}");
         }
 
-        private ClassGameObject ParseGameObject(BZNStreamReader reader, int countLeft, int depth, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, HashSet<string> SuccessfulParses, HashSet<string> FailedParses, BattlezoneBZNHints Hints)
+        private ClassGameObject ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, int depth, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, HashSet<string> SuccessfulParses, HashSet<string> FailedParses, BattlezoneBZNHints Hints)
         {
             List<string>? ValidClassLabels = null;
 
@@ -317,24 +314,6 @@ namespace BZNParser.Battlezone
             }
 
             ClassGameObject? gameObject = null;
-            string? mapKey = null;
-            if (reader.Format == BZNFormat.Battlezone2)
-            {
-                //mapKey = BZNFile.ClassLabelMapBZ2.ContainsKey(PrjID.ToLowerInvariant()) ? BZNFile.ClassLabelMapBZ2[PrjID.ToLowerInvariant()] : null;
-            }
-            else
-            {
-                //mapKey = BZNFile.ClassLabelMapBZ1.ContainsKey(PrjID.ToLowerInvariant()) ? BZNFile.ClassLabelMapBZ1[PrjID.ToLowerInvariant()] : null;
-            }
-            if (ClassLabelTempLookup != null && ClassLabelTempLookup.ContainsKey(PrjID.ToLowerInvariant()))
-                mapKey = ClassLabelTempLookup[PrjID.ToLowerInvariant()];
-
-            if (mapKey != null && (ClassLabelMap?.ContainsKey(mapKey) ?? false))
-            {
-                Type t = ClassLabelMap[mapKey];
-                ConstructorInfo? info = t.GetConstructor(new Type[] { typeof(string), typeof(bool), typeof(string) });
-                gameObject = (info?.Invoke(new object[] { PrjID, isUser != 0, mapKey })) as ClassGameObject;
-            }
 
             if (ValidClassLabels != null && ValidClassLabels.Count == 1)
             {
@@ -390,7 +369,7 @@ namespace BZNParser.Battlezone
                                 {
                                     tempGameObject.LoadData(reader); ClassLabelTempLookup[PrjID.ToLowerInvariant()] = classLableTempHolder;
                                     firstParseSuccess = true;
-                                    if (CheckNext(reader, countLeft - 1, depth + 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints))
+                                    if (CheckNext(parent, reader, countLeft - 1, depth + 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints))
                                         Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.BaseStream.Position, classLableTempHolder));
                                 }
                             }
@@ -441,13 +420,25 @@ namespace BZNParser.Battlezone
             return null;
         }
 
-        private bool CheckNext(BZNStreamReader reader, int countLeft, int depth, Dictionary<long, (BZNGameObjectWrapper? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, HashSet<string> SuccessfulParses, HashSet<string> FailedParses, BattlezoneBZNHints Hints)
+        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, int depth, Dictionary<long, (BZNGameObjectWrapper? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, HashSet<string> SuccessfulParses, HashSet<string> FailedParses, BattlezoneBZNHints Hints)
         {
             long pos = reader.BaseStream.Position;
             try
             {
                 if (countLeft == 0)
                 {
+                    try
+                    {
+                        parent.TailParse(reader);
+                    }
+                    catch
+                    {
+                        reader.BaseStream.Position = pos;
+                        return false;
+                    }
+                    reader.BaseStream.Position = pos;
+                    return true;
+                    /*
                     if (reader.InBinary)
                     {
                         return true; // TODO figure out how to determine we're at the end of the ODF section in binary mode, maybe test parse the next section?
@@ -475,7 +466,7 @@ namespace BZNParser.Battlezone
                             if (tok.Validate("groupTargets", BinaryFieldType.DATA_UNKNOWN)) return true;
                             return false;
                         }
-                    }
+                    }*/
                 }
                 else
                 {
@@ -494,7 +485,7 @@ namespace BZNParser.Battlezone
                         BZNGameObjectWrapper? tmpWrap = null;
                         try
                         {
-                            tmpWrap = new BZNGameObjectWrapper(reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints);
+                            tmpWrap = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints);
                             SuccessfulParses?.Add(tmpWrap.PrjID);
                         }
                         catch { }

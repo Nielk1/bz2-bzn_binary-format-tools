@@ -21,7 +21,7 @@ namespace BZNParser.Battlezone.GameObject
         public ClassTurretTank1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public override void LoadData(BZNStreamReader reader)
         {
-            if (reader.Version < 1020 && ClassLabel == "howitzer")
+            if (reader.Format == BZNFormat.Battlezone && reader.Version < 1020 && ClassLabel == "howitzer")
             {
                 base.LoadData(reader);
                 return;
@@ -31,9 +31,9 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version > 1000)
+                if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version > 1000)
                 {
-                    if (reader.Version != 1042)
+                    if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1042)
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
@@ -60,7 +60,7 @@ namespace BZNParser.Battlezone.GameObject
                     if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
                     undeffloat5 = tok.GetSingle(); // delayTimer
 
-                    if (reader.Version != 1042)
+                    if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1042)
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse undefbool/BOOL");

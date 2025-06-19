@@ -16,7 +16,7 @@ namespace BZNParser.Battlezone.GameObject
 
         public override void LoadData(BZNStreamReader reader)
         {
-            if (reader.Version > 1020)
+            if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version > 1020)
             {
                 IBZNToken tok = reader.ReadToken();
                 if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/LONG");

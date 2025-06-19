@@ -259,7 +259,7 @@ namespace BZNParser.Battlezone.GameObject
 
             //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 2011)
             //if (reader.Format == BZNFormat.Battlezone && reader.Version >= 1049)
-            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            if (reader.Format == BZNFormat.Battlezone)// || reader.Format == BZNFormat.BattlezoneN64)
             {
                 // not sure if this is on the n64 build
                 if ((reader.Version >= 1046 && reader.Version < 2000) || reader.Version >= 2010)
@@ -444,7 +444,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            if (reader.Format == BZNFormat.Battlezone)
             {
                 if (reader.Version < 1015)
                 {
@@ -550,7 +550,7 @@ namespace BZNParser.Battlezone.GameObject
             {
                 if (reader.SaveType == 0)
                 {
-                    if (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012)
+                    if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
                     {
                         // curCmd
                         reader.GetAiCmdInfo(); // TODO get return value
@@ -562,7 +562,7 @@ namespace BZNParser.Battlezone.GameObject
                     // end read of AiCmdInfo
                     
                     // aiProcess?
-                    if (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012)
+                    if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
                     {
                         tok = reader.ReadToken();
                         if (!tok.Validate("undefptr", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
@@ -570,7 +570,7 @@ namespace BZNParser.Battlezone.GameObject
                     }
                     else
                     {
-                        if (reader.Version != 1017 && reader.Version != 1018) // TODO get range for these
+                        if (reader.Format == BZNFormat.BattlezoneN64 || (reader.Version != 1017 && reader.Version != 1018)) // TODO get range for these
                         {
                             tok = reader.ReadToken();
                             if (!tok.Validate("aiProcess", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse aiProcess/BOOL");
@@ -590,7 +590,7 @@ namespace BZNParser.Battlezone.GameObject
             if (reader.Format == BZNFormat.Battlezone
              || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version > 1007)
+                if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version > 1007)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("isCargo", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse isCargo/BOOL");
@@ -613,7 +613,7 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.Version > 1016)
+                if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version > 1016)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("independence", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse independence/LONG");
@@ -639,7 +639,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            if (reader.Format == BZNFormat.BattlezoneN64 && reader.Version > 1016) // unsure of this version check
+            if (reader.Format == BZNFormat.BattlezoneN64) // unsure of this version check
             {
                 tok = reader.ReadToken();
                 UInt16 curPilotID = tok.GetUInt16();

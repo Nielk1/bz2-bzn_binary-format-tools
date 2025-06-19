@@ -64,7 +64,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
                 else
                 {
-                    tok = reader.ReadToken(); // armor, 24 0x00s raw
+                    tok = reader.ReadToken(); // bumpers or armor, 24 0x00s raw
                     tok = reader.ReadToken(); // bumpers, 6 VEC3
                 }
             }
