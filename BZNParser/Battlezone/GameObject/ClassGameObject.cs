@@ -306,7 +306,7 @@ namespace BZNParser.Battlezone.GameObject
 
                 tok = reader.ReadToken();
                 if (!tok.Validate("seen", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse seen/LONG");
-                seen = tok.GetUInt32H();
+                seen = tok.GetUInt32(); // TODO check if this is sometimes hex, though we know for a fact it wasn't in misn0464.bzn
             }
 
             if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041 && reader.Version != 1047) // avoid bz2001.bzn via != 1041
@@ -578,13 +578,13 @@ namespace BZNParser.Battlezone.GameObject
                         }
                     }
                 }
-                else
-                {
+                //else
+                //{
                     // savegame
                     //curCmd
                     //nextCmd
                     //aiProcess
-                }
+                //}
             }
 
             if (reader.Format == BZNFormat.Battlezone

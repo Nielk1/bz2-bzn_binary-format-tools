@@ -470,6 +470,15 @@ namespace BZNParser.Battlezone
                 }
                 else
                 {
+                    // technicly if an object ate 2 game objects this would be an invalid check, but that seems pretty unlikely
+                    if (!reader.InBinary)
+                    {
+                        long offset = reader.BaseStream.Position;
+                        IBZNToken tok = reader.ReadToken();
+                        reader.BaseStream.Position = offset;
+                        return tok.IsValidationOnly() && tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN);
+                    }
+
                     // just parse the next object and if it works, we're good
                     // (yes, this can become recursive and result in n! object building, but only if we're dealing with a lot of missing data)
                     // TODO move this to a factory pattern so we aren't relying on exceptions from constructors

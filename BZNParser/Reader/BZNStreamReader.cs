@@ -177,8 +177,6 @@ namespace BZNParser.Reader
                         stream.Position = position;
                     }
 
-                    // TODO look into using BZ1's missionSave bool for SaveType, where True is 0 and False is 1.
-
                     if (Version > 1022)
                     {
                         tmpPosition = stream.Position;
@@ -187,6 +185,28 @@ namespace BZNParser.Reader
                         {
                             if (BinaryToken.GetBoolean())
                                 binaryDataStartOffset = stream.Position;
+
+                            long tmpPosition2 = stream.Position;
+
+                            IBZNToken tok = ReadToken();
+                            if (tok.Validate("msn_filename"))
+                            {
+                                tok = ReadToken();
+                                if (tok.Validate("seq_count"))
+                                {
+                                    tok = ReadToken();
+                                    if (tok.Validate("missionSave"))
+                                    {
+                                        //SaveType = tok.GetBoolean() ? 0 : 1; // TODO we had an impossible BZN so let's ignore this for the moment
+                                        TypeSize = 2;
+                                        TypeSizeSet = true;
+                                        SizeSize = 2;
+                                        Format = BZNFormat.Battlezone;
+                                    }
+                                }
+                            }
+
+                            stream.Position = tmpPosition2;
                         }
                         else if (BinaryToken.Validate("BinaryMode"))
                         {
@@ -204,11 +224,6 @@ namespace BZNParser.Reader
                     }
                 }
 
-                // We're the default type size, so let's inspect our size
-                if (!TypeSizeSet)
-                {
-                    // interrogate, might need this to repeat earlier if the file starts binary but unsure
-                }
                 // check for special case BZ2's bz2001.bzn
                 // we might be the "bz2001.bzn" file from BZ2 that is not in the BZ1 patch continuum but we register as a BZ1 type BZN
                 if (Format == BZNFormat.Battlezone && !HasBinary)
@@ -223,10 +238,19 @@ namespace BZNParser.Reader
                             if (tok.Validate("saveType", BinaryFieldType.DATA_LONG))
                             {
                                 SaveType = tok.GetInt32();
+                                TypeSize = 1; // not sure if this is right
+                                TypeSizeSet = true;
+                                SizeSize = 2;
                                 Format = BZNFormat.Battlezone2;
                             }
                         }
                     }
+                }
+
+                // We're the default type size, so let's inspect our size
+                if (!TypeSizeSet)
+                {
+                    // interrogate, might need this to repeat earlier if the file starts binary but unsure
                 }
 
                 if (Format == BZNFormat.Battlezone2 && Version == 1160)

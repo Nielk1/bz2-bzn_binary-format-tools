@@ -23,15 +23,9 @@ namespace BZNParser.Battlezone.GameObject
                 return;
             }
 
-            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1108))
-            {
-                base.LoadData(reader);
-                return;
-            }
-
             IBZNToken tok;
 
-            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1047 || reader.Version == 1105))
+            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1047 || reader.Version == 1105 || reader.Version == 1108))
             {
                 long pos = reader.BaseStream.Position;
                 tok = reader.ReadToken();
@@ -201,7 +195,7 @@ namespace BZNParser.Battlezone.GameObject
                     else
                     {
                         tok = reader.ReadToken();
-                        if (reader.Version == 1145 || reader.Version == 1147 || reader.Version == 1149 || reader.Version == 1151)
+                        if (reader.Version == 1145 || reader.Version == 1147 || reader.Version == 1148 || reader.Version == 1149 || reader.Version == 1151 || reader.Version == 1154)
                         {
                             if (!tok.Validate("config", BinaryFieldType.DATA_CHAR))
                                 throw new Exception("Failed to parse curPilot/CHAR");

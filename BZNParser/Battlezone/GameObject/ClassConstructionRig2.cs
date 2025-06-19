@@ -35,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
             //tok = reader.ReadToken();
             //if (!tok.Validate("buildClass", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse buildClass/ID");
             //dropClass = tok.GetString();
-            if (reader.Version == 1151)
+            if (reader.Version == 1149 || reader.Version == 1151)
             {
                 dropClass = reader.ReadGameObjectClass_BZ2("config");
             }

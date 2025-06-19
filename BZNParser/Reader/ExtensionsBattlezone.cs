@@ -261,7 +261,7 @@ namespace BZNParser.Reader
 
         public static Euler GetEuler(this BZNStreamReader reader)
         {
-            if (reader.SaveType == 0)
+            if (reader.Format != BZNFormat.Battlezone2 || reader.SaveType == 0) // Battlezone 2 has side paths
             {
                 if (reader.InBinary)
                 {
@@ -325,7 +325,7 @@ namespace BZNParser.Reader
                     return euler;
                 }
             }
-            else if (reader.Version < 1145)
+            else if (reader.Format == BZNFormat.Battlezone2 && reader.Version < 1145)
             {
                 // text buffer
                 throw new NotImplementedException("Version <1145 Euler Save");

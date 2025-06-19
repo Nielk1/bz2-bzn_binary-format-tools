@@ -24,7 +24,10 @@ namespace BZNParser.Battlezone.GameObject
                 throw new Exception("Failed to parse navSlot/LONG");
             //int navSlot = tok.GetInt32();
 
-            base.LoadData(reader);
+            if (reader.Version > 1104)
+            {
+                base.LoadData(reader);
+            }
         }
     }
 }

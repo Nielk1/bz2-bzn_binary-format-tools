@@ -581,7 +581,7 @@ namespace BZNParser.Battlezone
             if (reader.Format == BZNFormat.Battlezone2)
             {
                 // SatellitePanel
-                if (reader.Version >= 1125) // version 1169 check might instead need a dumb check
+                if (reader.Version >= 1125 && reader.Version != 1169) // version 1169 failed to read this, might need a walk back for malformed
                 {
                     // 1188 1192
                     tok = reader.ReadToken();

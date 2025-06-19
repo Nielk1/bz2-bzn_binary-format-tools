@@ -11,7 +11,8 @@ namespace BZNParser.Battlezone.GameObject
         public float timeDeploy { get; set; }
         public float timeUndeploy { get; set; }
         public UInt32 undefptr2 { get; set; }
-        public byte[] state { get; set; }
+        //public byte[] state { get; set; }
+        public UInt32 state { get; set; }
         //public UInt32 delayTimer { get; set; }
         public float delayTimer { get; set; }
         public float nextRepair { get; set; }
@@ -48,7 +49,8 @@ namespace BZNParser.Battlezone.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
-            state = tok.GetBytes(0, 4); // probably need to reverse for n64
+            //state = tok.GetBytes(0, 4); // probably need to reverse for n64
+            state = tok.GetUInt32(); // probably need to reverse for n64
 
             tok = reader.ReadToken();
             if (!tok.Validate("delayTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse delayTimer/FLOAT");
