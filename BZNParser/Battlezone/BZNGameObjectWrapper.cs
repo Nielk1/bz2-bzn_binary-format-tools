@@ -30,11 +30,8 @@ namespace BZNParser.Battlezone
         private Dictionary<string, IClassFactory> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, IClassFactory> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null, bool fake = false)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, IClassFactory> ClassLabelMap = null, BattlezoneBZNHints? Hints = null, bool fake = false)
         {
-            SuccessfulParses = SuccessfulParses ?? new HashSet<string>();
-            FailedParses = FailedParses ?? new HashSet<string>();
-
             this.LongTermClassLabelLookupCache = LongTermClassLabelLookupCache;
             this.ClassLabelMap = ClassLabelMap;
             if (ClassLabelTempLookup == null)
@@ -289,12 +286,10 @@ namespace BZNParser.Battlezone
                 return;
             // other save types here
 
-            //Console.WriteLine($"DEBUG {new string('>', depth)} Trying to parse [{countLeft}] {PrjID} {reader.BaseStream.Position}");
-            gameObject = ParseGameObject(parent, reader, countLeft, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints);
-            //Console.WriteLine($"DEBUG {new string('<', depth)} return [{countLeft}] {PrjID} {reader.BaseStream.Position}");
+            gameObject = ParseGameObject(parent, reader, countLeft, RecursiveObjectGenreationMemo, ClassLabelTempLookup, Hints);
         }
 
-        private ClassGameObject ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, int depth, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, HashSet<string> SuccessfulParses, HashSet<string> FailedParses, BattlezoneBZNHints Hints)
+        private ClassGameObject ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
         {
             List<string>? ValidClassLabels = null;
 
@@ -327,20 +322,17 @@ namespace BZNParser.Battlezone
                         IClassFactory classFactory = ClassLabelMap[label];
                         if (classFactory.Create(reader, PrjID, isUser != 0, label, out gameObject))
                         {
-                            SuccessfulParses.Add(PrjID);
                             return gameObject; // success! Keep the stream position where it is
                         }
                         else
                         {
                             reader.BaseStream.Position = pos;
-                            FailedParses?.Add(PrjID);
                             gameObject = null;
                         }
                     }
                 }
                 catch
                 {
-                    FailedParses?.Add(PrjID);
                     // roll back to the start of the object
                     reader.BaseStream.Position = pos;
                     gameObject = null;
@@ -370,24 +362,17 @@ namespace BZNParser.Battlezone
                                 IClassFactory classFactory = kv.Value;
                                 if (classFactory.Create(reader, PrjID, isUser != 0, classLableTempHolder, out tempGameObject) && tempGameObject != null)
                                 {
-                                    //Console.ForegroundColor = ConsoleColor.Green;
-                                    //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
-                                    //Console.ResetColor();
                                     firstParseSuccess = true;
-                                    if (CheckNext(parent, reader, countLeft - 1, depth + 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints))
+                                    if (CheckNext(parent, reader, countLeft - 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, Hints))
                                         Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.BaseStream.Position, classLableTempHolder));
                                 }
                                 else
                                 {
-                                    //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
                                     tempGameObject = null;
                                 }
                             }
                             catch
                             {
-                                //Console.ForegroundColor = ConsoleColor.Red;
-                                //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {kv.Value.Name}");
-                                //Console.ResetColor();
                             }
                         reader.BaseStream.Position = pos;
                     }
@@ -414,20 +399,6 @@ namespace BZNParser.Battlezone
                 }
                 else
                 {
-                    if (firstParseSuccess)
-                    {
-                        if (SuccessfulParses != null && FailedParses != null)
-                        {
-                            var items = FailedParses.Except(SuccessfulParses).ToList();
-                            if (items.Count > 0)
-                            {
-                                if (items.Count == 1)
-                                    throw new Exception($"Failed to parse GameObject {items.First()}");
-                                throw new Exception($"Failed to parse GameObject {PrjID}, failure after on one of: {string.Join(",", items)}");
-                            }
-                        }
-                        throw new Exception($"Failed to parse GameObject {PrjID}, failure likely after this object");
-                    }
                     throw new Exception($"Failed to parse GameObject {PrjID}");
                 }
             }
@@ -435,119 +406,54 @@ namespace BZNParser.Battlezone
             return null;
         }
 
-        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, int depth, Dictionary<long, (BZNGameObjectWrapper? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, HashSet<string> SuccessfulParses, HashSet<string> FailedParses, BattlezoneBZNHints Hints)
+        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (BZNGameObjectWrapper? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
         {
             long pos = reader.BaseStream.Position;
-            try
+            if (countLeft == 0)
             {
-                if (countLeft == 0)
+                try
                 {
-                    try
+                    parent.TailParse(reader);
+                }
+                catch
+                {
+                    reader.BaseStream.Position = pos;
+                    return false;
+                }
+                reader.BaseStream.Position = pos;
+                return true;
+            }
+            else
+            {
+                if (!reader.InBinary)
+                {
+                    long offset = reader.BaseStream.Position;
+                    IBZNToken tok = reader.ReadToken();
+                    reader.BaseStream.Position = offset;
+                    if (!tok.IsValidationOnly() || !tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN))
                     {
-                        parent.TailParse(reader);
-                    }
-                    catch
-                    {
-                        reader.BaseStream.Position = pos;
+                        // next field isn't the start of a GameObject
                         return false;
                     }
-                    reader.BaseStream.Position = pos;
-                    //if (depth > 50)
-                    return true; // Maximum Depth
-                    /*
-                    if (reader.InBinary)
-                    {
-                        return true; // TODO figure out how to determine we're at the end of the ODF section in binary mode, maybe test parse the next section?
-                    }
-                    else
-                    {
-                        IBZNToken tok = reader.ReadToken();
-                        if (reader.Format == BZNFormat.Battlezone)
-                        {
-                            if (tok.Validate("name", BinaryFieldType.DATA_UNKNOWN))
-                            {
-                                long pos2 = reader.BaseStream.Position;
-                                IBZNToken tok2 = reader.ReadToken();
-                                if (tok2.Validate("sObject", BinaryFieldType.DATA_UNKNOWN))
-                                    return true;
-                                return false;
-                            }
-                            return false;
-                        }
-                        else if (reader.Format == BZNFormat.Battlezone2)
-                        {
-                            // 1123 1124 1128 1141 1143 1151
-                            if (reader.Version <= 1151 && tok.Validate("dllName", BinaryFieldType.DATA_UNKNOWN)) return true;
-                            // 1171, 1187, 1188, 1192
-                            if (tok.Validate("groupTargets", BinaryFieldType.DATA_UNKNOWN)) return true;
-                            return false;
-                        }
-                    }*/
+                    return true;
                 }
                 else
                 {
-                    // early aborts
-                    if (!reader.InBinary)
-                    {
-                        long offset = reader.BaseStream.Position;
-                        IBZNToken tok = reader.ReadToken();
-                        reader.BaseStream.Position = offset;
-                        if (!tok.IsValidationOnly() || !tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN))
-                        {
-                            // next field isn't the start of a GameObject
-                            return false;
-                        }
-                        //if (depth > 50)
-                        return true; // Maximum Depth
-                    }
-                    else
-                    {
-                        long offset = reader.BaseStream.Position;
-                        try
-                        {
-                            BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints, fake: true);
-                        }
-                        catch
-                        {
-                            // next field isn't the start of a GameObject (since a shallow gameobject crashed)
-                            reader.BaseStream.Position = offset;
-                            return false;
-                        }
-                        reader.BaseStream.Position = offset;
-                        return true;
-                    }
-
-                    // just parse the next object and if it works, we're good
-                    // (yes, this can become recursive and result in n! object building, but only if we're dealing with a lot of missing data)
-                    // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
+                    long offset = reader.BaseStream.Position;
                     try
-                        {
-                            long offset = reader.BaseStream.Position;
-                            if (RecursiveObjectGenreationMemo.ContainsKey(offset))
-                            {
-                                reader.BaseStream.Position = RecursiveObjectGenreationMemo[offset].Next;
-                                return RecursiveObjectGenreationMemo[offset].Object != null;
-                            }
-
-                            BZNGameObjectWrapper? tmpWrap = null;
-                            try
-                            {
-                                tmpWrap = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, depth, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, SuccessfulParses, FailedParses, Hints);
-                                SuccessfulParses?.Add(tmpWrap.PrjID);
-                            }
-                            catch { }
-                            RecursiveObjectGenreationMemo[offset] = (tmpWrap, reader.BaseStream.Position);
-                            return tmpWrap != null;
-                        }
-                        catch { }
-                    return false;
+                    {
+                        BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, Hints, fake: true);
+                    }
+                    catch
+                    {
+                        // next field isn't the start of a GameObject (since a shallow gameobject crashed)
+                        reader.BaseStream.Position = offset;
+                        return false;
+                    }
+                    reader.BaseStream.Position = offset;
+                    return true;
                 }
             }
-            finally
-            {
-                reader.BaseStream.Position = pos;
-            }
-            return false;
         }
     }
 }
