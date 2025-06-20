@@ -29,7 +29,7 @@ namespace BZNParser.Battlezone.GameObject
 
                 // block of reader.SaveType != 0
 
-                ClassDeployable.Build(reader, obj as ClassDeployable);
+                ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
                 return;
             }
             else

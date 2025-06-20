@@ -17,7 +17,7 @@ namespace BZNParser.Battlezone.GameObject
     public class ClassRecyclerVehicle : ClassDeployBuilding
     {
         public ClassRecyclerVehicle(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ref ClassRecyclerVehicle? obj)
+        public static void Build(BZNStreamReader reader, ClassRecyclerVehicle? obj)
         {
             if (reader.Version == 1047)
             {

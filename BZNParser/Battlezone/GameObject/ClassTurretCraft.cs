@@ -204,10 +204,8 @@ namespace BZNParser.Battlezone.GameObject
                     }
                     reader.BaseStream.Position = pos;
                 }
-                else
-                {
-                    ClassCraft.Build(reader, obj as ClassCraft);
-                }
+
+                ClassCraft.Build(reader, obj as ClassCraft);
 
                 if (m_AlignsToObject)
                 {

@@ -368,7 +368,7 @@ namespace BZNParser.Battlezone
                             try
                             {
                                 IClassFactory classFactory = kv.Value;
-                                if (classFactory.Create(reader, PrjID, isUser != 0, label, out tempGameObject) && tempGameObject != null)
+                                if (classFactory.Create(reader, PrjID, isUser != 0, classLableTempHolder, out tempGameObject) && tempGameObject != null)
                                 {
                                     //Console.ForegroundColor = ConsoleColor.Green;
                                     //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
