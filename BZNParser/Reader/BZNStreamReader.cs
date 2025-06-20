@@ -83,10 +83,9 @@ namespace BZNParser.Reader
         /// </summary>
         public int SaveType { get; private set; }
         /// <summary>
-        /// Used by Battlezone N64 BZNs which must have even sized data.
-        /// This might actually need to be 16bit alignment so do figure that out.
+        /// Data alignment in bytes.
         /// </summary>
-        public bool ValuesArePadded { get; private set; }
+        public byte AlignmentBytes { get; private set; }
         /// <summary>
         /// Game specific variant of the BZN format.
         /// </summary>
@@ -132,7 +131,7 @@ namespace BZNParser.Reader
                     {
                         IsBigEndian = true;
                         TypeSize = 0; // BZn64
-                        ValuesArePadded = true;
+                        AlignmentBytes = 2;
                         TypeSizeSet = true;
                         Format = BZNFormat.BattlezoneN64;
                     }
@@ -530,9 +529,13 @@ namespace BZNParser.Reader
             byte[] data = new byte[Size];
             filestream.Read(data, 0, (int)Size);
 
-            if (ValuesArePadded)
+            if (AlignmentBytes > 0)
             {
-                if (Size % 2 != 0) filestream.ReadByte(); // deal with padding
+                // Only known case of padding right now is BZn64's 16bit alignment, which due to Sizes being 2 bytes (and thus aligned) only requires the data to be padded.
+                // Still fully implemented a record pad here, though it might need to be broken into more sections if we find everything needs alignment
+                int pad = (int)((TypeSize + SizeSize + Size) % AlignmentBytes);
+                for (int i = 0; i < pad; i++)
+                    filestream.ReadByte(); // deal with padding
             }
 
             return new BZNTokenBinary((BinaryFieldType)type, data, IsBigEndian);
