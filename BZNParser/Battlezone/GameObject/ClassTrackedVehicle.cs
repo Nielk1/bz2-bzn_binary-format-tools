@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTrackedVehicle(PrjID, isUser, classLabel);
-            ClassTrackedVehicle.Build(reader, obj as ClassTrackedVehicle);
+            ClassTrackedVehicle.Hydrate(reader, obj as ClassTrackedVehicle);
             return true;
         }
     }
     public class ClassTrackedVehicle : ClassCraft
     {
         public ClassTrackedVehicle(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTrackedVehicle? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTrackedVehicle? obj)
         {
             IBZNToken tok;
 
@@ -71,7 +71,7 @@ namespace BZNParser.Battlezone.GameObject
                 }*/
             }
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

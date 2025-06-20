@@ -12,14 +12,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassFlareMine(PrjID, isUser, classLabel);
-            ClassFlareMine.Build(reader, obj as ClassFlareMine);
+            ClassFlareMine.Hydrate(reader, obj as ClassFlareMine);
             return true;
         }
     }
     public class ClassFlareMine : ClassMine
     {
         public ClassFlareMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassFlareMine? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassFlareMine? obj)
         {
             IBZNToken tok;
 
@@ -35,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
                 //saveClass = tok.GetSingle();
             }
 
-            ClassMine.Build(reader, obj as ClassMine);
+            ClassMine.Hydrate(reader, obj as ClassMine);
         }
     }
 }

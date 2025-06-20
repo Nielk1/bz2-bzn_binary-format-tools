@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassDayWrecker(PrjID, isUser, classLabel);
-            ClassDayWrecker.Build(reader, obj as ClassDayWrecker);
+            ClassDayWrecker.Hydrate(reader, obj as ClassDayWrecker);
             return true;
         }
     }
     public class ClassDayWrecker : ClassPowerUp
     {
         public ClassDayWrecker(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassDayWrecker? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassDayWrecker? obj)
         {
-            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
         }
     }
 }

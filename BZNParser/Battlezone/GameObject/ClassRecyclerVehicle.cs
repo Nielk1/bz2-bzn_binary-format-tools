@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassRecyclerVehicle(PrjID, isUser, classLabel);
-            ClassRecyclerVehicle.Build(reader, obj as ClassRecyclerVehicle);
+            ClassRecyclerVehicle.Hydrate(reader, obj as ClassRecyclerVehicle);
             return true;
         }
     }
     public class ClassRecyclerVehicle : ClassDeployBuilding
     {
         public ClassRecyclerVehicle(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassRecyclerVehicle? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassRecyclerVehicle? obj)
         {
             if (reader.Version == 1047)
             {
@@ -46,7 +46,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassDeployBuilding.Build(reader, obj as ClassDeployBuilding);
+            ClassDeployBuilding.Hydrate(reader, obj as ClassDeployBuilding);
         }
     }
 }

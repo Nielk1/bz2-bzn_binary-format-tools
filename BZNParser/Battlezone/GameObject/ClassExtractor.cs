@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassExtractor(PrjID, isUser, classLabel);
-            ClassExtractor.Build(reader, obj as ClassExtractor);
+            ClassExtractor.Hydrate(reader, obj as ClassExtractor);
             return true;
         }
     }
     public class ClassExtractor : ClassBuilding
     {
         public ClassExtractor(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassExtractor? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassExtractor? obj)
         {
             IBZNToken tok;
 
@@ -56,7 +56,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("animStart", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse animStart/BOOL");
             }
 
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

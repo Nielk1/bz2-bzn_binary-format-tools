@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassBomberBay(PrjID, isUser, classLabel);
-            ClassBomberBay.Build(reader, obj as ClassBomberBay);
+            ClassBomberBay.Hydrate(reader, obj as ClassBomberBay);
             return true;
         }
     }
     public class ClassBomberBay : ClassPoweredBuilding
     {
         public ClassBomberBay(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassBomberBay? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassBomberBay? obj)
         {
             IBZNToken tok;
 
@@ -37,7 +37,7 @@ namespace BZNParser.Battlezone.GameObject
                 // find bomber via slot scan
             }
 
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
         }
     }
 }

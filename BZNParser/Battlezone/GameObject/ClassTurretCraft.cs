@@ -16,14 +16,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTurretCraft(PrjID, isUser, classLabel);
-            ClassTurretCraft.Build(reader, obj as ClassTurretCraft);
+            ClassTurretCraft.Hydrate(reader, obj as ClassTurretCraft);
             return true;
         }
     }
     public class ClassTurretCraft : ClassCraft
     {
         public ClassTurretCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTurretCraft? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTurretCraft? obj)
         {
             IBZNToken tok;
 
@@ -188,7 +188,7 @@ namespace BZNParser.Battlezone.GameObject
                 // this file is detected as a BZ2 file but has a few odd quirks here and there due to being so old
                 if (reader.Version == 1041)
                 {
-                    ClassGameObject.Build(reader, obj as ClassGameObject);
+                    ClassGameObject.Hydrate(reader, obj as ClassGameObject);
                 }
                 else if (reader.Version == 1047 || reader.Version == 1105 || reader.Version == 1108)
                 {
@@ -199,13 +199,13 @@ namespace BZNParser.Battlezone.GameObject
                     if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
                     {
                         reader.BaseStream.Position = pos;
-                        ClassGameObject.Build(reader, obj as ClassGameObject);
+                        ClassGameObject.Hydrate(reader, obj as ClassGameObject);
                         return;
                     }
                     reader.BaseStream.Position = pos;
                 }
 
-                ClassCraft.Build(reader, obj as ClassCraft);
+                ClassCraft.Hydrate(reader, obj as ClassCraft);
 
                 if (m_AlignsToObject)
                 {
@@ -215,7 +215,7 @@ namespace BZNParser.Battlezone.GameObject
                 return;
             }
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
             return;
         }
     }

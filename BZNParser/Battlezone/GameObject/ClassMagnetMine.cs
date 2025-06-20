@@ -16,14 +16,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassMagnetMine(PrjID, isUser, classLabel);
-            ClassMagnetMine.Build(reader, obj as ClassMagnetMine);
+            ClassMagnetMine.Hydrate(reader, obj as ClassMagnetMine);
             return true;
         }
     }
     public class ClassMagnetMine : ClassMine
     {
         public ClassMagnetMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassMagnetMine? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassMagnetMine? obj)
         {
             IBZNToken tok;
 
@@ -34,7 +34,7 @@ namespace BZNParser.Battlezone.GameObject
             //    //saveClass = tok.GetSingle();
             //}
 
-            ClassMine.Build(reader, obj as ClassMine);
+            ClassMine.Hydrate(reader, obj as ClassMine);
         }
     }
 }

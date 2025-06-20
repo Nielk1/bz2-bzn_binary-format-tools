@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassSprayBuilding(PrjID, isUser, classLabel);
-            ClassSprayBuilding.Build(reader, obj as ClassSprayBuilding);
+            ClassSprayBuilding.Hydrate(reader, obj as ClassSprayBuilding);
             return true;
         }
     }
     public class ClassSprayBuilding : ClassBuilding
     {
         public ClassSprayBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassSprayBuilding? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassSprayBuilding? obj)
         {
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

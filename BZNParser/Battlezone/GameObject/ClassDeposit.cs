@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassDeposit(PrjID, isUser, classLabel);
-            ClassDeposit.Build(reader, obj as ClassDeposit);
+            ClassDeposit.Hydrate(reader, obj as ClassDeposit);
             return true;
         }
     }
     public class ClassDeposit : ClassBuilding
     {
         public ClassDeposit(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassDeposit? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassDeposit? obj)
         {
             IBZNToken tok;
 
@@ -33,7 +33,7 @@ namespace BZNParser.Battlezone.GameObject
             //    //saveClass = tok.GetString();
             //}
 
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

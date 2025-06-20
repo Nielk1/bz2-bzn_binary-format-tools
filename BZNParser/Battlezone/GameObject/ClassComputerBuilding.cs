@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassComputerBuilding(PrjID, isUser, classLabel);
-            ClassComputerBuilding.Build(reader, obj as ClassComputerBuilding);
+            ClassComputerBuilding.Hydrate(reader, obj as ClassComputerBuilding);
             return true;
         }
     }
@@ -19,9 +19,9 @@ namespace BZNParser.Battlezone.GameObject
         public string name { get; set; }
         public ClassComputerBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassComputerBuilding? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassComputerBuilding? obj)
         {
-            ClassDummy.Build(reader, obj as ClassDummy);
+            ClassDummy.Hydrate(reader, obj as ClassDummy);
 
             IBZNToken tok;
 

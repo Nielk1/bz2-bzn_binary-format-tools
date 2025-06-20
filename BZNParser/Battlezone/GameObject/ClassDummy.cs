@@ -14,7 +14,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassDummy(PrjID, isUser, classLabel);
-            ClassDummy.Build(reader, obj as ClassDummy);
+            ClassDummy.Hydrate(reader, obj as ClassDummy);
             return true;
         }
     }
@@ -23,11 +23,11 @@ namespace BZNParser.Battlezone.GameObject
         public string name { get; set; }
         public ClassDummy(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassDummy? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassDummy? obj)
         {
             if (reader.Version == 1047)
             {
-                ClassGameObject.Build(reader, obj as ClassGameObject); // this might be due to a changed base class on "spawnpnt"
+                ClassGameObject.Hydrate(reader, obj as ClassGameObject); // this might be due to a changed base class on "spawnpnt"
                 return;
             }
 

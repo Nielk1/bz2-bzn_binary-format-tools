@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTurretTank2(PrjID, isUser, classLabel);
-            ClassTurretTank2.Build(reader, obj as ClassTurretTank2);
+            ClassTurretTank2.Hydrate(reader, obj as ClassTurretTank2);
             return true;
         }
     }
     public class ClassTurretTank2 : ClassDeployable
     {
         public ClassTurretTank2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTurretTank2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTurretTank2? obj)
         {
             IBZNToken tok;
 
@@ -95,10 +95,10 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Version < 1109)
             {
-                ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+                ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
                 return;
             }
-            ClassDeployable.Build(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
         }
     }
 }

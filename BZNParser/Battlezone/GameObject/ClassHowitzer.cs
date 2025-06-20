@@ -15,21 +15,21 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassHowitzer(PrjID, isUser, classLabel);
-            ClassHowitzer.Build(reader, obj as ClassHowitzer);
+            ClassHowitzer.Hydrate(reader, obj as ClassHowitzer);
             return true;
         }
     }
     public class ClassHowitzer : ClassTurretTank1
     {
         public ClassHowitzer(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassHowitzer? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassHowitzer? obj)
         {
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1020)
             {
-                ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+                ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
                 return;
             }
-            ClassTurretTank1.Build(reader, obj as ClassTurretTank1);
+            ClassTurretTank1.Hydrate(reader, obj as ClassTurretTank1);
         }
     }
 }

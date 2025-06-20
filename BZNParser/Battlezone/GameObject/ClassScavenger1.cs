@@ -15,7 +15,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassScavenger1(PrjID, isUser, classLabel);
-            ClassScavenger1.Build(reader, obj as ClassScavenger1);
+            ClassScavenger1.Hydrate(reader, obj as ClassScavenger1);
             return true;
         }
     }
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 scrapHeld { get; set; }
 
         public ClassScavenger1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassScavenger1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassScavenger1? obj)
         {
             if (reader.Format == BZNFormat.Battlezone)
             {
@@ -38,7 +38,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

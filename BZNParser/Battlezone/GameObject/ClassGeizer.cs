@@ -11,7 +11,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassGeizer(PrjID, isUser, classLabel);
-            ClassGeizer.Build(reader, obj as ClassGeizer);
+            ClassGeizer.Hydrate(reader, obj as ClassGeizer);
             return true;
         }
     }
@@ -20,9 +20,9 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 undefptr { get; set; }
 
         public ClassGeizer(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassGeizer? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassGeizer? obj)
         {
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

@@ -15,14 +15,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassWalker1(PrjID, isUser, classLabel);
-            ClassWalker1.Build(reader, obj as ClassWalker1);
+            ClassWalker1.Hydrate(reader, obj as ClassWalker1);
             return true;
         }
     }
     public class ClassWalker1 : ClassCraft
     {
         public ClassWalker1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassWalker1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassWalker1? obj)
         {
             if (reader.Version > 1001 && reader.Version < 1026)
             {
@@ -50,7 +50,7 @@ namespace BZNParser.Battlezone.GameObject
                 reader.ReadToken();
             }
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

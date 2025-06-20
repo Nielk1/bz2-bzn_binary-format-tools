@@ -16,16 +16,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassWeaponPowerup(PrjID, isUser, classLabel);
-            ClassWeaponPowerup.Build(reader, obj as ClassWeaponPowerup);
+            ClassWeaponPowerup.Hydrate(reader, obj as ClassWeaponPowerup);
             return true;
         }
     }
     public class ClassWeaponPowerup : ClassPowerUp
     {
         public ClassWeaponPowerup(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassWeaponPowerup? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassWeaponPowerup? obj)
         {
-            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
         }
     }
 }

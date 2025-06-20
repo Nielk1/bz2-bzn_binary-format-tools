@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassServiceTruck(PrjID, isUser, classLabel);
-            ClassServiceTruck.Build(reader, obj as ClassServiceTruck);
+            ClassServiceTruck.Hydrate(reader, obj as ClassServiceTruck);
             return true;
         }
     }
     public class ClassServiceTruck : ClassTrackedVehicle
     {
         public ClassServiceTruck(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassServiceTruck? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassServiceTruck? obj)
         {
-            ClassTrackedVehicle.Build(reader, obj as ClassTrackedVehicle);
+            ClassTrackedVehicle.Hydrate(reader, obj as ClassTrackedVehicle);
         }
     }
 }

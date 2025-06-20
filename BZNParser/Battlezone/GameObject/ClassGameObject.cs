@@ -52,7 +52,7 @@ namespace BZNParser.Battlezone.GameObject
             this.classLabel = classLabel;
         }
 
-        public static void Build(BZNStreamReader reader, ClassGameObject? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassGameObject? obj)
         {
             IBZNToken tok;
 

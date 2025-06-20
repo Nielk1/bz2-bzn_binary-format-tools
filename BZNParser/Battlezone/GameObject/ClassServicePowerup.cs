@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassServicePowerup(PrjID, isUser, classLabel);
-            ClassServicePowerup.Build(reader, obj as ClassServicePowerup);
+            ClassServicePowerup.Hydrate(reader, obj as ClassServicePowerup);
             return true;
         }
     }
     public class ClassServicePowerup : ClassPowerUp
     {
         public ClassServicePowerup(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassServicePowerup? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassServicePowerup? obj)
         {
-            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
         }
     }
 }

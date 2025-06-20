@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassRecycler2(PrjID, isUser, classLabel);
-            ClassRecycler2.Build(reader, obj as ClassRecycler2);
+            ClassRecycler2.Hydrate(reader, obj as ClassRecycler2);
             return true;
         }
     }
@@ -19,7 +19,7 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 undefptr { get; set; }
 
         public ClassRecycler2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassRecycler2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassRecycler2? obj)
         {
             IBZNToken tok;
 
@@ -27,7 +27,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("scrapTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse scrapTimer/FLOAT");
             //scrapTimer = tok.GetSingle();
 
-            ClassFactory2.Build(reader, obj as ClassFactory2);
+            ClassFactory2.Hydrate(reader, obj as ClassFactory2);
         }
     }
 }

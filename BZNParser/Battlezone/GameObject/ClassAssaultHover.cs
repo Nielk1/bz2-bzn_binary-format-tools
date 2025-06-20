@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassAssaultHover(PrjID, isUser, classLabel);
-            ClassAssaultHover.Build(reader, obj as ClassAssaultHover);
+            ClassAssaultHover.Hydrate(reader, obj as ClassAssaultHover);
             return true;
         }
     }
@@ -18,14 +18,14 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassAssaultHover(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassAssaultHover? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassAssaultHover? obj)
         {
             if (reader.SaveType != 0)
             {
 
             }
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

@@ -19,14 +19,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassPoweredBuilding(PrjID, isUser, classLabel);
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
             return true;
         }
     }
     public class ClassPoweredBuilding : ClassBuilding
     {
         public ClassPoweredBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassPoweredBuilding? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassPoweredBuilding? obj)
         {
             IBZNToken tok;
 
@@ -64,7 +64,7 @@ namespace BZNParser.Battlezone.GameObject
                 Int32 autoTarget = tok.GetInt32();
             }
 
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

@@ -10,18 +10,18 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassArmory2(PrjID, isUser, classLabel);
-            ClassArmory2.Build(reader, obj as ClassArmory2);
+            ClassArmory2.Hydrate(reader, obj as ClassArmory2);
             return true;
         }
     }
     public class ClassArmory2 : ClassPoweredBuilding
     {
         public ClassArmory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassArmory2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassArmory2? obj)
         {
             if (reader.Version == 1041) // version is special case for bz2001.bzn
             {
-                ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+                ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
         }
     }
 }

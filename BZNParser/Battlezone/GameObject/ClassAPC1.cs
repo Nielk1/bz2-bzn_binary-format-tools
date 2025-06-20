@@ -12,7 +12,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassAPC1(PrjID, isUser, classLabel);
-            ClassAPC1.Build(reader, obj as ClassAPC1);
+            ClassAPC1.Hydrate(reader, obj as ClassAPC1);
             return true;
         }
     }
@@ -21,7 +21,7 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 soldierCount { get; set; }
         public byte[] state { get; set; }
         public ClassAPC1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassAPC1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassAPC1? obj)
         {
             IBZNToken tok;
             
@@ -35,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
                 throw new Exception("Failed to parse state/VOID");
             if (obj != null) obj.state = tok.GetBytes(0, 4);
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

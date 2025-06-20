@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassMinelayer(PrjID, isUser, classLabel);
-            ClassMinelayer.Build(reader, obj as ClassMinelayer);
+            ClassMinelayer.Hydrate(reader, obj as ClassMinelayer);
             return true;
         }
     }
     public class ClassMinelayer : ClassHoverCraft
     {
         public ClassMinelayer(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassMinelayer? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassMinelayer? obj)
         {
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

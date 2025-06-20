@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassBomber(PrjID, isUser, classLabel);
-            ClassBomber.Build(reader, obj as ClassBomber);
+            ClassBomber.Hydrate(reader, obj as ClassBomber);
             return true;
         }
     }
     public class ClassBomber : ClassHoverCraft
     {
         public ClassBomber(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassBomber? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassBomber? obj)
         {
             // if reader.SaveType != 0
             // m_ReloadTime
@@ -31,7 +31,7 @@ namespace BZNParser.Battlezone.GameObject
             // if reader.SaveType != 0
             // reloadTime float
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

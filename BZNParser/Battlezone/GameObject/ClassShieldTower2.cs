@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassShieldTower2(PrjID, isUser, classLabel);
-            ClassShieldTower2.Build(reader, obj as ClassShieldTower2);
+            ClassShieldTower2.Hydrate(reader, obj as ClassShieldTower2);
             return true;
         }
     }
     public class ClassShieldTower2 : ClassPoweredBuilding
     {
         public ClassShieldTower2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassShieldTower2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassShieldTower2? obj)
         {
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
         }
     }
 }

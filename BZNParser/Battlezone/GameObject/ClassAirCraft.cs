@@ -10,18 +10,18 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassAirCraft(PrjID, isUser, classLabel);
-            ClassAirCraft.Build(reader, obj as ClassAirCraft);
+            ClassAirCraft.Hydrate(reader, obj as ClassAirCraft);
             return true;
         }
     }
     public class ClassAirCraft : ClassCraft
     {
         public ClassAirCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassAirCraft? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassAirCraft? obj)
         {
             //if (reader.SaveType != 0)
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

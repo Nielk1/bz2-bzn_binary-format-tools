@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassNozzelBuilding(PrjID, isUser, classLabel);
-            ClassNozzelBuilding.Build(reader, obj as ClassNozzelBuilding);
+            ClassNozzelBuilding.Hydrate(reader, obj as ClassNozzelBuilding);
             return true;
         }
     }
     public class ClassNozzelBuilding: ClassBuilding
     {
         public ClassNozzelBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassNozzelBuilding? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassNozzelBuilding? obj)
         {
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassMorphTank(PrjID, isUser, classLabel);
-            ClassMorphTank.Build(reader, obj as ClassMorphTank);
+            ClassMorphTank.Hydrate(reader, obj as ClassMorphTank);
             return true;
         }
     }
     public class ClassMorphTank : ClassDeployable
     {
         public ClassMorphTank(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassMorphTank? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassMorphTank? obj)
         {
             IBZNToken tok;
 
@@ -33,7 +33,7 @@ namespace BZNParser.Battlezone.GameObject
             //if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
             //state = tok.GetBytes(0, 4);
 
-            ClassDeployable.Build(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
         }
     }
 }

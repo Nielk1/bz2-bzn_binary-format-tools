@@ -11,7 +11,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassMine(PrjID, isUser, classLabel);
-            ClassMine.Build(reader, obj as ClassMine);
+            ClassMine.Hydrate(reader, obj as ClassMine);
             return true;
         }
     }
@@ -19,7 +19,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassMine? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassMine? obj)
         {
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
@@ -65,7 +65,7 @@ namespace BZNParser.Battlezone.GameObject
                 //}
             }
 
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTug(PrjID, isUser, classLabel);
-            ClassTug.Build(reader, obj as ClassTug);
+            ClassTug.Hydrate(reader, obj as ClassTug);
             return true;
         }
     }
@@ -25,7 +25,7 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 undefptr { get; set; }
 
         public ClassTug(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTug? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTug? obj)
         {
             IBZNToken tok;
 
@@ -56,7 +56,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
 
             if (reader.Format == BZNFormat.Battlezone2)
             {

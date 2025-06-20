@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassLandCreature(PrjID, isUser, classLabel);
-            ClassLandCreature.Build(reader, obj as ClassLandCreature);
+            ClassLandCreature.Hydrate(reader, obj as ClassLandCreature);
             return true;
         }
     }
     public class ClassLandCreature : ClassCraft
     {
         public ClassLandCreature(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassLandCreature? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassLandCreature? obj)
         {
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

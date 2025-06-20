@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassArtillery(PrjID, isUser, classLabel);
-            ClassArtillery.Build(reader, obj as ClassArtillery);
+            ClassArtillery.Hydrate(reader, obj as ClassArtillery);
             return true;
         }
     }
     public class ClassArtillery : ClassTurretTank2
     {
         public ClassArtillery(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassArtillery? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassArtillery? obj)
         {
             if (reader.Version < 1110)
             {
@@ -29,7 +29,7 @@ namespace BZNParser.Battlezone.GameObject
 
                 // block of reader.SaveType != 0
 
-                ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+                ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
                 return;
             }
             else
@@ -37,7 +37,7 @@ namespace BZNParser.Battlezone.GameObject
                 // block of reader.SaveType != 0
             }
 
-            ClassTurretTank2.Build(reader, obj as ClassTurretTank2);
+            ClassTurretTank2.Hydrate(reader, obj as ClassTurretTank2);
         }
     }
 }

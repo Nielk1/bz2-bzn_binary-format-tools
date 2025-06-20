@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassScrapField(PrjID, isUser, classLabel);
-            ClassScrapField.Build(reader, obj as ClassScrapField);
+            ClassScrapField.Hydrate(reader, obj as ClassScrapField);
             return true;
         }
     }
     public class ClassScrapField : ClassBuilding
     {
         public ClassScrapField(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassScrapField? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassScrapField? obj)
         {
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassSpawnBuoy2(PrjID, isUser, classLabel);
-            ClassSpawnBuoy2.Build(reader, obj as ClassSpawnBuoy2);
+            ClassSpawnBuoy2.Hydrate(reader, obj as ClassSpawnBuoy2);
             return true;
         }
     }
     public class ClassSpawnBuoy2 : ClassDummy
     {
         public ClassSpawnBuoy2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassSpawnBuoy2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassSpawnBuoy2? obj)
         {
-            ClassDummy.Build(reader, obj as ClassDummy);
+            ClassDummy.Hydrate(reader, obj as ClassDummy);
         }
     }
 }

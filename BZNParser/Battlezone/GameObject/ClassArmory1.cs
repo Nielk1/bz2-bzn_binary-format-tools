@@ -11,16 +11,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassArmory1(PrjID, isUser, classLabel);
-            ClassArmory1.Build(reader, obj as ClassArmory1);
+            ClassArmory1.Hydrate(reader, obj as ClassArmory1);
             return true;
         }
     }
     public class ClassArmory1 : ClassProducer
     {
         public ClassArmory1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassArmory1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassArmory1? obj)
         {
-            ClassProducer.Build(reader, obj as ClassProducer);
+            ClassProducer.Hydrate(reader, obj as ClassProducer);
         }
     }
 }

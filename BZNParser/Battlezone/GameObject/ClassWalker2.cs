@@ -11,14 +11,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassWalker2(PrjID, isUser, classLabel);
-            ClassWalker2.Build(reader, obj as ClassWalker2);
+            ClassWalker2.Hydrate(reader, obj as ClassWalker2);
             return true;
         }
     }
     public class ClassWalker2 : ClassCraft
     {
         public ClassWalker2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassWalker2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassWalker2? obj)
         {
             IBZNToken tok;
 
@@ -28,7 +28,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("Walker_IK", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse Walker_IK/VOID");
                 byte[] data = tok.GetBytes();
 
-                ClassCraft.Build(reader, obj as ClassCraft);
+                ClassCraft.Hydrate(reader, obj as ClassCraft);
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace BZNParser.Battlezone.GameObject
 
             // reader.SaveType != 0 stuff
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

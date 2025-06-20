@@ -12,14 +12,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassCameraPod(PrjID, isUser, classLabel);
-            ClassCameraPod.Build(reader, obj as ClassCameraPod);
+            ClassCameraPod.Hydrate(reader, obj as ClassCameraPod);
             return true;
         }
     }
     public class ClassCameraPod : ClassPowerUp
     {
         public ClassCameraPod(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassCameraPod? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassCameraPod? obj)
         {
             if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -38,7 +38,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTurretTank1(PrjID, isUser, classLabel);
-            ClassTurretTank1.Build(reader, obj as ClassTurretTank1);
+            ClassTurretTank1.Hydrate(reader, obj as ClassTurretTank1);
             return true;
         }
     }
@@ -30,7 +30,7 @@ namespace BZNParser.Battlezone.GameObject
         public bool undefbool { get; set; }
 
         public ClassTurretTank1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTurretTank1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTurretTank1? obj)
         {
             IBZNToken tok;
 
@@ -74,7 +74,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

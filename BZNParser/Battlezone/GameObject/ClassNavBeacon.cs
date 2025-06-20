@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassNavBeacon(PrjID, isUser, classLabel);
-            ClassNavBeacon.Build(reader, obj as ClassNavBeacon);
+            ClassNavBeacon.Hydrate(reader, obj as ClassNavBeacon);
             return true;
         }
     }
     public class ClassNavBeacon : ClassGameObject
     {
         public ClassNavBeacon(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassNavBeacon? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassNavBeacon? obj)
         {
             IBZNToken tok;
 
@@ -37,7 +37,7 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Version > 1104)
             {
-                ClassGameObject.Build(reader, obj as ClassGameObject);
+                ClassGameObject.Hydrate(reader, obj as ClassGameObject);
             }
         }
     }

@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassScavenger2(PrjID, isUser, classLabel);
-            ClassScavenger2.Build(reader, obj as ClassScavenger2);
+            ClassScavenger2.Hydrate(reader, obj as ClassScavenger2);
             return true;
         }
     }
     public class ClassScavenger2 : ClassTrackedDeployable
     {
         public ClassScavenger2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassScavenger2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassScavenger2? obj)
         {
             if (reader.SaveType != 0)
             {
@@ -77,7 +77,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassTrackedDeployable.Build(reader, obj as ClassTrackedDeployable);
+            ClassTrackedDeployable.Hydrate(reader, obj as ClassTrackedDeployable);
         }
     }
 }

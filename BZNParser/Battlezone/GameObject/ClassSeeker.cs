@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassSeeker(PrjID, isUser, classLabel);
-            ClassSeeker.Build(reader, obj as ClassSeeker);
+            ClassSeeker.Hydrate(reader, obj as ClassSeeker);
             return true;
         }
     }
     public class ClassSeeker : ClassMine
     {
         public ClassSeeker(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassSeeker? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassSeeker? obj)
         {
-            ClassMine.Build(reader, obj as ClassMine);
+            ClassMine.Hydrate(reader, obj as ClassMine);
         }
     }
 }

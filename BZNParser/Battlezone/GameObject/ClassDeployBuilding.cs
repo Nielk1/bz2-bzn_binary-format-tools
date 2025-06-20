@@ -14,7 +14,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassDeployBuilding(PrjID, isUser, classLabel);
-            ClassDeployBuilding.Build(reader, obj as ClassDeployBuilding);
+            ClassDeployBuilding.Hydrate(reader, obj as ClassDeployBuilding);
             return true;
         }
     }
@@ -22,7 +22,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassDeployBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassDeployBuilding? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassDeployBuilding? obj)
         {
             IBZNToken tok;
 
@@ -42,7 +42,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassTrackedDeployable.Build(reader, obj as ClassTrackedDeployable);
+            ClassTrackedDeployable.Hydrate(reader, obj as ClassTrackedDeployable);
         }
     }
 }

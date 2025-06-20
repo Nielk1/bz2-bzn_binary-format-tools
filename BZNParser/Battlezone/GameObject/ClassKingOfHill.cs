@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassKingOfHill(PrjID, isUser, classLabel);
-            ClassKingOfHill.Build(reader, obj as ClassKingOfHill);
+            ClassKingOfHill.Hydrate(reader, obj as ClassKingOfHill);
             return true;
         }
     }
     public class ClassKingOfHill : ClassBuilding
     {
         public ClassKingOfHill(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassKingOfHill? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassKingOfHill? obj)
         {
             IBZNToken tok;
 
@@ -25,7 +25,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("scoreTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse scoreTimer/FLOAT");
             float scoreTimer = tok.GetSingle();
 
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

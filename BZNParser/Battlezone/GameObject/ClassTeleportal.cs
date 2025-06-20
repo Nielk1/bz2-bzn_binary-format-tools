@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTeleportal(PrjID, isUser, classLabel);
-            ClassTeleportal.Build(reader, obj as ClassTeleportal);
+            ClassTeleportal.Hydrate(reader, obj as ClassTeleportal);
             return true;
         }
     }
     public class ClassTeleportal : ClassPoweredBuilding
     {
         public ClassTeleportal(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTeleportal? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTeleportal? obj)
         {
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
         }
     }
 }

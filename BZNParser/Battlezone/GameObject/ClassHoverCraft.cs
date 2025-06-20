@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassHoverCraft(PrjID, isUser, classLabel);
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
             return true;
         }
     }
     public class ClassHoverCraft : ClassCraft
     {
         public ClassHoverCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassHoverCraft? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassHoverCraft? obj)
         {
             if (reader.Format == BZNFormat.Battlezone && reader.Version > 1001 && reader.Version < 1026)
             {
@@ -48,7 +48,7 @@ namespace BZNParser.Battlezone.GameObject
                 tok = reader.ReadToken(); // airBorne
             }
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

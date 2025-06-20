@@ -10,16 +10,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassMotionSensor(PrjID, isUser, classLabel);
-            ClassMotionSensor.Build(reader, obj as ClassMotionSensor);
+            ClassMotionSensor.Hydrate(reader, obj as ClassMotionSensor);
             return true;
         }
     }
     public class ClassMotionSensor : ClassPoweredBuilding
     {
         public ClassMotionSensor(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassMotionSensor? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassMotionSensor? obj)
         {
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
         }
     }
 }

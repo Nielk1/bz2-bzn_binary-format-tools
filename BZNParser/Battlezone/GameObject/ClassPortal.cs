@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassPortal(PrjID, isUser, classLabel);
-            ClassPortal.Build(reader, obj as ClassPortal);
+            ClassPortal.Hydrate(reader, obj as ClassPortal);
             return true;
         }
     }
     public class ClassPortal : ClassGameObject
     {
         public ClassPortal(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassPortal? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassPortal? obj)
         {
             IBZNToken tok;
 
@@ -44,7 +44,7 @@ namespace BZNParser.Battlezone.GameObject
                 bool isIn = tok.GetBoolean();
             }
 
-            ClassGameObject.Build(reader, obj as ClassGameObject);
+            ClassGameObject.Hydrate(reader, obj as ClassGameObject);
         }
     }
 }

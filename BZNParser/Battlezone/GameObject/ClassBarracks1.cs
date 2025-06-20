@@ -11,7 +11,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassBarracks1(PrjID, isUser, classLabel);
-            ClassBarracks1.Build(reader, obj as ClassBarracks1);
+            ClassBarracks1.Hydrate(reader, obj as ClassBarracks1);
             return true;
         }
     }
@@ -19,9 +19,9 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassBarracks1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassBarracks1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassBarracks1? obj)
         {
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

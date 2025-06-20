@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassAPC2(PrjID, isUser, classLabel);
-            ClassAPC2.Build(reader, obj as ClassAPC2);
+            ClassAPC2.Hydrate(reader, obj as ClassAPC2);
             return true;
         }
     }
     public class ClassAPC2 : ClassHoverCraft
     {
         public ClassAPC2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassAPC2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassAPC2? obj)
         {
             IBZNToken tok;
 
@@ -56,7 +56,7 @@ namespace BZNParser.Battlezone.GameObject
                 throw new Exception("Failed to parse state/VOID");
             //state = tok.GetBytes(0, 4);
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassProducer(PrjID, isUser, classLabel);
-            ClassProducer.Build(reader, obj as ClassProducer);
+            ClassProducer.Hydrate(reader, obj as ClassProducer);
             return true;
         }
     }
@@ -32,7 +32,7 @@ namespace BZNParser.Battlezone.GameObject
         public float buildDoneTime { get; set; }
 
         public ClassProducer(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassProducer? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassProducer? obj)
         {
             IBZNToken tok;
 
@@ -108,10 +108,10 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1010)
             {
-                ClassCraft.Build(reader, obj as ClassCraft);
+                ClassCraft.Hydrate(reader, obj as ClassCraft);
                 return;
             }
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

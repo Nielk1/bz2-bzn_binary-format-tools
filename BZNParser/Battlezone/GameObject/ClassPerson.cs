@@ -16,7 +16,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassPerson(PrjID, isUser, classLabel);
-            ClassPerson.Build(reader, obj as ClassPerson);
+            ClassPerson.Hydrate(reader, obj as ClassPerson);
             return true;
         }
     }
@@ -25,7 +25,7 @@ namespace BZNParser.Battlezone.GameObject
         public float nextScream { get; set; }
 
         public ClassPerson(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassPerson? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassPerson? obj)
         {
             IBZNToken tok;
 
@@ -64,7 +64,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

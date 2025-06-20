@@ -14,20 +14,20 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassPowerUp(PrjID, isUser, classLabel);
-            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
             return true;
         }
     }
     public class ClassPowerUp : ClassGameObject
     {
         public ClassPowerUp(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassPowerUp? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassPowerUp? obj)
         {
             if (reader.Format == BZNFormat.Battlezone && reader.SaveType != 0)
             {
                 // flags
             }
-            ClassGameObject.Build(reader, obj as ClassGameObject);
+            ClassGameObject.Hydrate(reader, obj as ClassGameObject);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassCraft(PrjID, isUser, classLabel);
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
             return true;
         }
     }
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
         public Int32 abandoned { get; set; }
 
         public ClassCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassCraft? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassCraft? obj)
         {
             IBZNToken tok;
 
@@ -217,7 +217,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassGameObject.Build(reader, obj as ClassGameObject);
+            ClassGameObject.Hydrate(reader, obj as ClassGameObject);
         }
     }
 }

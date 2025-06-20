@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassSAV(PrjID, isUser, classLabel);
-            ClassSAV.Build(reader, obj as ClassSAV);
+            ClassSAV.Hydrate(reader, obj as ClassSAV);
             return true;
         }
     }
     public class ClassSAV : ClassHoverCraft
     {
         public ClassSAV(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassSAV? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassSAV? obj)
         {
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

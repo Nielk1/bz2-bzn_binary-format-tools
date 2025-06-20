@@ -10,14 +10,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassFactory2(PrjID, isUser, classLabel);
-            ClassFactory2.Build(reader, obj as ClassFactory2);
+            ClassFactory2.Hydrate(reader, obj as ClassFactory2);
             return true;
         }
     }
     public class ClassFactory2 : ClassPoweredBuilding
     {
         public ClassFactory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassFactory2? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassFactory2? obj)
         {
             IBZNToken tok;
 
@@ -61,7 +61,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
         }
     }
 }

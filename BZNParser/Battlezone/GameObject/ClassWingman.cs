@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassWingman(PrjID, isUser, classLabel);
-            ClassWingman.Build(reader, obj as ClassWingman);
+            ClassWingman.Hydrate(reader, obj as ClassWingman);
             return true;
         }
     }
     public class ClassWingman : ClassHoverCraft
     {
         public ClassWingman(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassWingman? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassWingman? obj)
         {
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassScrapSilo1(PrjID, isUser, classLabel);
-            ClassScrapSilo1.Build(reader, obj as ClassScrapSilo1);
+            ClassScrapSilo1.Hydrate(reader, obj as ClassScrapSilo1);
             return true;
         }
     }
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 undefptr { get; set; }
 
         public ClassScrapSilo1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassScrapSilo1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassScrapSilo1? obj)
         {
             if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version > 1020)
             {
@@ -33,7 +33,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (obj != null) obj.undefptr = tok.GetUInt32H(); // dropoff
             }
 
-            ClassGameObject.Build(reader, obj as ClassGameObject);
+            ClassGameObject.Hydrate(reader, obj as ClassGameObject);
         }
     }
 }

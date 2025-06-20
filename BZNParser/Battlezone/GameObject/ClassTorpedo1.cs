@@ -12,14 +12,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassTorpedo1(PrjID, isUser, classLabel);
-            ClassTorpedo1.Build(reader, obj as ClassTorpedo1);
+            ClassTorpedo1.Hydrate(reader, obj as ClassTorpedo1);
             return true;
         }
     }
     public class ClassTorpedo1 : ClassPowerUp
     {
         public ClassTorpedo1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassTorpedo1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassTorpedo1? obj)
         {
             if (reader.Version < 1031)
             {
@@ -50,10 +50,10 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1031)
             {
-                ClassGameObject.Build(reader, obj as ClassGameObject);
+                ClassGameObject.Hydrate(reader, obj as ClassGameObject);
                 return;
             }
-            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
         }
     }
 }

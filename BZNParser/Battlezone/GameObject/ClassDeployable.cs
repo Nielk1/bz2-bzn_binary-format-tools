@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassDeployable(PrjID, isUser, classLabel);
-            ClassDeployable.Build(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
             return true;
         }
     }
     public class ClassDeployable : ClassHoverCraft
     {
         public ClassDeployable(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassDeployable? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassDeployable? obj)
         {
             IBZNToken tok;
 
@@ -51,7 +51,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }
     }
 }

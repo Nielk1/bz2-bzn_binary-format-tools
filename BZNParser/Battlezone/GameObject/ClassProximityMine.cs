@@ -12,16 +12,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassProximityMine(PrjID, isUser, classLabel);
-            ClassProximityMine.Build(reader, obj as ClassProximityMine);
+            ClassProximityMine.Hydrate(reader, obj as ClassProximityMine);
             return true;
         }
     }
     public class ClassProximityMine : ClassMine
     {
         public ClassProximityMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassProximityMine? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassProximityMine? obj)
         {
-            ClassMine.Build(reader, obj as ClassMine);
+            ClassMine.Hydrate(reader, obj as ClassMine);
         }
     }
 }

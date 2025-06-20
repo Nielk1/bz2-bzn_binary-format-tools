@@ -14,14 +14,14 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassObjectSpawn(PrjID, isUser, classLabel);
-            ClassObjectSpawn.Build(reader, obj as ClassObjectSpawn);
+            ClassObjectSpawn.Hydrate(reader, obj as ClassObjectSpawn);
             return true;
         }
     }
     public class ClassObjectSpawn : ClassBuilding
     {
         public ClassObjectSpawn(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassObjectSpawn? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassObjectSpawn? obj)
         {
             IBZNToken tok;
 
@@ -36,7 +36,7 @@ namespace BZNParser.Battlezone.GameObject
                 //state = tok.GetSingle();
             }
 
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

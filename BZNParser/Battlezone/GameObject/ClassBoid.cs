@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassBoid(PrjID, isUser, classLabel);
-            ClassBoid.Build(reader, obj as ClassBoid);
+            ClassBoid.Hydrate(reader, obj as ClassBoid);
             return true;
         }
     }
@@ -18,9 +18,9 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassBoid(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Build(BZNStreamReader reader, ClassBoid? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassBoid? obj)
         {
-            ClassCraft.Build(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(reader, obj as ClassCraft);
         }
     }
 }

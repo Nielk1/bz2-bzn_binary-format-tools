@@ -13,16 +13,16 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassPowerPlant(PrjID, isUser, classLabel);
-            ClassPowerPlant.Build(reader, obj as ClassPowerPlant);
+            ClassPowerPlant.Hydrate(reader, obj as ClassPowerPlant);
             return true;
         }
     }
     public class ClassPowerPlant : ClassBuilding
     {
         public ClassPowerPlant(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassPowerPlant? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassPowerPlant? obj)
         {
-            ClassBuilding.Build(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
         }
     }
 }

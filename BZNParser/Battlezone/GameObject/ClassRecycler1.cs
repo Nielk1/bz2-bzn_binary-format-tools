@@ -15,7 +15,7 @@ namespace BZNParser.Battlezone.GameObject
             obj = null;
             if (create)
                 obj = new ClassRecycler1(PrjID, isUser, classLabel);
-            ClassRecycler1.Build(reader, obj as ClassRecycler1);
+            ClassRecycler1.Hydrate(reader, obj as ClassRecycler1);
             return true;
         }
     }
@@ -24,13 +24,13 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 undefptr { get; set; }
 
         public ClassRecycler1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Build(BZNStreamReader reader, ClassRecycler1? obj)
+        public static void Hydrate(BZNStreamReader reader, ClassRecycler1? obj)
         {
             IBZNToken tok = reader.ReadToken();
             if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
             if (obj != null) obj.undefptr = tok.GetUInt32H(); // dropObj
 
-            ClassProducer.Build(reader, obj as ClassProducer);
+            ClassProducer.Hydrate(reader, obj as ClassProducer);
         }
     }
 }
