@@ -11,7 +11,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "turret")]
     public class ClassTurretCraftFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -203,9 +203,12 @@ namespace BZNParser.Battlezone.GameObject
                         return;
                     }
                     reader.BaseStream.Position = pos;
+                    ClassCraft.Hydrate(reader, obj as ClassCraft);
                 }
-
-                ClassCraft.Hydrate(reader, obj as ClassCraft);
+                else
+                {
+                    ClassCraft.Hydrate(reader, obj as ClassCraft);
+                }
 
                 if (m_AlignsToObject)
                 {

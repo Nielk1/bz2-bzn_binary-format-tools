@@ -6,7 +6,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "commtower")]
     public class ClassCommTower1Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)

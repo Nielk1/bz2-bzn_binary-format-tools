@@ -6,13 +6,13 @@ using System.Text;
 
 namespace BZNParser.Battlezone.GameObject
 {
-    public class MultiClass : ClassGameObject
+    public class MultiClass : Entity
     {
-        private List<(ClassGameObject Object, bool Expected, long Next, string Name)> Candidates;
+        private List<(Entity Object, bool Expected, long Next, string Name)> Candidates;
         public override string ClassLabel { get { return $"[{string.Join(',', Candidates.Select(dr => dr.Object.ClassLabel))}]"; } }
 
 
-        public MultiClass(string PrjID, bool isUser, List<(ClassGameObject Object, bool Expected, long Next, string Name)> candidates) : base(PrjID, isUser, null)
+        public MultiClass(string PrjID, bool isUser, List<(Entity Object, bool Expected, long Next, string Name)> candidates) : base(PrjID, isUser, null)
         {
             this.Candidates = candidates;
         }

@@ -208,7 +208,7 @@ namespace BZNParser.Battlezone
 
             BZNGameObjectWrapper[] GameObjects = new BZNGameObjectWrapper[CountItems];
 
-            Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = new Dictionary<long, (BZNGameObjectWrapper Object, long Next)>();
+            Dictionary<long, (Entity Object, long Next)> RecursiveObjectGenreationMemo = new Dictionary<long, (Entity Object, long Next)>();
 
             Dictionary<string, IClassFactory> ClassLabelMap = new Dictionary<string, IClassFactory>();
             foreach (Type type in this.GetType().Assembly.GetTypes())

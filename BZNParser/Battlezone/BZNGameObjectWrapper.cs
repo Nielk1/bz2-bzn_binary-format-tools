@@ -23,14 +23,14 @@ namespace BZNParser.Battlezone
         public UInt32 obj_addr { get; set; }
         public Matrix transform { get; set; }
 
-        public ClassGameObject gameObject { get; set; }
+        public Entity gameObject { get; set; }
 
 
         private Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache;
         private Dictionary<string, IClassFactory> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, IClassFactory> ClassLabelMap = null, BattlezoneBZNHints? Hints = null, bool fake = false)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, Dictionary<long, (Entity Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, IClassFactory> ClassLabelMap = null, BattlezoneBZNHints? Hints = null, bool fake = false)
         {
             this.LongTermClassLabelLookupCache = LongTermClassLabelLookupCache;
             this.ClassLabelMap = ClassLabelMap;
@@ -289,7 +289,7 @@ namespace BZNParser.Battlezone
             gameObject = ParseGameObject(parent, reader, countLeft, RecursiveObjectGenreationMemo, ClassLabelTempLookup, Hints);
         }
 
-        private ClassGameObject ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
+        private Entity ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (Entity Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
         {
             List<string>? ValidClassLabels = null;
 
@@ -310,7 +310,7 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            ClassGameObject? gameObject = null;
+            Entity? gameObject = null;
 
             {
                 long pos = reader.BaseStream.Position;
@@ -344,10 +344,10 @@ namespace BZNParser.Battlezone
             {
                 // try every possible object
                 long pos = reader.BaseStream.Position;
-                ClassGameObject tempGameObject;
+                Entity tempGameObject;
 
                 
-                List<(ClassGameObject Object, bool Expected, long Next, string Name)> Candidates = new List<(ClassGameObject Object, bool Expected, long Next, string Name)>();
+                List<(Entity Object, bool Expected, long Next, string Name)> Candidates = new List<(Entity Object, bool Expected, long Next, string Name)>();
                 string classLableTempHolder = null;
                 bool firstParseSuccess = false;
 
@@ -406,7 +406,7 @@ namespace BZNParser.Battlezone
             return null;
         }
 
-        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (BZNGameObjectWrapper? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
+        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (Entity? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
         {
             long pos = reader.BaseStream.Position;
             if (countLeft == 0)

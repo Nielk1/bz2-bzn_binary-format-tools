@@ -5,7 +5,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "armory")]
     public class ClassArmory2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)

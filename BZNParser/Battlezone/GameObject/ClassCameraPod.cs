@@ -7,7 +7,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "camerapod")]
     public class ClassCameraPodFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)

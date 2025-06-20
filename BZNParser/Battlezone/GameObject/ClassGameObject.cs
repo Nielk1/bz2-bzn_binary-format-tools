@@ -10,14 +10,8 @@ using System.Text;
 
 namespace BZNParser.Battlezone.GameObject
 {
-    public class ClassGameObject
+    public class ClassGameObject : Entity
     {
-        protected string PrjID;
-        protected bool isUser;
-        protected string classLabel;
-
-        public virtual string ClassLabel { get { return classLabel; } }
-
         public float illumination { get; set; }
         public Vector3D pos { get; set; }
         public Euler euler { get; set; }
@@ -45,11 +39,8 @@ namespace BZNParser.Battlezone.GameObject
         public string curPilot { get; set; }
         public Int32 perceivedTeam { get; set; }
 
-        public ClassGameObject(string PrjID, bool isUser, string classLabel)
+        public ClassGameObject(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel)
         {
-            this.PrjID = PrjID;
-            this.isUser = isUser;
-            this.classLabel = classLabel;
         }
 
         public static void Hydrate(BZNStreamReader reader, ClassGameObject? obj)
