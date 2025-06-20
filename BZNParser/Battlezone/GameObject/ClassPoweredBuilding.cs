@@ -12,10 +12,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "barracks")]
     [ObjectClass(BZNFormat.Battlezone2, "powered")]
     [ObjectClass(BZNFormat.Battlezone2, "techcenter")]
+    public class ClassPoweredBuildingFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassPoweredBuilding(PrjID, isUser, classLabel);
+            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
+            return true;
+        }
+    }
     public class ClassPoweredBuilding : ClassBuilding
     {
         public ClassPoweredBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassPoweredBuilding? obj)
         {
             IBZNToken tok;
 
@@ -53,7 +64,7 @@ namespace BZNParser.Battlezone.GameObject
                 Int32 autoTarget = tok.GetInt32();
             }
 
-            base.LoadData(reader);
+            ClassBuilding.Build(reader, obj as ClassBuilding);
         }
     }
 }

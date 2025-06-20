@@ -5,10 +5,21 @@ namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "torpedo")]
     [ObjectClass(BZNFormat.BattlezoneN64, "torpedo")]
+    public class ClassTorpedo1Factory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassTorpedo1(PrjID, isUser, classLabel);
+            ClassTorpedo1.Build(reader, obj as ClassTorpedo1);
+            return true;
+        }
+    }
     public class ClassTorpedo1 : ClassPowerUp
     {
         public ClassTorpedo1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassTorpedo1? obj)
         {
             if (reader.Version < 1031)
             {
@@ -37,7 +48,12 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            if (reader.Format == BZNFormat.Battlezone && reader.Version < 1031)
+            {
+                ClassGameObject.Build(reader, obj as ClassGameObject);
+                return;
+            }
+            ClassPowerUp.Build(reader, obj as ClassPowerUp);
         }
     }
 }

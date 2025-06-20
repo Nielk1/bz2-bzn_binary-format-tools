@@ -7,11 +7,21 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     // BZ2
+    public class ClassTrackedDeployableFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassTrackedDeployable(PrjID, isUser, classLabel);
+            ClassTrackedDeployable.Build(reader, obj as ClassTrackedDeployable);
+            return true;
+        }
+    }
     public class ClassTrackedDeployable : ClassTrackedVehicle
     {
         public ClassTrackedDeployable(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassTrackedDeployable? obj)
         {
             IBZNToken tok;
 
@@ -31,7 +41,7 @@ namespace BZNParser.Battlezone.GameObject
                 //    (a2->vftable->read_long)(a2, this + 2544, 4, "changeState");
             }
 
-            base.LoadData(reader);
+            ClassTrackedVehicle.Build(reader, obj as ClassTrackedVehicle);
         }
     }
 }

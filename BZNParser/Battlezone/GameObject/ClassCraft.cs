@@ -8,35 +8,25 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "craft")]
+    public class ClassCraftFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassCraft(PrjID, isUser, classLabel);
+            ClassCraft.Build(reader, obj as ClassCraft);
+            return true;
+        }
+    }
     public class ClassCraft : ClassGameObject
     {
         public Int32 abandoned { get; set; }
 
         public ClassCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassCraft? obj)
         {
-            // version is special case for bz2001.bzn
-            // this file is detected as a BZ2 file but has a few odd quirks here and there due to being so old
-            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && reader.Version == 1041)
-            {
-                base.LoadData(reader);
-                return;
-            }
-
             IBZNToken tok;
-
-            if (reader.Format == BZNFormat.Battlezone2 && ClassLabel == "turret" && (reader.Version == 1047 || reader.Version == 1105 || reader.Version == 1108))
-            {
-                long pos = reader.BaseStream.Position;
-                tok = reader.ReadToken();
-                if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
-                {
-                    reader.BaseStream.Position = pos;
-                    base.LoadData(reader);
-                    return;
-                }
-                reader.BaseStream.Position = pos;
-            }
 
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1019)
             {
@@ -73,7 +63,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
                     throw new Exception("Failed to parse abandoned/LONG");
 
-                abandoned = tok.GetInt32();
+                if (obj != null) obj.abandoned = tok.GetInt32();
             }
             /*if (reader.Format == BZNFormat.Battlezone && reader.Version <= 1022 && reader.Version != 1001)
             {
@@ -166,12 +156,12 @@ namespace BZNParser.Battlezone.GameObject
                     tok = reader.ReadToken();
                     if (!tok.Validate("curAmmo", BinaryFieldType.DATA_FLOAT))
                         throw new Exception("Failed to parse curAmmo/FLOAT");
-                    curAmmo = (int)tok.GetSingle();
+                    if (obj != null) obj.curAmmo = (int)tok.GetSingle();
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("maxAmmo", BinaryFieldType.DATA_FLOAT))
                         throw new Exception("Failed to parse maxAmmo/FLOAT");
-                    maxAmmo = (int)tok.GetSingle();
+                    if (obj != null) obj.maxAmmo = (int)tok.GetSingle();
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("addAmmo", BinaryFieldType.DATA_FLOAT))
@@ -190,7 +180,7 @@ namespace BZNParser.Battlezone.GameObject
                             tok = reader.ReadToken();
                             if (!tok.Validate("curPilot", BinaryFieldType.DATA_CHAR))
                                 throw new Exception("Failed to parse curPilot/CHAR");
-                            curPilot = tok.GetString();
+                            if (obj != null) obj.curPilot = tok.GetString();
                         }
                     }
                     else
@@ -206,7 +196,7 @@ namespace BZNParser.Battlezone.GameObject
                             if (!tok.Validate("curPilot", BinaryFieldType.DATA_CHAR))
                                 throw new Exception("Failed to parse curPilot/CHAR");
                         }
-                        curPilot = tok.GetString();
+                        if (obj != null) obj.curPilot = tok.GetString();
                     }
 
                     if (reader.Version >= 1195)
@@ -227,7 +217,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassGameObject.Build(reader, obj as ClassGameObject);
         }
     }
 }

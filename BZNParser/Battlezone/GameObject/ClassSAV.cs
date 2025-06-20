@@ -5,12 +5,23 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "sav")]
     [ObjectClass(BZNFormat.BattlezoneN64, "sav")]
     [ObjectClass(BZNFormat.Battlezone2, "sav")]
+    public class ClassSAVFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassSAV(PrjID, isUser, classLabel);
+            ClassSAV.Build(reader, obj as ClassSAV);
+            return true;
+        }
+    }
     public class ClassSAV : ClassHoverCraft
     {
         public ClassSAV(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassSAV? obj)
         {
-            base.LoadData(reader);
+            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
         }
     }
 }

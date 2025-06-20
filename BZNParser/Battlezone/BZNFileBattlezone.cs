@@ -1,4 +1,5 @@
-﻿using BZNParser.Reader;
+﻿using BZNParser.Battlezone.GameObject;
+using BZNParser.Reader;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -209,16 +210,20 @@ namespace BZNParser.Battlezone
 
             Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = new Dictionary<long, (BZNGameObjectWrapper Object, long Next)>();
 
-            Dictionary<string, Type> ClassLabelMap = new Dictionary<string, Type>();
+            Dictionary<string, IClassFactory> ClassLabelMap = new Dictionary<string, IClassFactory>();
             foreach (Type type in this.GetType().Assembly.GetTypes())
             {
+                // Only consider types that implement IClassFactory and are not interfaces or abstract
+                if (!typeof(IClassFactory).IsAssignableFrom(type) || type.IsInterface || type.IsAbstract)
+                    continue;
+
                 var attrs = type.GetCustomAttributes(typeof(ObjectClassAttribute), true);
                 foreach (ObjectClassAttribute attr in attrs)
                     if (attr.Format == reader.Format)
                         if (ClassLabelMap.ContainsKey(attr.ClassName))
                             throw new Exception($"Duplicate class label: {attr.ClassName} ({type})");
                         else
-                            ClassLabelMap[attr.ClassName] = type;
+                            ClassLabelMap[attr.ClassName] = (IClassFactory)Activator.CreateInstance(type)!;
             }
 
             int CntPad = CountItems.ToString().Length;

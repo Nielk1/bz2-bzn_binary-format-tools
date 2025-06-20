@@ -3,10 +3,21 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "scavengerh")]
+    public class ClassScavengerHFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassScavengerH(PrjID, isUser, classLabel);
+            ClassScavengerH.Build(reader, obj as ClassScavengerH);
+            return true;
+        }
+    }
     public class ClassScavengerH : ClassDeployable
     {
         public ClassScavengerH(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassScavengerH? obj)
         {
             if (reader.SaveType != 0)
             {
@@ -66,7 +77,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassDeployable.Build(reader, obj as ClassDeployable);
         }
     }
 }

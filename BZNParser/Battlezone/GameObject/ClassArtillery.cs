@@ -3,10 +3,21 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "artillery")]
+    public class ClassArtilleryFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassArtillery(PrjID, isUser, classLabel);
+            ClassArtillery.Build(reader, obj as ClassArtillery);
+            return true;
+        }
+    }
     public class ClassArtillery : ClassTurretTank2
     {
         public ClassArtillery(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassArtillery? obj)
         {
             if (reader.Version < 1110)
             {
@@ -18,14 +29,15 @@ namespace BZNParser.Battlezone.GameObject
 
                 // block of reader.SaveType != 0
 
-                // use hovercraft instead of turretcraft here
+                ClassDeployable.Build(reader, obj as ClassDeployable);
+                return;
             }
             else
             {
                 // block of reader.SaveType != 0
             }
 
-            base.LoadData(reader);
+            ClassTurretTank2.Build(reader, obj as ClassTurretTank2);
         }
     }
 }

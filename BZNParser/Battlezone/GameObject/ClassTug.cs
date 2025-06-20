@@ -9,12 +9,23 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "tug")]
     [ObjectClass(BZNFormat.BattlezoneN64, "tug")]
     [ObjectClass(BZNFormat.Battlezone2, "tug")]
+    public class ClassTugFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassTug(PrjID, isUser, classLabel);
+            ClassTug.Build(reader, obj as ClassTug);
+            return true;
+        }
+    }
     public class ClassTug : ClassHoverCraft
     {
         public UInt32 undefptr { get; set; }
 
         public ClassTug(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassTug? obj)
         {
             IBZNToken tok;
 
@@ -32,7 +43,7 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
                 }
-                undefptr = tok.GetUInt32H(); // cargo
+                if (obj != null) obj.undefptr = tok.GetUInt32H(); // cargo
             }
             else if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -45,7 +56,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
 
             if (reader.Format == BZNFormat.Battlezone2)
             {

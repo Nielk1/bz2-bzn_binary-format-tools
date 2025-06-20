@@ -7,22 +7,22 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "deployable")]
+    public class ClassDeployableFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassDeployable(PrjID, isUser, classLabel);
+            ClassDeployable.Build(reader, obj as ClassDeployable);
+            return true;
+        }
+    }
     public class ClassDeployable : ClassHoverCraft
     {
         public ClassDeployable(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassDeployable? obj)
         {
-            if (reader.Format == BZNFormat.Battlezone2 && reader.Version < 1110 && ClassLabel == "artillery")
-            {
-                base.LoadData(reader);
-                return;
-            }
-            if (reader.Format == BZNFormat.Battlezone2 && reader.Version < 1109 && ClassLabel == "turrettank")
-            {
-                base.LoadData(reader);
-                return;
-            }
-
             IBZNToken tok;
 
             // this class doesn't exist in BZ1
@@ -51,7 +51,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
         }
     }
 }

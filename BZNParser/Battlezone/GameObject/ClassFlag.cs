@@ -7,11 +7,22 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "flag")]
+    public class ClassFlagFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassFlag(PrjID, isUser, classLabel);
+            ClassFlag.Build(reader, obj as ClassFlag);
+            return true;
+        }
+    }
     public class ClassFlag : ClassPowerUp
     {
         public ClassFlag(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassFlag? obj)
         {
             IBZNToken tok;
 
@@ -26,7 +37,7 @@ namespace BZNParser.Battlezone.GameObject
                 //state = tok.GetUInt32();
             }
 
-            base.LoadData(reader);
+            ClassPowerUp.Build(reader, obj as ClassPowerUp);
         }
     }
 }

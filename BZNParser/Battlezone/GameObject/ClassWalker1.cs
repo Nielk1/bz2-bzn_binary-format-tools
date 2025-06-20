@@ -8,11 +8,21 @@ namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "walker")]
     [ObjectClass(BZNFormat.BattlezoneN64, "walker")]
+    public class ClassWalker1Factory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassWalker1(PrjID, isUser, classLabel);
+            ClassWalker1.Build(reader, obj as ClassWalker1);
+            return true;
+        }
+    }
     public class ClassWalker1 : ClassCraft
     {
         public ClassWalker1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassWalker1? obj)
         {
             if (reader.Version > 1001 && reader.Version < 1026)
             {
@@ -40,7 +50,7 @@ namespace BZNParser.Battlezone.GameObject
                 reader.ReadToken();
             }
 
-            base.LoadData(reader);
+            ClassCraft.Build(reader, obj as ClassCraft);
         }
     }
 }

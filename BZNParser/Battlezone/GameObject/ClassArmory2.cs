@@ -3,14 +3,25 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "armory")]
+    public class ClassArmory2Factory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassArmory2(PrjID, isUser, classLabel);
+            ClassArmory2.Build(reader, obj as ClassArmory2);
+            return true;
+        }
+    }
     public class ClassArmory2 : ClassPoweredBuilding
     {
         public ClassArmory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassArmory2? obj)
         {
             if (reader.Version == 1041) // version is special case for bz2001.bzn
             {
-                base.LoadData(reader);
+                ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
                 return;
             }
 
@@ -52,7 +63,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassPoweredBuilding.Build(reader, obj as ClassPoweredBuilding);
         }
     }
 }

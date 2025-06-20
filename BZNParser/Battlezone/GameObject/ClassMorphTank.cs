@@ -7,11 +7,21 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "morphtank")]
+    public class ClassMorphTankFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassMorphTank(PrjID, isUser, classLabel);
+            ClassMorphTank.Build(reader, obj as ClassMorphTank);
+            return true;
+        }
+    }
     public class ClassMorphTank : ClassDeployable
     {
         public ClassMorphTank(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassMorphTank? obj)
         {
             IBZNToken tok;
 
@@ -23,7 +33,7 @@ namespace BZNParser.Battlezone.GameObject
             //if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
             //state = tok.GetBytes(0, 4);
 
-            base.LoadData(reader);
+            ClassDeployable.Build(reader, obj as ClassDeployable);
         }
     }
 }

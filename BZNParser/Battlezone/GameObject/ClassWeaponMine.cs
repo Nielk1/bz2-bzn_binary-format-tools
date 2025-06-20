@@ -5,11 +5,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "weaponmine")]
     [ObjectClass(BZNFormat.BattlezoneN64, "weaponmine")]
     [ObjectClass(BZNFormat.Battlezone2, "weaponmine")]
+    public class ClassWeaponMineFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassWeaponMine(PrjID, isUser, classLabel);
+            ClassWeaponMine.Build(reader, obj as ClassWeaponMine);
+            return true;
+        }
+    }
     public class ClassWeaponMine : ClassMine
     {
         public ClassWeaponMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassWeaponMine? obj)
         {
             if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -19,11 +29,11 @@ namespace BZNParser.Battlezone.GameObject
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("curAmmo", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse curAmmo/FLOAT");
-                    curAmmo = (int)tok.GetSingle();
+                    if (obj != null) obj.curAmmo = (int)tok.GetSingle();
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("maxAmmo", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse maxAmmo/FLOAT");
-                    maxAmmo = (int)tok.GetSingle();
+                    if (obj != null) obj.maxAmmo = (int)tok.GetSingle();
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("addAmmo", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse addAmmo/FLOAT");
@@ -31,7 +41,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassMine.Build(reader, obj as ClassMine);
         }
     }
 }

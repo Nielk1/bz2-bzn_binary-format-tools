@@ -5,10 +5,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "camerapod")]
     [ObjectClass(BZNFormat.BattlezoneN64, "camerapod")]
     [ObjectClass(BZNFormat.Battlezone2, "camerapod")]
+    public class ClassCameraPodFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassCameraPod(PrjID, isUser, classLabel);
+            ClassCameraPod.Build(reader, obj as ClassCameraPod);
+            return true;
+        }
+    }
     public class ClassCameraPod : ClassPowerUp
     {
         public ClassCameraPod(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassCameraPod? obj)
         {
             if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -27,7 +38,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassPowerUp.Build(reader, obj as ClassPowerUp);
         }
     }
 }

@@ -7,16 +7,27 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "terrain")]
+    public class ClassDummyFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassDummy(PrjID, isUser, classLabel);
+            ClassDummy.Build(reader, obj as ClassDummy);
+            return true;
+        }
+    }
     public class ClassDummy : ClassGameObject
     {
         public string name { get; set; }
         public ClassDummy(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassDummy? obj)
         {
             if (reader.Version == 1047)
             {
-                base.LoadData(reader); // this might be due to a changed base class on "spawnpnt"
+                ClassGameObject.Build(reader, obj as ClassGameObject); // this might be due to a changed base class on "spawnpnt"
                 return;
             }
 
@@ -25,10 +36,10 @@ namespace BZNParser.Battlezone.GameObject
             tok = reader.ReadToken();
             if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
                 throw new Exception("Failed to parse name/CHAR");
-            name = tok.GetString();
+            if (obj != null) obj.name = tok.GetString();
 
             // Terrain doesn't call base data load
-            //base.LoadData(reader);
+            //base.Build(reader, obj);
         }
     }
 }

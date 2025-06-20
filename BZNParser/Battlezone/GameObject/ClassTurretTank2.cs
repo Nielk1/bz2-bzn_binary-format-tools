@@ -3,18 +3,23 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "turrettank")]
+    public class ClassTurretTank2Factory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassTurretTank2(PrjID, isUser, classLabel);
+            ClassTurretTank2.Build(reader, obj as ClassTurretTank2);
+            return true;
+        }
+    }
     public class ClassTurretTank2 : ClassDeployable
     {
         public ClassTurretTank2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassTurretTank2? obj)
         {
             IBZNToken tok;
-
-            if (reader.Version < 1110 && ClassLabel == "artillery")
-            {
-                base.LoadData(reader);
-                return;
-            }
 
             bool m_Use13Aim = false; // we're assuming Use13Aim is impossible before 1109
             //if (reader.Version < 1109 || !m_Use13Aim)
@@ -88,7 +93,12 @@ namespace BZNParser.Battlezone.GameObject
 
             // reader.SaveType != 0
 
-            base.LoadData(reader);
+            if (reader.Version < 1109)
+            {
+                ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+                return;
+            }
+            ClassDeployable.Build(reader, obj as ClassDeployable);
         }
     }
 }

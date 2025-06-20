@@ -3,14 +3,25 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "computer")]
+    public class ClassComputerBuildingFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassComputerBuilding(PrjID, isUser, classLabel);
+            ClassComputerBuilding.Build(reader, obj as ClassComputerBuilding);
+            return true;
+        }
+    }
     public class ClassComputerBuilding : ClassDummy
     {
         public string name { get; set; }
         public ClassComputerBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassComputerBuilding? obj)
         {
-            base.LoadData(reader);
+            ClassDummy.Build(reader, obj as ClassDummy);
 
             IBZNToken tok;
 
@@ -23,16 +34,6 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("Nozzle2", BinaryFieldType.DATA_VOID))
                 throw new Exception("Failed to parse Nozzle2/VOID");
             //tok.GetUInt32H();
-        }
-    }
-    [ObjectClass(BZNFormat.Battlezone2, "cnozzle")]
-    public class ClassNozzelBuilding: ClassBuilding
-    {
-        public ClassNozzelBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-
-        public override void LoadData(BZNStreamReader reader)
-        {
-            base.LoadData(reader);
         }
     }
 }

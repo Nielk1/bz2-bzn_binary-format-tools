@@ -7,17 +7,28 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "beacon")]
+    public class ClassNavBeaconFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassNavBeacon(PrjID, isUser, classLabel);
+            ClassNavBeacon.Build(reader, obj as ClassNavBeacon);
+            return true;
+        }
+    }
     public class ClassNavBeacon : ClassGameObject
     {
         public ClassNavBeacon(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassNavBeacon? obj)
         {
             IBZNToken tok;
 
             tok = reader.ReadToken();
             if (!tok.Validate("name", BinaryFieldType.DATA_CHAR))
                 throw new Exception("Failed to parse name/CHAR");
-            name = tok.GetString();
+            string name = tok.GetString();
 
             tok = reader.ReadToken();
             if (!tok.Validate("navSlot", BinaryFieldType.DATA_LONG))
@@ -26,7 +37,7 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Version > 1104)
             {
-                base.LoadData(reader);
+                ClassGameObject.Build(reader, obj as ClassGameObject);
             }
         }
     }

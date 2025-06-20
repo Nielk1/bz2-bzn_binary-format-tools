@@ -3,10 +3,21 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "torpedo")]
+    public class ClassTorpedo2Factory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassTorpedo2(PrjID, isUser, classLabel);
+            ClassTorpedo2.Build(reader, obj as ClassTorpedo2);
+            return true;
+        }
+    }
     public class ClassTorpedo2 : ClassGameObject
     {
         public ClassTorpedo2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassTorpedo2? obj)
         {
             IBZNToken tok;
 
@@ -14,7 +25,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("lifeTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse lifeTimer/FLOAT");
             float lifeTimer = tok.GetSingle();
 
-            base.LoadData(reader);
+            ClassGameObject.Build(reader, obj as ClassGameObject);
         }
     }
 }

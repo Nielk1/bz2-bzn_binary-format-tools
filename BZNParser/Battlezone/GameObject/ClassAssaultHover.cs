@@ -3,18 +3,29 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "assaulthover")]
+    public class ClassAssaultHoverFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassAssaultHover(PrjID, isUser, classLabel);
+            ClassAssaultHover.Build(reader, obj as ClassAssaultHover);
+            return true;
+        }
+    }
     public class ClassAssaultHover : ClassHoverCraft
     {
         public ClassAssaultHover(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassAssaultHover? obj)
         {
             if (reader.SaveType != 0)
             {
 
             }
 
-            base.LoadData(reader);
+            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
         }
     }
 }

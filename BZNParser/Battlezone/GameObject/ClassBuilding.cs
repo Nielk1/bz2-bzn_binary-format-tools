@@ -21,10 +21,21 @@ namespace BZNParser.Battlezone.GameObject
 
     [ObjectClass(BZNFormat.Battlezone, "repairdepot")]
     [ObjectClass(BZNFormat.BattlezoneN64, "repairdepot")]
+    public class ClassBuildingFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassBuilding(PrjID, isUser, classLabel);
+            ClassBuilding.Build(reader, obj as ClassBuilding);
+            return true;
+        }
+    }
     public class ClassBuilding : ClassGameObject
     {
         public ClassBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassBuilding? obj)
         {
             IBZNToken tok;
 
@@ -82,11 +93,11 @@ namespace BZNParser.Battlezone.GameObject
                 reader.BaseStream.Position = pos;
                 if (loadAsDummy)
                 {
-                    name = reader.ReadSizedString_BZ2_1145("name", 32);
+                    if (obj != null) obj.name = reader.ReadSizedString_BZ2_1145("name", 32);
                     return;
                 }
 
-                base.LoadData(reader);
+                ClassGameObject.Build(reader, obj as ClassGameObject);
 
                 if (!string.IsNullOrEmpty(saveClass) && (reader.Version < 1148 || m_AlignsToObject))
                 {
@@ -95,7 +106,7 @@ namespace BZNParser.Battlezone.GameObject
                 return;
             }
 
-            base.LoadData(reader);
+            ClassGameObject.Build(reader, obj as ClassGameObject);
         }
     }
 }

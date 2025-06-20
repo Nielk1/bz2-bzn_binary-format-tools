@@ -4,12 +4,23 @@ namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "supplydepot")]
     [ObjectClass(BZNFormat.BattlezoneN64, "supplydepot")]
+    public class ClassSupplyDepotFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassSupplyDepot(PrjID, isUser, classLabel);
+            ClassSupplyDepot.Build(reader, obj as ClassSupplyDepot);
+            return true;
+        }
+    }
     public class ClassSupplyDepot : ClassBuilding
     {
         public ClassSupplyDepot(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassSupplyDepot? obj)
         {
-            base.LoadData(reader);
+            ClassBuilding.Build(reader, obj as ClassBuilding);
         }
     }
 }

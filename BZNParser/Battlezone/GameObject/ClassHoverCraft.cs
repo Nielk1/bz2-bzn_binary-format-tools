@@ -7,27 +7,22 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "hover")]
+    public class ClassHoverCraftFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassHoverCraft(PrjID, isUser, classLabel);
+            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+            return true;
+        }
+    }
     public class ClassHoverCraft : ClassCraft
     {
         public ClassHoverCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassHoverCraft? obj)
         {
-            if (reader.Format == BZNFormat.Battlezone)
-            {
-                if (reader.Version <= 1010)
-                {
-                    // any producer
-                    if (ClassLabel == "armory"
-                      || ClassLabel == "constructionrig"
-                      || ClassLabel == "factory"
-                      || ClassLabel == "recycler")
-                    {
-                        base.LoadData(reader);
-                        return;
-                    }
-                }
-            }
-
             if (reader.Format == BZNFormat.Battlezone && reader.Version > 1001 && reader.Version < 1026)
             {
                 IBZNToken tok = reader.ReadToken();
@@ -53,7 +48,7 @@ namespace BZNParser.Battlezone.GameObject
                 tok = reader.ReadToken(); // airBorne
             }
 
-            base.LoadData(reader);
+            ClassCraft.Build(reader, obj as ClassCraft);
         }
     }
 }

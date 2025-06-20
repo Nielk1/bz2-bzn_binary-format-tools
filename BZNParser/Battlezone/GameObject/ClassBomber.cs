@@ -3,10 +3,21 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "bomber")]
+    public class ClassBomberFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassBomber(PrjID, isUser, classLabel);
+            ClassBomber.Build(reader, obj as ClassBomber);
+            return true;
+        }
+    }
     public class ClassBomber : ClassHoverCraft
     {
         public ClassBomber(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassBomber? obj)
         {
             // if reader.SaveType != 0
             // m_ReloadTime
@@ -20,7 +31,7 @@ namespace BZNParser.Battlezone.GameObject
             // if reader.SaveType != 0
             // reloadTime float
 
-            base.LoadData(reader);
+            ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
         }
     }
 }

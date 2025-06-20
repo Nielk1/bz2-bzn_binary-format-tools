@@ -16,7 +16,7 @@ namespace BZNParser.Battlezone.GameObject
         {
             this.Candidates = candidates;
         }
-        public override void LoadData(BZNStreamReader reader)
+        public void LoadData(BZNStreamReader reader)
         {
             reader.BaseStream.Position = Candidates[0].Next;
             //base.LoadData(reader);

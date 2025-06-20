@@ -5,10 +5,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "flare")]
     [ObjectClass(BZNFormat.BattlezoneN64, "flare")]
     [ObjectClass(BZNFormat.Battlezone2, "flare")]
+    public class ClassFlareMineFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassFlareMine(PrjID, isUser, classLabel);
+            ClassFlareMine.Build(reader, obj as ClassFlareMine);
+            return true;
+        }
+    }
     public class ClassFlareMine : ClassMine
     {
         public ClassFlareMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassFlareMine? obj)
         {
             IBZNToken tok;
 
@@ -24,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
                 //saveClass = tok.GetSingle();
             }
 
-            base.LoadData(reader);
+            ClassMine.Build(reader, obj as ClassMine);
         }
     }
 }

@@ -7,28 +7,27 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "powerup")]
+    public class ClassPowerUpFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassPowerUp(PrjID, isUser, classLabel);
+            ClassPowerUp.Build(reader, obj as ClassPowerUp);
+            return true;
+        }
+    }
     public class ClassPowerUp : ClassGameObject
     {
         public ClassPowerUp(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassPowerUp? obj)
         {
-            if (reader.Format == BZNFormat.Battlezone)
-            {
-                if (reader.Version < 1031)
-                {
-                    if (ClassLabel == "torpedo")
-                    {
-                        base.LoadData(reader);
-                        return;
-                    }
-                }
-            }
-
             if (reader.Format == BZNFormat.Battlezone && reader.SaveType != 0)
             {
                 // flags
             }
-            base.LoadData(reader);
+            ClassGameObject.Build(reader, obj as ClassGameObject);
         }
     }
 }

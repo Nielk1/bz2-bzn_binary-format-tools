@@ -7,10 +7,21 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "deposit")]
+    public class ClassDepositFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassDeposit(PrjID, isUser, classLabel);
+            ClassDeposit.Build(reader, obj as ClassDeposit);
+            return true;
+        }
+    }
     public class ClassDeposit : ClassBuilding
     {
         public ClassDeposit(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassDeposit? obj)
         {
             IBZNToken tok;
 
@@ -22,7 +33,7 @@ namespace BZNParser.Battlezone.GameObject
             //    //saveClass = tok.GetString();
             //}
 
-            base.LoadData(reader);
+            ClassBuilding.Build(reader, obj as ClassBuilding);
         }
     }
 }

@@ -8,12 +8,28 @@ namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "howitzer")]
     [ObjectClass(BZNFormat.BattlezoneN64, "howitzer")]
+    public class ClassHowitzerFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassHowitzer(PrjID, isUser, classLabel);
+            ClassHowitzer.Build(reader, obj as ClassHowitzer);
+            return true;
+        }
+    }
     public class ClassHowitzer : ClassTurretTank1
     {
         public ClassHowitzer(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassHowitzer? obj)
         {
-            base.LoadData(reader);
+            if (reader.Format == BZNFormat.Battlezone && reader.Version < 1020)
+            {
+                ClassHoverCraft.Build(reader, obj as ClassHoverCraft);
+                return;
+            }
+            ClassTurretTank1.Build(reader, obj as ClassTurretTank1);
         }
     }
 }

@@ -9,12 +9,23 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "person")]
     [ObjectClass(BZNFormat.BattlezoneN64, "person")]
     [ObjectClass(BZNFormat.Battlezone2, "person")] // ?
+    public class ClassPersonFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassPerson(PrjID, isUser, classLabel);
+            ClassPerson.Build(reader, obj as ClassPerson);
+            return true;
+        }
+    }
     public class ClassPerson : ClassCraft
     {
         public float nextScream { get; set; }
 
         public ClassPerson(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassPerson? obj)
         {
             IBZNToken tok;
 
@@ -22,7 +33,7 @@ namespace BZNParser.Battlezone.GameObject
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("nextScream", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse nextScream/FLOAT");
-                nextScream = tok.GetSingle();
+                if (obj != null) obj.nextScream = tok.GetSingle();
             }
             if (reader.Format == BZNFormat.Battlezone2)
             {
@@ -30,7 +41,7 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("nextScream", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse nextScream/FLOAT");
-                    nextScream = tok.GetSingle();
+                    if (obj != null) obj.nextScream = tok.GetSingle();
                 }
                 else
                 {
@@ -53,7 +64,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            base.LoadData(reader);
+            ClassCraft.Build(reader, obj as ClassCraft);
         }
     }
 }

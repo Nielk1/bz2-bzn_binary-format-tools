@@ -2,12 +2,23 @@
 
 namespace BZNParser.Battlezone.GameObject
 {
+    public class ClassGrenadeFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassGrenade(PrjID, isUser, classLabel);
+            ClassGrenade.Build(reader, obj as ClassGrenade);
+            return true;
+        }
+    }
     public class ClassGrenade : ClassRocket
     {
         public ClassGrenade(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassGrenade? obj)
         {
-            base.LoadData(reader);
+            ClassRocket.Build(reader, obj as ClassRocket);
         }
     }
 }

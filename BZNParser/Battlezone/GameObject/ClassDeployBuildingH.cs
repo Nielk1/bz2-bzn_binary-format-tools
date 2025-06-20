@@ -4,11 +4,22 @@ namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "recyclervehicleh")]
     [ObjectClass(BZNFormat.Battlezone2, "deploybuildingh")]
+    public class ClassDeployBuildingHFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassDeployBuildingH(PrjID, isUser, classLabel);
+            ClassDeployBuildingH.Build(reader, obj as ClassDeployBuildingH);
+            return true;
+        }
+    }
     public class ClassDeployBuildingH : ClassDeployable
     {
         public ClassDeployBuildingH(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassDeployBuildingH? obj)
         {
             IBZNToken tok;
 
@@ -24,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("buildMatrix", BinaryFieldType.DATA_MAT3D)) throw new Exception("Failed to parse buildMatrix/MAT3D"); // type unconfirmed
             //dropMat = tok.GetMatrix()
 
-            base.LoadData(reader);
+            ClassDeployable.Build(reader, obj as ClassDeployable);
         }
     }
 }

@@ -3,13 +3,24 @@
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone2, "constructionrig")]
+    public class ClassConstructionRig2Factory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassConstructionRig2(PrjID, isUser, classLabel);
+            ClassConstructionRig2.Build(reader, obj as ClassConstructionRig2);
+            return true;
+        }
+    }
     public class ClassConstructionRig2 : ClassDeployable
     {
         public Matrix dropMat { get; set; }
         public string dropClass { get; set; }
 
         public ClassConstructionRig2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassConstructionRig2? obj)
         {
             IBZNToken tok;
 
@@ -30,18 +41,18 @@ namespace BZNParser.Battlezone.GameObject
 
             tok = reader.ReadToken();
             if (!tok.Validate("buildMatrix", BinaryFieldType.DATA_MAT3D)) throw new Exception("Failed to parse buildMatrix/MAT3D"); // type unconfirmed
-            dropMat = tok.GetMatrix();
+            if (obj != null) obj.dropMat = tok.GetMatrix();
 
             //tok = reader.ReadToken();
             //if (!tok.Validate("buildClass", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse buildClass/ID");
             //dropClass = tok.GetString();
             if (reader.Version == 1149 || reader.Version == 1151)
             {
-                dropClass = reader.ReadGameObjectClass_BZ2("config");
+                if (obj != null) obj.dropClass = reader.ReadGameObjectClass_BZ2("config");
             }
             else
             {
-                dropClass = reader.ReadGameObjectClass_BZ2("buildClass");
+                if (obj != null) obj.dropClass = reader.ReadGameObjectClass_BZ2("buildClass");
             }
 
             if (reader.Version >= 1150)
@@ -61,7 +72,7 @@ namespace BZNParser.Battlezone.GameObject
                 (a2->vftable->out_bool)(a2, this + 2379, 1, "Explosion");
             }*/
 
-            base.LoadData(reader);
+            ClassDeployable.Build(reader, obj as ClassDeployable);
         }
     }
 }

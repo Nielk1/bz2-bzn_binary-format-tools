@@ -4,14 +4,25 @@ namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "geyser")]
     [ObjectClass(BZNFormat.BattlezoneN64, "geyser")]
+    public class ClassGeizerFactory : IClassFactory
+    {
+        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out ClassGameObject? obj, bool create = true)
+        {
+            obj = null;
+            if (create)
+                obj = new ClassGeizer(PrjID, isUser, classLabel);
+            ClassGeizer.Build(reader, obj as ClassGeizer);
+            return true;
+        }
+    }
     public class ClassGeizer : ClassBuilding
     {
         public UInt32 undefptr { get; set; }
 
         public ClassGeizer(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public override void LoadData(BZNStreamReader reader)
+        public static void Build(BZNStreamReader reader, ClassGeizer? obj)
         {
-            base.LoadData(reader);
+            ClassBuilding.Build(reader, obj as ClassBuilding);
         }
     }
 }

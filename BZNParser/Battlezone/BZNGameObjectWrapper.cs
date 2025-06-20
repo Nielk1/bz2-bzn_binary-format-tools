@@ -27,10 +27,10 @@ namespace BZNParser.Battlezone
 
 
         private Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache;
-        private Dictionary<string, Type> ClassLabelMap;
+        private Dictionary<string, IClassFactory> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, Type> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null, bool fake = false)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, int depth = 0, Dictionary<long, (BZNGameObjectWrapper Object, long Next)> RecursiveObjectGenreationMemo = null, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, IClassFactory> ClassLabelMap = null, HashSet<string> SuccessfulParses = null, HashSet<string> FailedParses = null, BattlezoneBZNHints? Hints = null, bool fake = false)
         {
             SuccessfulParses = SuccessfulParses ?? new HashSet<string>();
             FailedParses = FailedParses ?? new HashSet<string>();
@@ -317,23 +317,26 @@ namespace BZNParser.Battlezone
 
             ClassGameObject? gameObject = null;
 
-            if (ValidClassLabels != null && ValidClassLabels.Count == 1)
-            {
-                string label = ValidClassLabels.First();
-                Type t = ClassLabelMap[label];
-                ConstructorInfo? info = t.GetConstructor(new Type[] { typeof(string), typeof(bool), typeof(string) });
-                gameObject = (info?.Invoke(new object[] { PrjID, isUser != 0, label })) as ClassGameObject;
-            }
-
-            // we think we know what type of GameObject this is based on data about the class
-            if (gameObject != null)
             {
                 long pos = reader.BaseStream.Position;
                 try
                 {
-                    gameObject.LoadData(reader);
-                    SuccessfulParses.Add(PrjID);
-                    return gameObject; // success! Keep the stream position where it is
+                    if (ValidClassLabels != null && ValidClassLabels.Count == 1)
+                    {
+                        string label = ValidClassLabels.First();
+                        IClassFactory classFactory = ClassLabelMap[label];
+                        if (classFactory.Create(reader, PrjID, isUser != 0, label, out gameObject))
+                        {
+                            SuccessfulParses.Add(PrjID);
+                            return gameObject; // success! Keep the stream position where it is
+                        }
+                        else
+                        {
+                            reader.BaseStream.Position = pos;
+                            FailedParses?.Add(PrjID);
+                            gameObject = null;
+                        }
+                    }
                 }
                 catch
                 {
@@ -364,14 +367,12 @@ namespace BZNParser.Battlezone
                         if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Count == 0 || ValidClassLabels.Contains(classLableTempHolder))
                             try
                             {
-                                ConstructorInfo? info = kv.Value.GetConstructor(new Type[] { typeof(string), typeof(bool), typeof(string) });
-                                tempGameObject = (info?.Invoke(new object[] { PrjID, isUser != 0, kv.Key })) as ClassGameObject;
-                                if (tempGameObject != null)
+                                IClassFactory classFactory = kv.Value;
+                                if (classFactory.Create(reader, PrjID, isUser != 0, label, out tempGameObject) && tempGameObject != null)
                                 {
                                     //Console.ForegroundColor = ConsoleColor.Green;
                                     //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
                                     //Console.ResetColor();
-                                    tempGameObject.LoadData(reader); ClassLabelTempLookup[PrjID.ToLowerInvariant()] = classLableTempHolder;
                                     firstParseSuccess = true;
                                     if (CheckNext(parent, reader, countLeft - 1, depth + 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, SuccessfulParses, FailedParses, Hints))
                                         Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.BaseStream.Position, classLableTempHolder));
@@ -379,6 +380,7 @@ namespace BZNParser.Battlezone
                                 else
                                 {
                                     //Console.WriteLine($"DEBUG {new string('>', depth)} Candidate [{countLeft}] {PrjID} {tempGameObject}");
+                                    tempGameObject = null;
                                 }
                             }
                             catch
