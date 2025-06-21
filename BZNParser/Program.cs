@@ -153,38 +153,22 @@ namespace BZNParser
                             {
                                 case BZNFormat.Battlezone:
                                 case BZNFormat.BattlezoneN64:
-                                    {
-                                        //bool success = false;
-                                        try
-                                        {
-                                            new BZNFileBattlezone(reader, Hints: BZ1Hints);
-                                            //success = true;
-                                            File.AppendAllText("success.txt", $"{filename}\r\n");
-                                            //File.AppendAllText($"{reader.Format.ToString()} {reader.Version.ToString("D4")}.txt", $"{filename}\r\n");
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.ForegroundColor = ConsoleColor.Red;
-                                            Console.WriteLine($"Error: {ex.Message}");
-                                            Console.ResetColor();
-                                            //Console.ReadKey(true);
-                                            File.AppendAllText("failed.txt", $"{filename}\r\n");
-                                        }
-                                        finally
-                                        {
-                                            /*BznType bznType = new BznType(reader.Version, reader.HasBinary, reader.Format);
-                                            if (!Files.ContainsKey(bznType))
-                                                Files[bznType] = new List<(string, bool)>();
-                                            Files[bznType].Add((filename, success));*/
-                                        }
-                                    }
-                                    break;
                                 case BZNFormat.Battlezone2:
                                     {
                                         //bool success = false;
                                         try
                                         {
-                                            new BZNFileBattlezone(reader, Hints: BZ2Hints);
+                                            switch (reader.Format)
+                                            {
+                                                case BZNFormat.Battlezone:
+                                                case BZNFormat.BattlezoneN64:
+                                                    new BZNFileBattlezone(reader, Hints: BZ1Hints);
+                                                    break;
+                                                case BZNFormat.Battlezone2:
+                                                    new BZNFileBattlezone(reader, Hints: BZ2Hints);
+                                                    break;
+                                            }
+
                                             //success = true;
                                             File.AppendAllText("success.txt", $"{filename}\r\n");
                                             //File.AppendAllText($"{reader.Format.ToString()} {reader.Version.ToString("D4")}.txt", $"{filename}\r\n");

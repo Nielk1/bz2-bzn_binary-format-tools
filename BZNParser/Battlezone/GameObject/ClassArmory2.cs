@@ -19,12 +19,6 @@ namespace BZNParser.Battlezone.GameObject
         public ClassArmory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNStreamReader reader, ClassArmory2? obj)
         {
-            if (reader.Version == 1041) // version is special case for bz2001.bzn
-            {
-                ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
-                return;
-            }
-
             IBZNToken tok;
 
             tok = reader.ReadToken();

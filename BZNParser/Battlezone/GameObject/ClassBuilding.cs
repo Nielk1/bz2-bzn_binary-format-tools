@@ -59,16 +59,17 @@ namespace BZNParser.Battlezone.GameObject
                     {
                         if (reader.Version >= 1148)
                         {
-                            long posX = reader.BaseStream.Position;
+                            reader.Bookmark.Push();
                             tok = reader.ReadToken();
                             if (tok.Validate("saveMatrix", BinaryFieldType.DATA_MAT3D))
                             {
+                                reader.Bookmark.Discard();
                                 Matrix saveMatrix = tok.GetMatrix();
                             }
                             else
                             {
                                 //throw new Exception("Failed to parse saveMatrix/MAT3D"); // type not confirmed
-                                reader.BaseStream.Position = posX;
+                                reader.Bookmark.Pop();
                                 m_AlignsToObject = true;
                             }
                         }
@@ -87,10 +88,10 @@ namespace BZNParser.Battlezone.GameObject
                 }
 
                 bool loadAsDummy = false;
-                long pos = reader.BaseStream.Position;
+                reader.Bookmark.Push();
                 tok = reader.ReadToken();
                 loadAsDummy = tok.Validate("name", BinaryFieldType.DATA_CHAR);
-                reader.BaseStream.Position = pos;
+                reader.Bookmark.Pop();
                 if (loadAsDummy)
                 {
                     if (obj != null) obj.name = reader.ReadSizedString_BZ2_1145("name", 32);

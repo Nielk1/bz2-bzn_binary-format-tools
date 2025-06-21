@@ -236,7 +236,7 @@ namespace BZNParser.Reader
             return $"BINARY\tType: {type.ToString().PadRight(13)}\tValue: {BitConverter.ToString(data.Take(20).ToArray())}{(data.Length > 20 ? "..." : string.Empty)}";
         }
 
-        public bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
+        public bool Validate(string? name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
         {
             if (this.type == BinaryFieldType.DATA_UNKNOWN) return true;
             return this.type == type;

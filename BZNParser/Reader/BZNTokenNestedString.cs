@@ -184,7 +184,7 @@ namespace BZNParser.Reader
             return "ASCII\tName: " + name;
         }
 
-        public bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
+        public bool Validate(string? name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
         {
             return this.name == name;
         }

@@ -34,7 +34,7 @@ namespace BZNParser.Battlezone.GameObject
             if (reader.Version >= 1062)
             {
                 // we don't know how many taps there are without the ODF, so just try to read forever
-                long pos = reader.BaseStream.Position;
+                reader.Bookmark.Push();
                 tok = reader.ReadToken();
                 if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
                 {
@@ -43,10 +43,11 @@ namespace BZNParser.Battlezone.GameObject
                     {
                         UInt32 powerHandle2 = tok.GetUInt32(1);
                     }
+                    reader.Bookmark.Discard();
                 }
                 else
                 {
-                    reader.BaseStream.Position = pos;
+                    reader.Bookmark.Pop();
                 }
             }
 

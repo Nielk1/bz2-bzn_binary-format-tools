@@ -30,6 +30,6 @@ namespace BZNParser.Reader
         byte[] GetRaw(int index = 0, int length = -1);
 
         bool IsValidationOnly();
-        bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN);
+        bool Validate(string? name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN);
     }
 }

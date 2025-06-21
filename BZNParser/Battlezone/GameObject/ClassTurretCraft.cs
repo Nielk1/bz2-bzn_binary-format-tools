@@ -25,6 +25,8 @@ namespace BZNParser.Battlezone.GameObject
         public ClassTurretCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNStreamReader reader, ClassTurretCraft? obj)
         {
+            List<UInt32> powerHandles = new List<uint>();
+
             IBZNToken tok;
 
             if (reader.Format == BZNFormat.Battlezone2)
@@ -34,50 +36,71 @@ namespace BZNParser.Battlezone.GameObject
                     if (reader.Version >= 1072)
                     {
                         // we don't know how many taps there are without the ODF, so just try to read forever
-                        List<UInt32> powerHandles = new List<uint>();
-                        if (!reader.InBinary)
+                        //List<UInt32> powerHandles = new List<uint>();
+                        if (reader.InBinary)
                         {
                             for (; ; )
                             {
-                                long pos = reader.BaseStream.Position;
+                                reader.Bookmark.Push();
                                 tok = reader.ReadToken();
-                                if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
-                                {
-                                    UInt32 powerHandle = tok.GetUInt32();
-                                }
-                                else
-                                {
-                                    reader.BaseStream.Position = pos;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            long pos2 = 0;
-                            for (; ; )
-                            {
-                                long pos = reader.BaseStream.Position;
-                                tok = reader.ReadToken();
-                                if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
+                                if (tok.Validate(null, BinaryFieldType.DATA_LONG)) // "powerHandle"
                                 {
                                     UInt32 powerHandle = tok.GetUInt32();
                                     powerHandles.Add(powerHandle);
-                                    pos2 = pos;
                                 }
                                 else
                                 {
-                                    if (tok.Validate("illumination", BinaryFieldType.DATA_FLOAT))
+                                    reader.Bookmark.Pop(); // jump back to before this item which was a non-LONG
+
+                                    if (tok.Validate(null /*"illumination"*/, BinaryFieldType.DATA_FLOAT))
                                     {
-                                        reader.BaseStream.Position = pos2;
-                                        powerHandles.Remove(powerHandles.Last());
-                                        break;
+                                        if (reader.Version == 1041)
+                                        {
+                                            // version is special case for bz2001.bzn
+                                            // if we're here, reading a float means it must be the illumination float of the GameObject base class
+                                            // this means we didn't read an abandoned long, so we're done
+                                            break;
+                                        }
+
+                                        //UInt32 possibleAbandonedFlag = powerHandles.Last();
+                                        //if (possibleAbandonedFlag == 0 || possibleAbandonedFlag == 1)
+                                        {
+                                            // we must have eaten an abandoned flag prior, based on its value, so lets walk back to before it and stop holding it
+                                            reader.Bookmark.Pop();
+                                            powerHandles.Remove(powerHandles.Last());
+                                            break;
+                                        }
+                                        //else
+                                        //{
+                                        //    // well, we ate a UInt32 that wasn't 0 or 1, so it's not an Abandoned flag for sure, so keep it
+                                        //    break;
+                                        //}
                                     }
                                     else
                                     {
-                                        reader.BaseStream.Position = pos;
+                                        // we're done, we hit a non-LONG that is not a special case
                                         break;
                                     }
+                                }
+                            }
+                            for (int i = 0; i < powerHandles.Count; i++)
+                                reader.Bookmark.Discard(); // discard the bookmarks of the start of each powerHandle token
+                        }
+                        else
+                        {
+                            for (; ; )
+                            {
+                                reader.Bookmark.Push();
+                                tok = reader.ReadToken();
+                                if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
+                                {
+                                    reader.Bookmark.Discard();
+                                    UInt32 powerHandle = tok.GetUInt32();
+                                }
+                                else
+                                {
+                                    reader.Bookmark.Pop();
+                                    break;
                                 }
                             }
                         }
@@ -85,10 +108,11 @@ namespace BZNParser.Battlezone.GameObject
                     else
                     {
                         // we don't know how many taps there are without the ODF, so just try to read forever
-                        long pos = reader.BaseStream.Position;
+                        reader.Bookmark.Push();
                         tok = reader.ReadToken();
                         if (tok.Validate("powerHandle", BinaryFieldType.DATA_LONG))
                         {
+                            reader.Bookmark.Discard();
                             UInt32 powerHandle = tok.GetUInt32();
                             if (tok.GetCount() > 1)
                             {
@@ -97,7 +121,7 @@ namespace BZNParser.Battlezone.GameObject
                         }
                         else
                         {
-                            reader.BaseStream.Position = pos;
+                            reader.Bookmark.Pop();
                         }
                     }
                 }
@@ -141,16 +165,17 @@ namespace BZNParser.Battlezone.GameObject
                     //if (*(this + 376))
                     if (!string.IsNullOrEmpty(saveClass))
                     {
-                        long pos = reader.BaseStream.Position;
+                        reader.Bookmark.Push();
                         tok = reader.ReadToken();
                         if (tok.Validate("saveMatrix", BinaryFieldType.DATA_MAT3D))
                         {
+                            reader.Bookmark.Discard();
                             Matrix saveMatrix = tok.GetMatrix();
                         }
                         else
                         {
                             //throw new Exception("Failed to parse saveMatrix/MAT3D"); // type not confirmed
-                            reader.BaseStream.Position = pos;
+                            reader.Bookmark.Pop();
                             m_AlignsToObject = true;
                         }
 
@@ -184,31 +209,7 @@ namespace BZNParser.Battlezone.GameObject
                     Int32 autoTarget = tok.GetInt32();
                 }
 
-                // version is special case for bz2001.bzn
-                // this file is detected as a BZ2 file but has a few odd quirks here and there due to being so old
-                if (reader.Version == 1041)
-                {
-                    ClassGameObject.Hydrate(reader, obj as ClassGameObject);
-                }
-                else if (reader.Version == 1047 || reader.Version == 1105 || reader.Version == 1108)
-                {
-                    // this doesn't seem like it should ever happen, but it does, a lot
-                    // for example an fbspir doesn't have the abandoned flag but an ibgtow does?
-                    long pos = reader.BaseStream.Position;
-                    tok = reader.ReadToken();
-                    if (!tok.Validate("abandoned", BinaryFieldType.DATA_LONG))
-                    {
-                        reader.BaseStream.Position = pos;
-                        ClassGameObject.Hydrate(reader, obj as ClassGameObject);
-                        return;
-                    }
-                    reader.BaseStream.Position = pos;
-                    ClassCraft.Hydrate(reader, obj as ClassCraft);
-                }
-                else
-                {
-                    ClassCraft.Hydrate(reader, obj as ClassCraft);
-                }
+                ClassCraft.Hydrate(reader, obj as ClassCraft);
 
                 if (m_AlignsToObject)
                 {

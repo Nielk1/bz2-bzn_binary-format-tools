@@ -174,7 +174,7 @@ namespace BZNParser.Reader
             return retVal;
         }
 
-        public bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
+        public bool Validate(string? name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
         {
             //return this.name == name;
             if (this.name == name)

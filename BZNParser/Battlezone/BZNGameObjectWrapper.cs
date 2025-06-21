@@ -313,7 +313,7 @@ namespace BZNParser.Battlezone
             Entity? gameObject = null;
 
             {
-                long pos = reader.BaseStream.Position;
+                reader.Bookmark.Push();
                 try
                 {
                     if (ValidClassLabels != null && ValidClassLabels.Count == 1)
@@ -322,19 +322,24 @@ namespace BZNParser.Battlezone
                         IClassFactory classFactory = ClassLabelMap[label];
                         if (classFactory.Create(reader, PrjID, isUser != 0, label, out gameObject))
                         {
+                            reader.Bookmark.Discard();
                             return gameObject; // success! Keep the stream position where it is
                         }
                         else
                         {
-                            reader.BaseStream.Position = pos;
+                            reader.Bookmark.Pop();
                             gameObject = null;
                         }
+                    }
+                    else
+                    {
+                        reader.Bookmark.Discard();
                     }
                 }
                 catch
                 {
                     // roll back to the start of the object
-                    reader.BaseStream.Position = pos;
+                    reader.Bookmark.Pop();
                     gameObject = null;
                 }
             }
@@ -343,7 +348,7 @@ namespace BZNParser.Battlezone
             //if (gameObject == null)
             {
                 // try every possible object
-                long pos = reader.BaseStream.Position;
+                reader.Bookmark.Push();
                 Entity tempGameObject;
 
                 
@@ -364,7 +369,7 @@ namespace BZNParser.Battlezone
                                 {
                                     firstParseSuccess = true;
                                     if (CheckNext(parent, reader, countLeft - 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, Hints))
-                                        Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.BaseStream.Position, classLableTempHolder));
+                                        Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.Bookmark.Get(), classLableTempHolder));
                                 }
                                 else
                                 {
@@ -374,9 +379,10 @@ namespace BZNParser.Battlezone
                             catch
                             {
                             }
-                        reader.BaseStream.Position = pos;
+                        reader.Bookmark.Peek();
                     }
                 }
+                reader.Bookmark.Pop();
 
                 ClassLabelTempLookup.Remove(PrjID.ToLowerInvariant());
 
@@ -388,12 +394,12 @@ namespace BZNParser.Battlezone
                 {
                     if (Candidates.Count == 1)
                     {
-                        reader.BaseStream.Position = Candidates[0].Next;
+                        reader.Bookmark.Set(Candidates[0].Next);
                         return Candidates[0].Object;
                     }
                     else
                     {
-                        reader.BaseStream.Position = Candidates.Min(dr => dr.Next);
+                        reader.Bookmark.Set(Candidates.Min(dr => dr.Next));
                         return new MultiClass(PrjID, isUser != 0, Candidates);
                     }
                 }
@@ -408,28 +414,28 @@ namespace BZNParser.Battlezone
 
         private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<long, (Entity? Object, long Next)> RecursiveObjectGenreationMemo, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
         {
-            long pos = reader.BaseStream.Position;
             if (countLeft == 0)
             {
+                reader.Bookmark.Push();
                 try
                 {
                     parent.TailParse(reader);
                 }
                 catch
                 {
-                    reader.BaseStream.Position = pos;
+                    reader.Bookmark.Pop();
                     return false;
                 }
-                reader.BaseStream.Position = pos;
+                reader.Bookmark.Pop();
                 return true;
             }
             else
             {
                 if (!reader.InBinary)
                 {
-                    long offset = reader.BaseStream.Position;
+                    reader.Bookmark.Push();
                     IBZNToken tok = reader.ReadToken();
-                    reader.BaseStream.Position = offset;
+                    reader.Bookmark.Pop();
                     if (!tok.IsValidationOnly() || !tok.Validate("GameObject", BinaryFieldType.DATA_UNKNOWN))
                     {
                         // next field isn't the start of a GameObject
@@ -439,19 +445,19 @@ namespace BZNParser.Battlezone
                 }
                 else
                 {
-                    long offset = reader.BaseStream.Position;
+                    reader.Bookmark.Push();
                     try
                     {
                         BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, RecursiveObjectGenreationMemo, ClassLabelTempLookup, ClassLabelMap, Hints, fake: true);
+                        reader.Bookmark.Pop();
+                        return true;
                     }
                     catch
                     {
                         // next field isn't the start of a GameObject (since a shallow gameobject crashed)
-                        reader.BaseStream.Position = offset;
+                        reader.Bookmark.Pop();
                         return false;
                     }
-                    reader.BaseStream.Position = offset;
-                    return true;
                 }
             }
         }

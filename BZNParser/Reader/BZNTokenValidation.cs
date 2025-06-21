@@ -44,7 +44,7 @@ namespace BZNParser.Reader
             return "VALDT\t[" + name + "]";
         }
 
-        public bool Validate(string name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
+        public bool Validate(string? name, BinaryFieldType type = BinaryFieldType.DATA_UNKNOWN)
         {
             return this.name == name;
         }

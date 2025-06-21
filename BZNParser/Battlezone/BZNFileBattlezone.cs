@@ -26,23 +26,7 @@ namespace BZNParser.Battlezone
             this.Hints = Hints;
 
             IBZNToken tok;
-            //if(!tok.Validate("version", BinaryFieldType.DATA_UNKNOWN)) throw new Exception("Failed to parse version/UNKNOWN");
-            //Console.WriteLine($"Version: {tok.GetUInt32()}");
-            /*if (!tok.Validate("version", BinaryFieldType.DATA_UNKNOWN))
-            {
-                if (!tok.Validate("aversion", BinaryFieldType.DATA_UNKNOWN))
-                {
-                    throw new Exception("Failed to parse version/UNKNOWN");
-                }
-                else
-                {
-                    Console.WriteLine($"version: {tok.GetUInt32()}");
-                }
-            }
-            else
-            {
-                Console.WriteLine($"Version: {tok.GetUInt32()}");
-            }*/
+
             Console.WriteLine($"Format: {reader.Format}");
 
             if (reader.Format != BZNFormat.BattlezoneN64)
@@ -59,18 +43,6 @@ namespace BZNParser.Battlezone
                 Console.WriteLine($"saveType: {tok.GetUInt32()}");
             }
 
-            //if (reader.Format == BZNFormat.BattlezoneN64)
-            //{
-            //    tok = reader.ReadToken();
-            //    if (!tok.Validate("binarySave", BinaryFieldType.DATA_BOOL))
-            //        throw new Exception("Failed to parse binarySave/BOOL");
-            //    Console.WriteLine($"binarySave: {tok.GetBoolean()}");
-            //
-            //    tok = reader.ReadToken();
-            //    if (!tok.Validate("msn_filename", BinaryFieldType.DATA_CHAR))
-            //        throw new Exception("Failed to parse msn_filename/CHAR");
-            //    Console.WriteLine($"msn_filename: \"{tok.GetString()}\"");
-            //}
             if (reader.Format == BZNFormat.Battlezone)
             {
                 if (reader.Version > 1022)
@@ -310,16 +282,17 @@ namespace BZNParser.Battlezone
                 // but it looks like AIMission starts with the header, so no idea what this extra bool is for
                 if (reader.Version == 1044)
                 {
-                    long pos = reader.BaseStream.Position;
+                    reader.Bookmark.Push();
                     tok = reader.ReadToken();
                     if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL))
                     {
                         // unknown what this is or why it happens
                         //throw new Exception("Failed to parse undefboolBOOL");
-                        reader.BaseStream.Position = pos;
+                        reader.Bookmark.Pop();
                     }
                     else
                     {
+                        reader.Bookmark.Discard();
                         // if this never happens now we can remove it
                     }
                 }
@@ -525,15 +498,16 @@ namespace BZNParser.Battlezone
                 }
                 else if (reader.Format == BZNFormat.Battlezone2)
                 {
-                    long pos = reader.BaseStream.Position;
+                    reader.Bookmark.Push();
                     tok = reader.ReadToken();
                     if (!tok.Validate("sObject", BinaryFieldType.DATA_PTR))
                     {
-                        reader.BaseStream.Position = pos;
+                        reader.Bookmark.Pop();
                         //throw new Exception("Failed to parse sObject/PTR");
                     }
                     else
                     {
+                        reader.Bookmark.Discard();
                         //Int32 x = tok.GetUInt32H();
                     }
                 }
@@ -588,7 +562,7 @@ namespace BZNParser.Battlezone
                 // SatellitePanel
                 if (reader.Version >= 1125) // version 1169 failed to read this, might need a walk back for malformed
                 {
-                    long pos = reader.BaseStream.Position;
+                    reader.Bookmark.Push();
 
                     // 1188 1192
                     tok = reader.ReadToken();
@@ -597,16 +571,17 @@ namespace BZNParser.Battlezone
                         if (tok.Validate("PadData", BinaryFieldType.DATA_VOID))
                         {
                             // SatellitePanel data is missing when it must exist, deal with damaged BZN?
-                            reader.BaseStream.Position = pos;
+                            reader.Bookmark.Pop();
                         }
                         else
                         {
+                            reader.Bookmark.Discard();
                             throw new Exception("Failed to parse hasEntered/BOOL");
                         }
                     }
                     else
                     {
-
+                        reader.Bookmark.Discard();
                         for (int i = 0; i < 3/*MAX_WORLDS*/; i++)
                         {
                             tok = reader.ReadToken();
@@ -674,7 +649,7 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            if (reader.BaseStream.Position < reader.BaseStream.Length)
+            if (!reader.EndOfFile())
             {
                 if (reader.Format == BZNFormat.Battlezone)
                 {
@@ -692,7 +667,7 @@ namespace BZNParser.Battlezone
                     }
                 }
 
-                if (reader.BaseStream.Position < reader.BaseStream.Length)
+                if (!reader.EndOfFile())
                 {
                     throw new Exception("Tokens left after last known token");
                 }

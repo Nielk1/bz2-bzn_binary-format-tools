@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+using static BZNParser.Reader.BZNStreamReader;
 
 namespace BZNParser.Reader
 {
@@ -34,7 +35,57 @@ namespace BZNParser.Reader
             {"bumpers", 3}, // VEC3
         };
 
-        public Stream BaseStream { get; private set; } // Underlying Stream
+        private Stream BaseStream { get; set; } // Underlying Stream
+        public bool EndOfFile()
+        {
+            return BaseStream.Position >= BaseStream.Length;
+        }
+
+        private readonly BookmarkManager _bookmarkManager;
+        public BookmarkManager Bookmark => _bookmarkManager;
+        public class BookmarkManager
+        {
+            private readonly BZNStreamReader _reader;
+            private readonly Stack<long> _offsets = new();
+
+            public BookmarkManager(BZNStreamReader reader)
+            {
+                _reader = reader;
+            }
+
+            public void Push()
+            {
+                _offsets.Push(_reader.BaseStream.Position);
+            }
+
+            public void Pop()
+            {
+                if (_offsets.TryPop(out var pos))
+                    _reader.BaseStream.Position = pos;
+            }
+            public void Peek()
+            {
+                if (_offsets.TryPeek(out var pos))
+                    _reader.BaseStream.Position = pos;
+            }
+
+            public void Discard()
+            {
+                _offsets.TryPop(out _);
+            }
+
+            // Set the offset, used for multi-offset situations
+            public void Set(long offset)
+            {
+                _reader.BaseStream.Position = offset;
+            }
+
+            // Get the offset, used for multi-offset situations
+            public long Get()
+            {
+                return _reader.BaseStream.Position; ;
+            }
+        }
 
         /// <summary>
         /// BZN file started in binary.
@@ -100,6 +151,8 @@ namespace BZNParser.Reader
 
         public BZNStreamReader(Stream stream)
         {
+            _bookmarkManager = new BookmarkManager(this);
+
             long startPosition = stream.Position;
 
             Format = BZNFormat.Battlezone;
