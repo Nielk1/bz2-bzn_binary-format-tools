@@ -392,14 +392,17 @@ namespace BZNParser.Battlezone
 
                 if (Candidates.Count > 0)
                 {
+                    // limit to only the shortest valid parsings, avoiding issues with objects that overflow over a 2nd object perfectly
+                    long minEnd = Candidates.Min(dr => dr.Next);
+                    reader.Bookmark.Set(minEnd);
+                    Candidates = Candidates.Where(dr => dr.Next == minEnd).ToList();
+
                     if (Candidates.Count == 1)
                     {
-                        reader.Bookmark.Set(Candidates[0].Next);
                         return Candidates[0].Object;
                     }
                     else
                     {
-                        reader.Bookmark.Set(Candidates.Min(dr => dr.Next));
                         return new MultiClass(PrjID, isUser != 0, Candidates);
                     }
                 }
