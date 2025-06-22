@@ -10,12 +10,6 @@ using System.Threading.Tasks;
 
 namespace BZNParser.Battlezone
 {
-    public enum Malformation
-    {
-        UNKNOWN = 0,
-        INCOMPAT, // Not loadable by game
-        OVERCOUNT, // Too many objects of this type, maximum may have changed
-    }
     public enum SaveType
     {
         BZN = 0, // ST_MISSION in BZ2, MissionSave False in BZ1
@@ -33,12 +27,20 @@ namespace BZNParser.Battlezone
         public bool Strict { get; set; }
         public Dictionary<string, HashSet<string>>? ClassLabels { get; set; }
     }
-    public class BZNFileBattlezone
+    public class BZNFileBattlezone : IMalformable
     {
         private BattlezoneBZNHints? Hints;
         public SaveType SaveType { get; private set; }
+
+
+        private readonly IMalformable.MalformationManager _malformationManager;
+        public IMalformable.MalformationManager Malformations => _malformationManager;
+
+
         public BZNFileBattlezone(BZNStreamReader reader, BattlezoneBZNHints? Hints = null)
         {
+            this._malformationManager = new IMalformable.MalformationManager(this);
+
             this.Hints = Hints;
 
             IBZNToken tok;
@@ -119,7 +121,9 @@ namespace BZNParser.Battlezone
             {
                 if (reader.Format == BZNFormat.Battlezone && reader.Version < 1016)
                 {
-                    bool missionSave = false;
+                    //bool missionSave = false;
+                    Console.WriteLine($"missionSave: false (assumed)");
+                    SaveType = SaveType.BZN;
                 }
                 //if ((1017 <= reader.Version && reader.Version <= 1037) || reader.Version == 1043 || reader.Version == 1045 || reader.Version == 2003 || reader.Version == 2016)
                 else
@@ -188,6 +192,33 @@ namespace BZNParser.Battlezone
                     Console.WriteLine($"start_time: {start_time}");
                 }
             }
+
+            if (reader.Format == BZNFormat.Battlezone && SaveType == SaveType.SAVE)
+            {
+                reader.Bookmark.Push();
+                try
+                {
+                    Hydrate(reader);
+                    reader.Bookmark.Discard();
+                }
+                catch
+                {
+                    reader.Bookmark.Pop();
+                    SaveType = SaveType.BZN;
+                    Hydrate(reader);
+                    // Malformation: missionSave wrong
+                    Malformations.Add(Malformation.INCORRECT, "missionSave", true);
+                }
+            }
+            else
+            {
+                Hydrate(reader);
+            }
+        }
+
+        private void Hydrate(BZNStreamReader reader)
+        {
+            IBZNToken tok;
 
             // get count of GameObjects
             tok = reader.ReadToken();

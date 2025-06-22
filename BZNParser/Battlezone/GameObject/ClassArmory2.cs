@@ -49,7 +49,7 @@ namespace BZNParser.Battlezone.GameObject
 
             for (int i = 0; i < buildCount; i++)
             {
-                string item = reader.ReadGameObjectClass_BZ2(parent, "buildItem");
+                string item = reader.ReadGameObjectClass_BZ2("buildItem");
                 if (obj != null) obj.buildQueue.Enqueue(item);
             }
             if (parent.SaveType != SaveType.BZN)

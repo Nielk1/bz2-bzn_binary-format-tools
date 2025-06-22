@@ -135,7 +135,7 @@ namespace BZNParser.Battlezone.GameObject
                         bool wantTurret = tok.GetBoolean(); // wantTurret
                         if (obj != null)
                         {
-                            obj.Malformations.Add(Malformation.INCOMPAT, "wantTurret");
+                            obj.Malformations.Add(Malformation.MISINTERPRET, "wantTurret", "turretAligned");
                             obj.turretAligned = tok.GetBoolean(); // turretAligned // game would do this, so is it right? // TODO figure this out
                         }
                     }
