@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace BZNParser
@@ -11,6 +13,11 @@ namespace BZNParser
         public float x;
         public float y;
         public float z;
+
+        internal float Magnitude()
+        {
+            return (float)Math.Sqrt(x * x + y * y + z * z);
+        }
     }
 
     public struct Vector2D
@@ -21,18 +28,59 @@ namespace BZNParser
 
     public struct Euler
     {
-        public float mass;
-        public float mass_inv;
+        const float EPSILON = 1.0e-4f;
+        const float HUGE_NUMBER = 1.0e30f;
 
-        public float v_mag;
-        public float v_mag_inv;
-
-        public float I;
-        public float k_i;
+        public Quaternion Att;
 
         public Vector3D v;
         public Vector3D omega;
         public Vector3D Accel;
+
+        public Vector3D Alpha;
+        public Vector3D Pos;
+
+        public float mass;
+        public float mass_inv;
+
+        public float I;
+        public float I_inv;
+
+        public float v_mag;
+        public float v_mag_inv;
+
+        public void InitLoadSave()
+        {
+            v = new Vector3D();
+            omega = new Vector3D();
+            Accel = new Vector3D();
+            Alpha = new Vector3D();
+        }
+
+        // Reads the 'mass' member, builds mass_inv and I_inv fields
+        public void CalcMassIInv()
+        {
+            mass_inv = HUGE_NUMBER;
+            I_inv = HUGE_NUMBER;
+            if (mass > EPSILON)
+            {
+                mass_inv = 1.0f / mass;
+                I_inv = 1.0f / I;
+            }
+            else
+            {
+                mass_inv = HUGE_NUMBER;
+                I_inv = HUGE_NUMBER;
+            }
+        }
+
+
+        // Reads the 'v' member, builds the 'v_mag' and 'v_mag_inv' members
+        public void CalcVMag()
+        {
+            v_mag = v.Magnitude();
+            v_mag_inv = (v_mag == 0.0f) ? HUGE_NUMBER : 1.0f / v_mag;
+        }
     }
 
     /*public struct MatrixOld
@@ -55,6 +103,9 @@ namespace BZNParser
         public float positw;
     }
 
+    public struct Quaternion
+    {
+    }
     public enum BinaryFieldType : byte
     {
         DATA_VOID = 0, //0x00

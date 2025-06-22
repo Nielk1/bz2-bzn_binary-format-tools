@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Numerics;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -260,9 +261,9 @@ namespace BZNParser.Reader
             }
         }
 
-        public static Euler GetEuler(this BZNStreamReader reader, BZNFileBattlezone parent)
+        public static Euler GetEuler(this BZNStreamReader reader, SaveType saveType)
         {
-            if (reader.Format != BZNFormat.Battlezone2 || parent.SaveType == SaveType.BZN) // Battlezone 2 has side paths
+            if (reader.Format != BZNFormat.Battlezone2 || saveType == SaveType.BZN) // Battlezone 2 has side paths
             {
                 if (reader.InBinary)
                 {
@@ -309,7 +310,7 @@ namespace BZNParser.Reader
                         v_mag = euler_v_mag,
                         v_mag_inv = euler_v_mag_inv,
                         I = euler_I,
-                        k_i = euler_k_i,
+                        I_inv = euler_k_i,
                         v = euler_v,
                         omega = euler_omega,
                         Accel = euler_Accel
@@ -328,13 +329,77 @@ namespace BZNParser.Reader
             }
             else if (reader.Format == BZNFormat.Battlezone2 && reader.Version < 1145)
             {
-                // text buffer
+                // byte buffer as void*
                 throw new NotImplementedException("Version <1145 Euler Save");
             }
             else
             {
-                // compressable data
-                throw new NotImplementedException("Version <1145 Euler Save");
+                if (reader.InBinary)
+                {
+                    IBZNToken tok = reader.ReadToken();
+                    if (!tok.Validate("mass", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                    float euler_mass = tok.GetSingle();
+
+                    //float euler_mass_inv = tok.GetSingle();
+                    //float euler_v_mag = tok.GetSingle();
+                    //float euler_v_mag_inv = tok.GetSingle();
+
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("I", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse euler's FLOAT");
+                    float euler_I = tok.GetSingle();
+
+                    //float euler_k_i = tok.GetSingle();
+
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("small", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse euler's small BOOL");
+                    bool canCompress = tok.GetBoolean();
+
+                    Euler euler = new Euler()
+                    {
+                        mass = euler_mass,
+                        I = euler_I,
+                    };
+
+                    if (!canCompress)
+                    {
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("v", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
+                        euler.v = tok.GetVector3D();
+
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("omega", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
+                        euler.omega = tok.GetVector3D();
+
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("Accel", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
+                        euler.Accel = tok.GetVector3D();
+
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("Alpha", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
+                        euler.Alpha = tok.GetVector3D();
+                    }
+                    else
+                    {
+                        euler.InitLoadSave();
+                    }
+
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("Pos", BinaryFieldType.DATA_VEC3D)) throw new Exception("Failed to parse euler's VEC3D");
+                    Vector3D euler_Pos = tok.GetVector3D();
+
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("Att", BinaryFieldType.DATA_QUAT)) throw new Exception("Failed to parse euler's QUAT");
+                    Quaternion euler_Att = tok.GetQuaternion();
+
+                    euler.Pos = euler_Pos;
+                    euler.Att = euler_Att;
+
+                    // And, reconstruct unsaved params now
+                    euler.CalcMassIInv();
+                    euler.CalcVMag();
+
+                    return euler;
+                }
             }
         }
     }

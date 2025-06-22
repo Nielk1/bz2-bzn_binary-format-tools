@@ -167,7 +167,7 @@ namespace BZNParser.Reader
                 v_mag = subToks[2].GetSingle(),
                 v_mag_inv = subToks[3].GetSingle(),
                 I = subToks[4].GetSingle(),
-                k_i = subToks[5].GetSingle(),
+                I_inv = subToks[5].GetSingle(),
                 v = subToks[6].GetVector3D(),
                 omega = subToks[7].GetVector3D(),
                 Accel = subToks[8].GetVector3D()

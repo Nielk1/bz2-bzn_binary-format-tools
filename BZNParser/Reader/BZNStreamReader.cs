@@ -26,13 +26,14 @@ namespace BZNParser.Reader
             {"v", 3},
             {"omega", 3},
             {"Accel", 3},
-            {"euler", 9},
+            {"euler", 9}, // 5 or 9 in a savegame
             {"dropMat", 12},
             {"transform", 12},
             {"startMat", 12},
             {"saveMatrix", 12},
             {"buildMatrix", 12},
             {"bumpers", 3}, // VEC3
+            {"Att", 4}, // QUAT
         };
 
         private Stream BaseStream { get; set; } // Underlying Stream

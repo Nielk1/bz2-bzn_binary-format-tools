@@ -58,7 +58,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (obj != null) obj.pos = tok.GetVector3D();
             }
 
-            if (obj != null) obj.euler = reader.GetEuler(parent);
+            if (obj != null) obj.euler = reader.GetEuler(parent.SaveType);
 
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
