@@ -16,26 +16,6 @@ namespace BZNParser.Reader
         /// </summary>
         const long MAGIC_NO_BINARY = long.MaxValue;
 
-        /// <summary>
-        /// Lookup for complex variables in ASCII BZN files, the value is the number of sub-tokens that make up the complex variable.
-        /// </summary>
-        private static readonly Dictionary<string, int> ComplexStringTokenSizeMap = new Dictionary<string, int>
-        {
-            {"points", 2},
-            {"pos", 3},
-            {"v", 3},
-            {"omega", 3},
-            {"Accel", 3},
-            {"euler", 9}, // 5 or 9 in a savegame
-            {"dropMat", 12},
-            {"transform", 12},
-            {"startMat", 12},
-            {"saveMatrix", 12},
-            {"buildMatrix", 12},
-            {"bumpers", 3}, // VEC3
-            {"Att", 4}, // QUAT
-        };
-
         private Stream BaseStream { get; set; } // Underlying Stream
         public bool EndOfFile()
         {
@@ -417,6 +397,20 @@ namespace BZNParser.Reader
             return null;
         }
 
+        private static string[] SmartStringSplit(string input, int count)
+        {
+            if (input == null)
+                return Array.Empty<string>();
+
+            string trimmed = input.TrimStart();
+            int leadingSpaceCount = input.Length - trimmed.Length;
+
+            // Trim leading spaces, then split by spaces, removing empty entries
+            string[] retVal = trimmed.Split(' ', count);
+            retVal[0] = new string(' ', leadingSpaceCount) + retVal[0];
+            return retVal;
+        }
+
         /// <summary>
         /// Read a string value from the file stream.
         /// </summary>
@@ -434,22 +428,55 @@ namespace BZNParser.Reader
                 rawLine = rawLine.Replace("=", " = ");
             }
 
-            string[] line = rawLine.Split(' ', 4);
+            //string[] line = rawLine.Split(' ', 4);
+            string[] line = SmartStringSplit(rawLine, 4);
 
             if (line[1] == "=")
             {
                 line = rawLine.Split(' ', 3);
                 string name = line[0];
 
-                if (ComplexStringTokenSizeMap.ContainsKey(name))
+                int countIndentedLines = 0;
+                {
+                    HashSet<string> SeenBeforeKeys = new HashSet<string>();
+                    long offsetStartChildren = filestream.Position;
+                    int countSpacesHead = 0;
+                    for (; ; )
+                    {
+                        string nextRawLine = ReadStringLine(filestream);
+                        if (nextRawLine.StartsWith(" ") && nextRawLine.Contains("="))
+                        {
+                            int countSpacesHead2 = nextRawLine.Length - nextRawLine.TrimStart().Length;
+                            if (countSpacesHead == 0)
+                                countSpacesHead = countSpacesHead2;
+                            string key = nextRawLine.Split(new char[] { '=', '[' })[0].TrimEnd();
+                            if (countSpacesHead == countSpacesHead2 && SeenBeforeKeys.Add(key))
+                            {
+                                countIndentedLines++;
+                                IBZNToken tok = ReadStringValueToken(filestream, nextRawLine);
+                            }
+                            else
+                            {
+                                filestream.Position = offsetStartChildren;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            filestream.Position = offsetStartChildren;
+                            break;
+                        }
+                    }
+                }
+                if (countIndentedLines > 0)
                 {
                     int count = 1;
 
                     IBZNToken[][] values = new IBZNToken[count][];
                     for (int subSectionCounter = 0; subSectionCounter < count; subSectionCounter++)
                     {
-                        values[subSectionCounter] = new IBZNToken[ComplexStringTokenSizeMap[name]];
-                        for (int constructCounter = 0; constructCounter < ComplexStringTokenSizeMap[name]; constructCounter++)
+                        values[subSectionCounter] = new IBZNToken[countIndentedLines];
+                        for (int constructCounter = 0; constructCounter < countIndentedLines; constructCounter++)
                         {
                             string rawLineInner = ReadStringLine(filestream).TrimEnd('\r', '\n').TrimStart();
                             if (rawLineInner.Length != 0)
@@ -462,7 +489,7 @@ namespace BZNParser.Reader
                 else
                 {
                     if (line.Length == 2)
-                        //return new BZNTokenString(name, null);
+                        // because there is no array size indicator we assume the value is on the same line, and there isn't one
                         return new BZNTokenString(name, new string[] { string.Empty });
 
                     string value = line[2];
@@ -483,13 +510,45 @@ namespace BZNParser.Reader
 
                 if (count == 0) return new BZNTokenString(name, new string[0]);
 
-                if (ComplexStringTokenSizeMap.ContainsKey(name))
+                int countIndentedLines = 0;
+                {
+                    HashSet<string> SeenBeforeKeys = new HashSet<string>();
+                    long offsetStartChildren = filestream.Position;
+                    int countSpacesHead = 0;
+                    for (; ; )
+                    {
+                        string nextRawLine = ReadStringLine(filestream);
+                        if (nextRawLine.StartsWith(" ") && nextRawLine.Contains("="))
+                        {
+                            int countSpacesHead2 = nextRawLine.Length - nextRawLine.TrimStart().Length;
+                            if (countSpacesHead == 0)
+                                countSpacesHead = countSpacesHead2;
+                            string key = nextRawLine.Split(new char[] { '=', '[' })[0].TrimEnd();
+                            if (countSpacesHead == countSpacesHead2 && SeenBeforeKeys.Add(key))
+                                {
+                                countIndentedLines++;
+                                IBZNToken tok = ReadStringValueToken(filestream, nextRawLine);
+                            }
+                            else
+                            {
+                                filestream.Position = offsetStartChildren;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            filestream.Position = offsetStartChildren;
+                            break;
+                        }
+                    }
+                }
+                if (countIndentedLines > 0)
                 {
                     IBZNToken[][] values = new IBZNToken[count][];
                     for (int subSectionCounter = 0; subSectionCounter < count; subSectionCounter++)
                     {
-                        values[subSectionCounter] = new IBZNToken[ComplexStringTokenSizeMap[name]];
-                        for (int constructCounter = 0; constructCounter < ComplexStringTokenSizeMap[name]; constructCounter++)
+                        values[subSectionCounter] = new IBZNToken[countIndentedLines];
+                        for (int constructCounter = 0; constructCounter < countIndentedLines; constructCounter++)
                         {
                             string rawLineInner = ReadStringLine(filestream).TrimEnd('\r', '\n').TrimStart();
                             if (rawLineInner.Length != 0)

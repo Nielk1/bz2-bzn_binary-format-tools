@@ -389,10 +389,11 @@ namespace BZNParser.Reader
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("Att", BinaryFieldType.DATA_QUAT)) throw new Exception("Failed to parse euler's QUAT");
-                    Quaternion euler_Att = tok.GetQuaternion();
+                throw new NotImplementedException("Euler Save");
+                    //Quaternion euler_Att = tok.GetQuaternion();
 
                     euler.Pos = euler_Pos;
-                    euler.Att = euler_Att;
+                    //euler.Att = euler_Att;
 
                     // And, reconstruct unsaved params now
                     euler.CalcMassIInv();
@@ -401,6 +402,7 @@ namespace BZNParser.Reader
                     return euler;
                 }
             }
+            throw new NotImplementedException("Euler Save");
         }
     }
 }
