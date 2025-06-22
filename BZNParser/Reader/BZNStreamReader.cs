@@ -16,6 +16,26 @@ namespace BZNParser.Reader
         /// </summary>
         const long MAGIC_NO_BINARY = long.MaxValue;
 
+        /// <summary>
+        /// Lookup for complex variables in ASCII BZN files, the value is the number of sub-tokens that make up the complex variable.
+        /// </summary>
+        private static readonly Dictionary<string, int> ComplexStringTokenSizeMap = new Dictionary<string, int>
+        {
+            {"points", 2},
+            {"pos", 3},
+            {"v", 3},
+            {"omega", 3},
+            {"Accel", 3},
+            {"euler", 9}, // 5 or 9 in a savegame
+            {"dropMat", 12},
+            {"transform", 12},
+            {"startMat", 12},
+            {"saveMatrix", 12},
+            {"buildMatrix", 12},
+            {"bumpers", 3}, // VEC3
+            {"Att", 4}, // QUAT
+        };
+
         private Stream BaseStream { get; set; } // Underlying Stream
         public bool EndOfFile()
         {
@@ -468,6 +488,11 @@ namespace BZNParser.Reader
                         }
                     }
                 }
+
+                // fix for fucked up BZNs that removed leading spaces from complex ASCII tokens
+                if (countIndentedLines == 0 && ComplexStringTokenSizeMap.ContainsKey(name))
+                    countIndentedLines = ComplexStringTokenSizeMap[name];
+
                 if (countIndentedLines > 0)
                 {
                     int count = 1;
@@ -542,6 +567,11 @@ namespace BZNParser.Reader
                         }
                     }
                 }
+
+                // fix for fucked up BZNs that removed leading spaces from complex ASCII tokens
+                if (countIndentedLines == 0 && ComplexStringTokenSizeMap.ContainsKey(name))
+                    countIndentedLines = ComplexStringTokenSizeMap[name];
+
                 if (countIndentedLines > 0)
                 {
                     IBZNToken[][] values = new IBZNToken[count][];
