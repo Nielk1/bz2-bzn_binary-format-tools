@@ -27,13 +27,11 @@ namespace BZNParser.Battlezone
 
 
         private Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache;
-        private Dictionary<string, IClassFactory> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, Dictionary<string, IClassFactory> ClassLabelMap = null, BattlezoneBZNHints? Hints = null, bool fake = false)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, BattlezoneBZNHints? Hints = null, bool fake = false)
         {
             this.LongTermClassLabelLookupCache = LongTermClassLabelLookupCache;
-            this.ClassLabelMap = ClassLabelMap;
             IBZNToken tok;
             if (!reader.InBinary)
             {
@@ -300,7 +298,7 @@ namespace BZNParser.Battlezone
                     var possibleClasses = Hints.ClassLabels[lookupKey];
                     foreach (string possibleClass in possibleClasses)
                     {
-                        if (possibleClass != null && (ClassLabelMap?.ContainsKey(possibleClass) ?? false))
+                        if (possibleClass != null && (parent.ClassLabelMap?.ContainsKey(possibleClass) ?? false))
                         {
                             ValidClassLabels.Add(possibleClass);
                         }
@@ -317,7 +315,7 @@ namespace BZNParser.Battlezone
                     if (ValidClassLabels != null && ValidClassLabels.Count == 1)
                     {
                         string label = ValidClassLabels.First();
-                        IClassFactory classFactory = ClassLabelMap[label];
+                        IClassFactory classFactory = parent.ClassLabelMap[label];
                         if (classFactory.Create(parent, reader, PrjID, isUser != 0, label, out gameObject))
                         {
                             reader.Bookmark.Discard();
@@ -351,7 +349,7 @@ namespace BZNParser.Battlezone
                 
                 List<(Entity Object, bool Expected, long Next, string Name)> Candidates = new List<(Entity Object, bool Expected, long Next, string Name)>();
 
-                foreach (var kv in ClassLabelMap.OrderBy(dr => dr.Key))
+                foreach (var kv in parent.ClassLabelMap.OrderBy(dr => dr.Key))
                 {
                     string classLabel = kv.Key;
                     if (!LongTermClassLabelLookupCache.ContainsKey(PrjID.ToLowerInvariant()) || LongTermClassLabelLookupCache[PrjID.ToLowerInvariant()].Contains(classLabel))
@@ -438,7 +436,7 @@ namespace BZNParser.Battlezone
                     reader.Bookmark.Push();
                     try
                     {
-                        BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, ClassLabelMap, Hints, fake: true);
+                        BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, Hints, fake: true);
                         reader.Bookmark.Pop();
                         return true;
                     }

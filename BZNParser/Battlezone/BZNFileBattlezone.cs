@@ -37,11 +37,36 @@ namespace BZNParser.Battlezone
         public IMalformable.MalformationManager Malformations => _malformationManager;
 
 
+        private readonly Dictionary<string, IClassFactory> _classLabelMap;
+        public Dictionary<string, IClassFactory> ClassLabelMap => _classLabelMap;
+
+
         public BZNFileBattlezone(BZNStreamReader reader, BattlezoneBZNHints? Hints = null)
         {
             this._malformationManager = new IMalformable.MalformationManager(this);
-
+            this._classLabelMap = new Dictionary<string, IClassFactory>();
             this.Hints = Hints;
+
+
+
+            // build ClassLabelMap
+            foreach (Type type in this.GetType().Assembly.GetTypes())
+            {
+                // Only consider types that implement IClassFactory and are not interfaces or abstract
+                if (!typeof(IClassFactory).IsAssignableFrom(type) || type.IsInterface || type.IsAbstract)
+                    continue;
+
+                var attrs = type.GetCustomAttributes(typeof(ObjectClassAttribute), true);
+                foreach (ObjectClassAttribute attr in attrs)
+                    if (attr.Format == reader.Format)
+                        if (ClassLabelMap.ContainsKey(attr.ClassName))
+                            throw new Exception($"Duplicate class label: {attr.ClassName} ({type})");
+                        else
+                            ClassLabelMap[attr.ClassName] = (IClassFactory)Activator.CreateInstance(type)!;
+            }
+
+
+
 
             IBZNToken tok;
 
@@ -229,28 +254,12 @@ namespace BZNParser.Battlezone
 
             BZNGameObjectWrapper[] GameObjects = new BZNGameObjectWrapper[CountItems];
 
-            Dictionary<string, IClassFactory> ClassLabelMap = new Dictionary<string, IClassFactory>();
-            foreach (Type type in this.GetType().Assembly.GetTypes())
-            {
-                // Only consider types that implement IClassFactory and are not interfaces or abstract
-                if (!typeof(IClassFactory).IsAssignableFrom(type) || type.IsInterface || type.IsAbstract)
-                    continue;
-
-                var attrs = type.GetCustomAttributes(typeof(ObjectClassAttribute), true);
-                foreach (ObjectClassAttribute attr in attrs)
-                    if (attr.Format == reader.Format)
-                        if (ClassLabelMap.ContainsKey(attr.ClassName))
-                            throw new Exception($"Duplicate class label: {attr.ClassName} ({type})");
-                        else
-                            ClassLabelMap[attr.ClassName] = (IClassFactory)Activator.CreateInstance(type)!;
-            }
-
             int CntPad = CountItems.ToString().Length;
             Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache = new Dictionary<string, HashSet<string>>();
             for (int gameObjectCounter = 0; gameObjectCounter < CountItems; gameObjectCounter++)
             {
                 //GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader, (gameObjectCounter + 1) == CountItems);
-                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(this, reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, ClassLabelMap: ClassLabelMap, Hints: Hints);
+                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(this, reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, Hints: Hints);
                 Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
             }
 
