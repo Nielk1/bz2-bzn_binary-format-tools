@@ -347,32 +347,23 @@ namespace BZNParser.Battlezone
             {
                 // try every possible object
                 reader.Bookmark.Push();
-                Entity tempGameObject;
 
                 
                 List<(Entity Object, bool Expected, long Next, string Name)> Candidates = new List<(Entity Object, bool Expected, long Next, string Name)>();
-                string classLableTempHolder = null;
-                bool firstParseSuccess = false;
 
                 foreach (var kv in ClassLabelMap.OrderBy(dr => dr.Key))
                 {
-                    classLableTempHolder = kv.Key;
-                    if (!LongTermClassLabelLookupCache.ContainsKey(PrjID.ToLowerInvariant()) || LongTermClassLabelLookupCache[PrjID.ToLowerInvariant()].Contains(classLableTempHolder))
+                    string classLabel = kv.Key;
+                    if (!LongTermClassLabelLookupCache.ContainsKey(PrjID.ToLowerInvariant()) || LongTermClassLabelLookupCache[PrjID.ToLowerInvariant()].Contains(classLabel))
                     {
-                        if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Count == 0 || ValidClassLabels.Contains(classLableTempHolder))
+                        if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Count == 0 || ValidClassLabels.Contains(classLabel))
                             try
                             {
+                                Entity? tempGameObject;
                                 IClassFactory classFactory = kv.Value;
-                                if (classFactory.Create(parent, reader, PrjID, isUser != 0, classLableTempHolder, out tempGameObject) && tempGameObject != null)
-                                {
-                                    firstParseSuccess = true;
+                                if (classFactory.Create(parent, reader, PrjID, isUser != 0, classLabel, out tempGameObject) && tempGameObject != null)
                                     if (CheckNext(parent, reader, countLeft - 1, Hints))
-                                        Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.Bookmark.Get(), classLableTempHolder));
-                                }
-                                else
-                                {
-                                    tempGameObject = null;
-                                }
+                                        Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLabel) ?? false, reader.Bookmark.Get(), classLabel));
                             }
                             catch
                             {
@@ -411,7 +402,7 @@ namespace BZNParser.Battlezone
             return null;
         }
 
-        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints Hints)
+        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints? Hints)
         {
             if (countLeft == 0)
             {
