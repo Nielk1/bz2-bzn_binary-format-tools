@@ -21,14 +21,12 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassTurretTank1 : ClassHoverCraft
     {
-        public float undeffloat1 { get; set; }
-        public float undeffloat2 { get; set; }
-        public float undeffloat3 { get; set; }
-        public float undeffloat4 { get; set; }
-        public UInt32 undefraw { get; set; }
-        public float undeffloat5 { get; set; }
-        public bool undefbool { get; set; }
-
+        protected float omegaTurret { get; set; } // obsolete
+        protected float alphaTurret { get; set; } // obsolete
+        protected float timeDeploy { get; set; } // obsolete
+        protected float timeUndeploy { get; set; } // obsolete
+        protected float delayTimer { get; set; }
+        protected bool wantTurret { get; set; } // obsolete
         public ClassTurretTank1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNStreamReader reader, ClassTurretTank1? obj)
         {
@@ -40,36 +38,40 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1042)
                     {
-                        tok = reader.ReadToken();
-                        if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                        if (obj != null) obj.undeffloat1 = tok.GetSingle(); // omegaTurret
+                        // obsolete
 
                         tok = reader.ReadToken();
                         if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                        if (obj != null) obj.undeffloat2 = tok.GetSingle(); // alphaTurret
+                        if (obj != null) obj.omegaTurret = tok.GetSingle(); // omegaTurret
 
                         tok = reader.ReadToken();
                         if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                        if (obj != null) obj.undeffloat3 = tok.GetSingle(); // timeDeploy
+                        if (obj != null) obj.alphaTurret = tok.GetSingle(); // alphaTurret
 
                         tok = reader.ReadToken();
                         if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                        if (obj != null) obj.undeffloat4 = tok.GetSingle(); // timeUndeploy
+                        if (obj != null) obj.timeDeploy = tok.GetSingle(); // timeDeploy
+
+                        tok = reader.ReadToken();
+                        if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
+                        if (obj != null) obj.timeUndeploy = tok.GetSingle(); // timeUndeploy
                     }
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("undefraw", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse undefraw/VOID");
-                    if (obj != null) obj.undefraw = tok.GetUInt32(); // state
+                    if (obj != null) obj.state = (VEHICLE_STATE)tok.GetUInt32(); // state
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("undeffloat", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse undeffloat/FLOAT");
-                    if (obj != null) obj.undeffloat5 = tok.GetSingle(); // delayTimer
+                    if (obj != null) obj.delayTimer = tok.GetSingle(); // delayTimer
 
                     if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1042)
                     {
+                        // obsolete
+
                         tok = reader.ReadToken();
                         if (!tok.Validate("undefbool", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse undefbool/BOOL");
-                        if (obj != null) obj.undefbool = tok.GetBoolean(); // wantTurret
+                        if (obj != null) obj.wantTurret = tok.GetBoolean(); // wantTurret
                     }
                 }
             }

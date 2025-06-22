@@ -144,7 +144,7 @@ namespace BZNParser
                 {
                     using (FileStream file = File.OpenRead(filename))
                     {
-                        using (BZNStreamReader reader = new BZNStreamReader(file))
+                        using (BZNStreamReader reader = new BZNStreamReader(file, filename))
                         {
                             //if (reader.HasBinary)
                             //    continue;

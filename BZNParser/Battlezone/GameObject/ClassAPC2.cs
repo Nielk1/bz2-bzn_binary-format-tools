@@ -16,45 +16,83 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassAPC2 : ClassHoverCraft
     {
+        const int APC_MAX_SOLDIERS = 16;
+
+        public int InternalSoldierCount { get; set; }
+        public float nextSoldierDelay { get; set; }
+        public float nextSoldierAngle { get; set; }
+        public float nextReturnToAPC { get; set; }
+        public int ExternalSoldierCount { get; set; }
+        public int[] ExternalSoldiers { get; set; }
+        public bool DeployOnLanding { get; set; }
+        public long undeployTimeout { get; set; }
+
         public ClassAPC2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNStreamReader reader, ClassAPC2? obj)
         {
             IBZNToken tok;
 
-            //(a2->vftable->read_long)(a2, this + 2336, 4, "IsoldierCount");
             tok = reader.ReadToken();
             if (!tok.Validate("IsoldierCount", BinaryFieldType.DATA_LONG))
                 throw new Exception("Failed to parse IsoldierCount/LONG");
-            //IsoldierCount = tok.GetUInt32();
+            if (obj != null) obj.InternalSoldierCount = tok.GetInt32();
 
-            //(a2->vftable->read_long)(a2, this + 2352, 4, "EsoldierCount");
             tok = reader.ReadToken();
             if (!tok.Validate("EsoldierCount", BinaryFieldType.DATA_LONG))
                 throw new Exception("Failed to parse EsoldierCount/LONG");
-            int EsoldierCount = (int)tok.GetUInt32();
+            int ExternalSoldierCount = tok.GetInt32();
+            if (obj != null) obj.ExternalSoldierCount = ExternalSoldierCount;
 
-            if (EsoldierCount > 0)
+            if (ExternalSoldierCount > 0)
             {
-                //(a2->vftable->read_long)(a2, this + 2356, 4 * v3, "SoldierHandles");
                 tok = reader.ReadToken();
                 if (!tok.Validate("SoldierHandles", BinaryFieldType.DATA_PTR))
                     throw new Exception("Failed to parse SoldierHandles/PTR");
                 //tok.GetUInt32H();
+                if (obj != null)
+                {
+                    int count = tok.GetCount();
+                    if (count > APC_MAX_SOLDIERS)
+                        obj.Malformations.Add(Malformation.OVERCOUNT, "ExternalSoldiers");
+                    obj.ExternalSoldiers = new int[Math.Max(APC_MAX_SOLDIERS, count)];
+                    for(int i = 0; i < count; i++)
+                    {
+                        obj.ExternalSoldiers[i] = tok.GetInt32(i);
+                    }
+                }
             }
-            //if (a2[2].vftable)
-            //{
-            //    (a2->vftable->out_float)(a2, this + 2340, 4, "nextSoldierDelay");
-            //    (a2->vftable->out_float)(a2, this + 2344, 4, "nextSoldierAngle");
-            //    (a2->vftable->out_float)(a2, this + 2348, 4, "nextReturnTimer");
-            //    (a2->vftable->out_bool)(a2, this + 2420, 1, "DeployOnLanding");
-            //    (a2->vftable->field_38)(a2, this + 2424, 4, "undeployTimeout");
-            //}
             
-            //(a2->vftable->field_8)(a2, this + 1424, 4, "state");
+            if (reader.SaveType != 0)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("nextSoldierDelay", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse nextSoldierDelay/FLOAT");
+                if (obj != null) obj.nextSoldierDelay = tok.GetSingle(); // nextSoldierDelay
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("nextSoldierAngle", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse nextSoldierAngle/FLOAT");
+                if (obj != null) obj.nextSoldierAngle = tok.GetSingle(); // nextSoldierAngle
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("nextReturnTimer", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse nextReturnTimer/FLOAT");
+                if (obj != null) obj.nextReturnToAPC = tok.GetSingle(); // nextReturnTimer
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("DeployOnLanding", BinaryFieldType.DATA_BOOL))
+                    throw new Exception("Failed to parse DeployOnLanding/BOOL");
+                if (obj != null) obj.DeployOnLanding = tok.GetBoolean(); // DeployOnLanding
+
+                tok = reader.ReadToken();
+                if (!tok.Validate("undeployTimeout", BinaryFieldType.DATA_LONG))
+                    throw new Exception("Failed to parse undeployTimeout/LONG");
+                if (obj != null) obj.undeployTimeout = tok.GetInt32(); // undeployTimeout
+            }
+            
             tok = reader.ReadToken();
-            if (!tok.Validate("state", BinaryFieldType.DATA_VOID))
-                throw new Exception("Failed to parse state/VOID");
-            //state = tok.GetBytes(0, 4);
+            if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
+            if (obj != null) obj.state = (VEHICLE_STATE)tok.GetUInt32(); // state
 
             ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }

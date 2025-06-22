@@ -149,8 +149,12 @@ namespace BZNParser.Reader
 
         public bool QuoteStrings { get; private set; }
 
-        public BZNStreamReader(Stream stream)
+        public string? Filename { get; private set; }
+
+        public BZNStreamReader(Stream stream, string? filename = null)
         {
+            this.Filename = filename;
+
             _bookmarkManager = new BookmarkManager(this);
 
             long startPosition = stream.Position;

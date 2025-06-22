@@ -21,6 +21,10 @@ namespace BZNParser.Battlezone.GameObject
 
     [ObjectClass(BZNFormat.Battlezone, "repairdepot")]
     [ObjectClass(BZNFormat.BattlezoneN64, "repairdepot")]
+
+    [ObjectClass(BZNFormat.Battlezone, "artifact")]
+    [ObjectClass(BZNFormat.BattlezoneN64, "artifact")]
+    [ObjectClass(BZNFormat.Battlezone2, "artifact")]
     public class ClassBuildingFactory : IClassFactory
     {
         public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)

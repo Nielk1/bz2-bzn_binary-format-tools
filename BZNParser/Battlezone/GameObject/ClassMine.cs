@@ -21,7 +21,7 @@ namespace BZNParser.Battlezone.GameObject
 
         public static void Hydrate(BZNStreamReader reader, ClassMine? obj)
         {
-            if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
+            if (reader.Format == BZNFormat.Battlezone)
             {
                 if (reader.Version >= 1038 && reader.SaveType != 0)
                 {

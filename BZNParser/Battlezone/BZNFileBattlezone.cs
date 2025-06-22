@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace BZNParser.Battlezone
 {
+    public enum Malformation
+    {
+        UNKNOWN = 0,
+        INCOMPAT, // Not loadable by game
+        OVERCOUNT, // Too many objects of this type, maximum may have changed
+    }
     public class BattlezoneBZNHints
     {
         /// <summary>
@@ -630,23 +636,20 @@ namespace BZNParser.Battlezone
                 }
             }
 
-            if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
+            if (reader.Format == BZNFormat.Battlezone && reader.Version == 1001)
             {
-                if (reader.Version == 1001)
+                if (!reader.InBinary)
                 {
-                    if (!reader.InBinary)
-                    {
-                        tok = reader.ReadToken();
-                        if (!tok.IsValidationOnly() || !tok.Validate("Terrain", BinaryFieldType.DATA_UNKNOWN))
-                            throw new Exception("Failed to parse [Terrain]");
-                    }
-
                     tok = reader.ReadToken();
-                    string TerrainName = tok.GetString();
-                    if (!tok.Validate("Name", BinaryFieldType.DATA_UNKNOWN))
-                        throw new Exception("Failed to parse Name/UNKNOWN");
-                    Console.WriteLine($"TerrainName: {TerrainName}");
+                    if (!tok.IsValidationOnly() || !tok.Validate("Terrain", BinaryFieldType.DATA_UNKNOWN))
+                        throw new Exception("Failed to parse [Terrain]");
                 }
+
+                tok = reader.ReadToken();
+                string TerrainName = tok.GetString();
+                if (!tok.Validate("Name", BinaryFieldType.DATA_UNKNOWN))
+                    throw new Exception("Failed to parse Name/UNKNOWN");
+                Console.WriteLine($"TerrainName: {TerrainName}");
             }
 
             if (!reader.EndOfFile())
@@ -664,13 +667,14 @@ namespace BZNParser.Battlezone
                         Vector2D point = tok.GetVector2D();
                         if (point.x != 0 || point.z != 0)
                             throw new Exception("Tokens left after last known token");
+                        //Malformations.Add(Malformation.INCOMPAT, "Battlezone BZN file has extra VEC2D at the end, expected 0,0 but got " + point.ToString());
                     }
                 }
+            }
 
-                if (!reader.EndOfFile())
-                {
-                    throw new Exception("Tokens left after last known token");
-                }
+            if (!reader.EndOfFile())
+            {
+                throw new Exception("Tokens left after last known token");
             }
 
             // BZ1 version 2016 binary extra DATA_VEC2D at the end, not sure if this is universal

@@ -18,8 +18,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassAPC1 : ClassHoverCraft
     {
-        public UInt32 soldierCount { get; set; }
-        public byte[] state { get; set; }
+        public int soldierCount { get; set; }
         public ClassAPC1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNStreamReader reader, ClassAPC1? obj)
         {
@@ -28,12 +27,12 @@ namespace BZNParser.Battlezone.GameObject
             tok = reader.ReadToken();
             if (!tok.Validate("soldierCount", BinaryFieldType.DATA_LONG))
                 throw new Exception("Failed to parse soldierCount/LONG");
-            if (obj != null) obj.soldierCount = tok.GetUInt32();
+            if (obj != null) obj.soldierCount = tok.GetInt32();
 
             tok = reader.ReadToken();
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID))
                 throw new Exception("Failed to parse state/VOID");
-            if (obj != null) obj.state = tok.GetBytes(0, 4);
+            if (obj != null) obj.state = (VEHICLE_STATE)tok.GetUInt32(); // state
 
             ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
         }

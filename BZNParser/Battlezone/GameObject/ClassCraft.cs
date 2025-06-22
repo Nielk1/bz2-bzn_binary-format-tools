@@ -21,7 +21,15 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassCraft : ClassGameObject
     {
+        public enum VEHICLE_STATE { UNDEPLOYED, DEPLOYING, DEPLOYED, UNDEPLOYING };
+        public VEHICLE_STATE state { get; set; } = VEHICLE_STATE.UNDEPLOYED;
+
+
         public Int32 abandoned { get; set; }
+
+
+
+        public bool m_Use13Aim { get; set; } = false;
 
         public ClassCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNStreamReader reader, ClassCraft? obj)
