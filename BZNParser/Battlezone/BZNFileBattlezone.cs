@@ -250,7 +250,7 @@ namespace BZNParser.Battlezone
             for (int gameObjectCounter = 0; gameObjectCounter < CountItems; gameObjectCounter++)
             {
                 //GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader, (gameObjectCounter + 1) == CountItems);
-                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(this, reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, null, ClassLabelMap: ClassLabelMap, Hints: Hints);
+                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(this, reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, ClassLabelMap: ClassLabelMap, Hints: Hints);
                 Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
             }
 

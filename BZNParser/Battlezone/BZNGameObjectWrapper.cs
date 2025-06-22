@@ -30,12 +30,10 @@ namespace BZNParser.Battlezone
         private Dictionary<string, IClassFactory> ClassLabelMap;
 
         // TODO move this to a factory pattern so we aren't relying on exceptions from constructors
-        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, Dictionary<string, string> ClassLabelTempLookup = null, Dictionary<string, IClassFactory> ClassLabelMap = null, BattlezoneBZNHints? Hints = null, bool fake = false)
+        public BZNGameObjectWrapper(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache, Dictionary<string, IClassFactory> ClassLabelMap = null, BattlezoneBZNHints? Hints = null, bool fake = false)
         {
             this.LongTermClassLabelLookupCache = LongTermClassLabelLookupCache;
             this.ClassLabelMap = ClassLabelMap;
-            if (ClassLabelTempLookup == null)
-                ClassLabelTempLookup = new Dictionary<string, string>();
             IBZNToken tok;
             if (!reader.InBinary)
             {
@@ -286,10 +284,10 @@ namespace BZNParser.Battlezone
                 return;
             // other save types here
 
-            gameObject = ParseGameObject(parent, reader, countLeft, ClassLabelTempLookup, Hints);
+            gameObject = ParseGameObject(parent, reader, countLeft, Hints);
         }
 
-        private Entity ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
+        private Entity ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints Hints)
         {
             List<string>? ValidClassLabels = null;
 
@@ -368,7 +366,7 @@ namespace BZNParser.Battlezone
                                 if (classFactory.Create(parent, reader, PrjID, isUser != 0, classLableTempHolder, out tempGameObject) && tempGameObject != null)
                                 {
                                     firstParseSuccess = true;
-                                    if (CheckNext(parent, reader, countLeft - 1, ClassLabelTempLookup, Hints))
+                                    if (CheckNext(parent, reader, countLeft - 1, Hints))
                                         Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLableTempHolder) ?? false, reader.Bookmark.Get(), classLableTempHolder));
                                 }
                                 else
@@ -383,8 +381,6 @@ namespace BZNParser.Battlezone
                     }
                 }
                 reader.Bookmark.Pop();
-
-                ClassLabelTempLookup.Remove(PrjID.ToLowerInvariant());
 
                 if (!LongTermClassLabelLookupCache.ContainsKey(PrjID.ToLowerInvariant()))
                     LongTermClassLabelLookupCache[PrjID.ToLowerInvariant()] = new HashSet<string>(Candidates.Select(dr => dr.Name));
@@ -415,7 +411,7 @@ namespace BZNParser.Battlezone
             return null;
         }
 
-        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, Dictionary<string, string> ClassLabelTempLookup, BattlezoneBZNHints Hints)
+        private bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints Hints)
         {
             if (countLeft == 0)
             {
@@ -451,7 +447,7 @@ namespace BZNParser.Battlezone
                     reader.Bookmark.Push();
                     try
                     {
-                        BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, ClassLabelTempLookup, ClassLabelMap, Hints, fake: true);
+                        BZNGameObjectWrapper tmp = new BZNGameObjectWrapper(parent, reader, countLeft, LongTermClassLabelLookupCache, ClassLabelMap, Hints, fake: true);
                         reader.Bookmark.Pop();
                         return true;
                     }
