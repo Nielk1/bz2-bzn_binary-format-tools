@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "constructionrig")]
     public class ClassConstructionRig2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassConstructionRig2(PrjID, isUser, classLabel);
-            ClassConstructionRig2.Hydrate(reader, obj as ClassConstructionRig2);
+            ClassConstructionRig2.Hydrate(parent, reader, obj as ClassConstructionRig2);
             return true;
         }
     }
@@ -20,7 +20,7 @@ namespace BZNParser.Battlezone.GameObject
         public string dropClass { get; set; }
 
         public ClassConstructionRig2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassConstructionRig2? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassConstructionRig2? obj)
         {
             IBZNToken tok;
 
@@ -48,11 +48,11 @@ namespace BZNParser.Battlezone.GameObject
             //dropClass = tok.GetString();
             if (reader.Version == 1149 || reader.Version == 1151)
             {
-                if (obj != null) obj.dropClass = reader.ReadGameObjectClass_BZ2("config");
+                if (obj != null) obj.dropClass = reader.ReadGameObjectClass_BZ2(parent, "config");
             }
             else
             {
-                if (obj != null) obj.dropClass = reader.ReadGameObjectClass_BZ2("buildClass");
+                if (obj != null) obj.dropClass = reader.ReadGameObjectClass_BZ2(parent, "buildClass");
             }
 
             if (reader.Version >= 1150)
@@ -61,7 +61,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("upgradeHandle", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse upgradeHandle/LONG");
             }
 
-            // if reader.SaveType != 0
+            // if parent.SaveType != SaveType.BZN
             /*if (a2[2].vftable)
             {
                 (a2->vftable->read_long)(a2, this + 2372, 4, "buildGroup");
@@ -72,7 +72,7 @@ namespace BZNParser.Battlezone.GameObject
                 (a2->vftable->out_bool)(a2, this + 2379, 1, "Explosion");
             }*/
 
-            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(parent, reader, obj as ClassDeployable);
         }
     }
 }

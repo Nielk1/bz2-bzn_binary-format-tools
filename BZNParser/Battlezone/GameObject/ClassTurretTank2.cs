@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "turrettank")]
     public class ClassTurretTank2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassTurretTank2(PrjID, isUser, classLabel);
-            ClassTurretTank2.Hydrate(reader, obj as ClassTurretTank2);
+            ClassTurretTank2.Hydrate(parent, reader, obj as ClassTurretTank2);
             return true;
         }
     }
@@ -24,11 +24,11 @@ namespace BZNParser.Battlezone.GameObject
         protected bool turretAligned { get; set; }
         protected float prevYaw { get; set; }
         public ClassTurretTank2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassTurretTank2? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTurretTank2? obj)
         {
             IBZNToken tok;
 
-            if (reader.SaveType == 3 || reader.SaveType == 2)
+            if (parent.SaveType == SaveType.LOCKSTEP || parent.SaveType == SaveType.JOIN)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("omegaTurret", BinaryFieldType.DATA_FLOAT))
@@ -147,7 +147,7 @@ namespace BZNParser.Battlezone.GameObject
                         if (obj != null) obj.turretAligned = tok.GetBoolean(); // turretAligned
                     }
 
-                    if (reader.SaveType != 0 && reader.Version >= 1140)
+                    if (parent.SaveType != SaveType.BZN && reader.Version >= 1140)
                     {
                         if (!m_Use13Aim)
                         {
@@ -166,7 +166,7 @@ namespace BZNParser.Battlezone.GameObject
                     if (reader.Version < 1109)
                     {
                         if (obj != null) obj.m_Use13Aim = m_Use13Aim;
-                        ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+                        ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
                         return;
                     }
                 }
@@ -181,7 +181,7 @@ namespace BZNParser.Battlezone.GameObject
                     if (obj != null) obj.turretAligned = tok.GetBoolean(); // turretAligned
                 }
 
-                if (reader.SaveType != 0)
+                if (parent.SaveType != SaveType.BZN)
                 {
                     if (m_Use13Aim)
                     {
@@ -190,9 +190,9 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            // reader.SaveType != 0
+            // parent.SaveType != SaveType.BZN
 
-            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(parent, reader, obj as ClassDeployable);
         }
     }
 }

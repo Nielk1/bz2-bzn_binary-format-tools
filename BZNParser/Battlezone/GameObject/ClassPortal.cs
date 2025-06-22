@@ -9,19 +9,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "portal")]
     public class ClassPortalFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassPortal(PrjID, isUser, classLabel);
-            ClassPortal.Hydrate(reader, obj as ClassPortal);
+            ClassPortal.Hydrate(parent, reader, obj as ClassPortal);
             return true;
         }
     }
     public class ClassPortal : ClassGameObject
     {
         public ClassPortal(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassPortal? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassPortal? obj)
         {
             IBZNToken tok;
 
@@ -44,7 +44,7 @@ namespace BZNParser.Battlezone.GameObject
                 bool isIn = tok.GetBoolean();
             }
 
-            ClassGameObject.Hydrate(reader, obj as ClassGameObject);
+            ClassGameObject.Hydrate(parent, reader, obj as ClassGameObject);
         }
     }
 }

@@ -16,6 +16,15 @@ namespace BZNParser.Battlezone
         INCOMPAT, // Not loadable by game
         OVERCOUNT, // Too many objects of this type, maximum may have changed
     }
+    public enum SaveType
+    {
+        BZN = 0, // ST_MISSION in BZ2, MissionSave False in BZ1
+        SAVE = 1, // ST_SAVE in BZ2, MissionSave True in BZ1
+        JOIN = 2, // ST_JOIN in BZ2
+        LOCKSTEP = 3, // ST_LOCKSTEP in BZ2
+        VISUAL = 4, // ST_SWITCHSHOW in BZ2
+        NONE = 5, // ST_NONE in BZ2
+    }
     public class BattlezoneBZNHints
     {
         /// <summary>
@@ -27,6 +36,7 @@ namespace BZNParser.Battlezone
     public class BZNFileBattlezone
     {
         private BattlezoneBZNHints? Hints;
+        public SaveType SaveType { get; private set; }
         public BZNFileBattlezone(BZNStreamReader reader, BattlezoneBZNHints? Hints = null)
         {
             this.Hints = Hints;
@@ -47,6 +57,7 @@ namespace BZNParser.Battlezone
                 if (!tok.Validate("saveType", BinaryFieldType.DATA_UNKNOWN))
                     throw new Exception("Failed to parse saveType/UNKNOWN");
                 Console.WriteLine($"saveType: {tok.GetUInt32()}");
+                SaveType = (SaveType)tok.GetUInt32();
             }
 
             if (reader.Format == BZNFormat.Battlezone)
@@ -118,6 +129,7 @@ namespace BZNParser.Battlezone
                         throw new Exception("Failed to parse missionSave/BOOL");
                     bool missionSave = tok.GetBoolean();
                     Console.WriteLine($"missionSave: {missionSave}");
+                    SaveType = missionSave ? SaveType.BZN : SaveType.SAVE;
                 }
             }
 

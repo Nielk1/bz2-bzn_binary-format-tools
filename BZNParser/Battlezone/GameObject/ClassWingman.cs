@@ -7,21 +7,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "wingman")]
     public class ClassWingmanFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassWingman(PrjID, isUser, classLabel);
-            ClassWingman.Hydrate(reader, obj as ClassWingman);
+            ClassWingman.Hydrate(parent, reader, obj as ClassWingman);
             return true;
         }
     }
     public class ClassWingman : ClassHoverCraft
     {
         public ClassWingman(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassWingman? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassWingman? obj)
         {
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

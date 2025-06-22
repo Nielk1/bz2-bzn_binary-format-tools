@@ -9,19 +9,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone, "hover")]
     public class ClassHoverCraftFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassHoverCraft(PrjID, isUser, classLabel);
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
             return true;
         }
     }
     public class ClassHoverCraft : ClassCraft
     {
         public ClassHoverCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassHoverCraft? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassHoverCraft? obj)
         {
             if (reader.Format == BZNFormat.Battlezone && reader.Version > 1001 && reader.Version < 1026)
             {
@@ -48,7 +48,7 @@ namespace BZNParser.Battlezone.GameObject
                 tok = reader.ReadToken(); // airBorne
             }
 
-            ClassCraft.Hydrate(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(parent, reader, obj as ClassCraft);
         }
     }
 }

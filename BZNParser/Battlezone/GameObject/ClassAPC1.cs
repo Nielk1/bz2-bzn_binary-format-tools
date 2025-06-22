@@ -7,12 +7,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "apc")]
     public class ClassAPC1Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassAPC1(PrjID, isUser, classLabel);
-            ClassAPC1.Hydrate(reader, obj as ClassAPC1);
+            ClassAPC1.Hydrate(parent, reader, obj as ClassAPC1);
             return true;
         }
     }
@@ -20,7 +20,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public int soldierCount { get; set; }
         public ClassAPC1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassAPC1? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAPC1? obj)
         {
             IBZNToken tok;
             
@@ -34,7 +34,7 @@ namespace BZNParser.Battlezone.GameObject
                 throw new Exception("Failed to parse state/VOID");
             if (obj != null) obj.state = (VEHICLE_STATE)tok.GetUInt32(); // state
 
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

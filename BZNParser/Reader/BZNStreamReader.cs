@@ -132,7 +132,7 @@ namespace BZNParser.Reader
         /// <summary>
         /// Is this a save or a map? Not very useful for the tokenizer and might be removed later.
         /// </summary>
-        public int SaveType { get; private set; }
+        //public int SaveType { get; private set; }
         /// <summary>
         /// Data alignment in bytes.
         /// </summary>
@@ -202,7 +202,7 @@ namespace BZNParser.Reader
 
                     IBZNToken MissionSaveToken = ReadToken();
                     bool MissionSave = MissionSaveToken.GetBoolean();
-                    SaveType = MissionSave ? 0 : 1;
+                    //SaveType = MissionSave ? 0 : 1;
 
                     IBZNToken TerrainOrMissionName = ReadToken(); // long, probably 64 bytes of text
                 }
@@ -215,7 +215,7 @@ namespace BZNParser.Reader
                     IBZNToken SaveTypeToken = ReadToken();
                     if (!InBinary && SaveTypeToken.Validate("saveType"))
                     {
-                        SaveType = SaveTypeToken.GetInt32();
+                        //SaveType = SaveTypeToken.GetInt32();
                         TypeSize = 1;
                         TypeSizeSet = true;
                         Format = BZNFormat.Battlezone2;
@@ -344,7 +344,7 @@ namespace BZNParser.Reader
                             tok = ReadToken();
                             if (tok.Validate("saveType", BinaryFieldType.DATA_LONG))
                             {
-                                SaveType = tok.GetInt32();
+                                //SaveType = tok.GetInt32();
                                 TypeSize = 1;
                                 TypeSizeSet = true;
                                 SizeSize = 2;

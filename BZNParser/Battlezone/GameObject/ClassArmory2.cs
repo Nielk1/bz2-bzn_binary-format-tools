@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "armory")]
     public class ClassArmory2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassArmory2(PrjID, isUser, classLabel);
-            ClassArmory2.Hydrate(reader, obj as ClassArmory2);
+            ClassArmory2.Hydrate(parent, reader, obj as ClassArmory2);
             return true;
         }
     }
@@ -26,7 +26,7 @@ namespace BZNParser.Battlezone.GameObject
         int launchHandle { get; set; }
 
         public ClassArmory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassArmory2? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassArmory2? obj)
         {
             IBZNToken tok;
 
@@ -49,10 +49,10 @@ namespace BZNParser.Battlezone.GameObject
 
             for (int i = 0; i < buildCount; i++)
             {
-                string item = reader.ReadGameObjectClass_BZ2("buildItem");
+                string item = reader.ReadGameObjectClass_BZ2(parent, "buildItem");
                 if (obj != null) obj.buildQueue.Enqueue(item);
             }
-            if (reader.SaveType != 0)
+            if (parent.SaveType != SaveType.BZN)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("buildStall", BinaryFieldType.DATA_BOOL))
@@ -80,7 +80,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (obj != null) obj.launchTarget = tok.GetVector3D();
             }
 
-            if (reader.SaveType == 0)
+            if (parent.SaveType == 0)
             {
                 if (reader.Version >= 1135)
                 {
@@ -91,7 +91,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(parent, reader, obj as ClassPoweredBuilding);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace BZNParser.Battlezone.GameObject
         {
         }
 
-        public static void Hydrate(BZNStreamReader reader, ClassGameObject? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassGameObject? obj)
         {
             IBZNToken tok;
 
@@ -58,7 +58,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (obj != null) obj.pos = tok.GetVector3D();
             }
 
-            if (obj != null) obj.euler = reader.GetEuler();
+            if (obj != null) obj.euler = reader.GetEuler(parent);
 
             if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
@@ -411,7 +411,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            //if (reader.SaveType == 0)
+            //if (parent.SaveType == 0)
             //{
             //    isVisible = 0UL;
             //    isSeen = 0UL;
@@ -592,7 +592,7 @@ namespace BZNParser.Battlezone.GameObject
             // start read of AiCmdInfo
             if (reader.Format == BZNFormat.Battlezone2)
             {
-                if (reader.SaveType == 0)
+                if (parent.SaveType == 0)
                 {
                     reader.GetAiCmdInfo(); // TODO get return value
                     // end read of AiCmdInfo
@@ -608,7 +608,7 @@ namespace BZNParser.Battlezone.GameObject
             }
             else if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (reader.SaveType == 0)
+                if (parent.SaveType == 0)
                 {
                     if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
                     {
@@ -690,7 +690,7 @@ namespace BZNParser.Battlezone.GameObject
                     //independence = tok.GetUInt8();
                     if (obj != null) obj.independence = tok.GetUInt32(); // this is a bit odd, the game only uses 8 bits it appears but it uses a 32bit here
                 }
-                else if (reader.SaveType == 0)
+                else if (parent.SaveType == 0)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("independence", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse independence");

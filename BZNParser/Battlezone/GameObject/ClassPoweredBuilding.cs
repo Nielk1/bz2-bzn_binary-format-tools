@@ -14,19 +14,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "techcenter")]
     public class ClassPoweredBuildingFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassPoweredBuilding(PrjID, isUser, classLabel);
-            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(parent, reader, obj as ClassPoweredBuilding);
             return true;
         }
     }
     public class ClassPoweredBuilding : ClassBuilding
     {
         public ClassPoweredBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassPoweredBuilding? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassPoweredBuilding? obj)
         {
             IBZNToken tok;
 
@@ -51,7 +51,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            if (reader.SaveType != 0)
+            if (parent.SaveType != SaveType.BZN)
             {
                 //(a2->vftable->read_long)(a2, this + 2052, 4, "terminalUser");
                 //(a2->vftable->out_bool)(a2, this + 2056, 1, "terminalRemote");
@@ -65,7 +65,7 @@ namespace BZNParser.Battlezone.GameObject
                 Int32 autoTarget = tok.GetInt32();
             }
 
-            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(parent, reader, obj as ClassBuilding);
         }
     }
 }

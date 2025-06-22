@@ -7,19 +7,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "torpedo")]
     public class ClassTorpedo1Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassTorpedo1(PrjID, isUser, classLabel);
-            ClassTorpedo1.Hydrate(reader, obj as ClassTorpedo1);
+            ClassTorpedo1.Hydrate(parent, reader, obj as ClassTorpedo1);
             return true;
         }
     }
     public class ClassTorpedo1 : ClassPowerUp
     {
         public ClassTorpedo1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassTorpedo1? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTorpedo1? obj)
         {
             if (reader.Version < 1031)
             {
@@ -50,10 +50,10 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1031)
             {
-                ClassGameObject.Hydrate(reader, obj as ClassGameObject);
+                ClassGameObject.Hydrate(parent, reader, obj as ClassGameObject);
                 return;
             }
-            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(parent, reader, obj as ClassPowerUp);
         }
     }
 }

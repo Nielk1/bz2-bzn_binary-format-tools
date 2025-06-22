@@ -5,19 +5,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "factory")]
     public class ClassFactory2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassFactory2(PrjID, isUser, classLabel);
-            ClassFactory2.Hydrate(reader, obj as ClassFactory2);
+            ClassFactory2.Hydrate(parent, reader, obj as ClassFactory2);
             return true;
         }
     }
     public class ClassFactory2 : ClassPoweredBuilding
     {
         public ClassFactory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassFactory2? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassFactory2? obj)
         {
             IBZNToken tok;
 
@@ -44,14 +44,14 @@ namespace BZNParser.Battlezone.GameObject
                 //v5 = std::deque < GameObjectClass const *>::operator[] (v4);
                 //ILoadSaveVisitor::out(a2, *v5, "buildItem");
                 //++v4;
-                string item = reader.ReadGameObjectClass_BZ2("buildItem");
+                string item = reader.ReadGameObjectClass_BZ2(parent, "buildItem");
             }
 
             //...
 
-            // if reader.SaveType != 0
+            // if parent.SaveType != SaveType.BZN
 
-            if (reader.SaveType == 0)
+            if (parent.SaveType == 0)
             {
                 if (reader.Version >= 1135)
                 {
@@ -61,7 +61,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassPoweredBuilding.Hydrate(reader, obj as ClassPoweredBuilding);
+            ClassPoweredBuilding.Hydrate(parent, reader, obj as ClassPoweredBuilding);
         }
     }
 }

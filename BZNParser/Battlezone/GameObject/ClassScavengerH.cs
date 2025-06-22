@@ -5,21 +5,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "scavengerh")]
     public class ClassScavengerHFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassScavengerH(PrjID, isUser, classLabel);
-            ClassScavengerH.Hydrate(reader, obj as ClassScavengerH);
+            ClassScavengerH.Hydrate(parent, reader, obj as ClassScavengerH);
             return true;
         }
     }
     public class ClassScavengerH : ClassDeployable
     {
         public ClassScavengerH(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassScavengerH? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassScavengerH? obj)
         {
-            if (reader.SaveType != 0)
+            if (parent.SaveType != SaveType.BZN)
             {
                 IBZNToken tok;
 
@@ -77,7 +77,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(parent, reader, obj as ClassDeployable);
         }
     }
 }

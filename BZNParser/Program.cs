@@ -130,10 +130,11 @@ namespace BZNParser
                 .Concat(Directory.EnumerateFiles(@"..\..\..\..\old\sample", "*", SearchOption.AllDirectories))
                 .Concat(Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
                 )
-            //foreach (string filename in Directory.EnumerateFiles(@"F:\Programming\BZRModManager\BZRModManager\BZRModManager\bin\steamcmd\steamapps\workshop\content\301650", "*.bzn", SearchOption.AllDirectories))
-            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\..\old\sample", "*", SearchOption.AllDirectories))
-            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\sample", "*", SearchOption.AllDirectories))
-            //foreach (string filename in Directory.EnumerateFiles(@"..\..\..\..\TempApp\bin\Debug\net8.0\out", "*", SearchOption.AllDirectories))
+            //foreach (string filename in Directory.EnumerateFiles(@"lists", "Battlezone *.txt", SearchOption.TopDirectoryOnly).SelectMany(fn => File.ReadAllLines(fn).Where(dr => dr.Length > 0)))
+            //foreach (string filename in Directory.EnumerateFiles(@"lists", "BattlezoneN64 *.txt", SearchOption.TopDirectoryOnly).SelectMany(fn => File.ReadAllLines(fn).Where(dr => dr.Length > 0)))
+            //foreach (string filename in Directory.EnumerateFiles(@"lists", "Battlezone2 *.txt", SearchOption.TopDirectoryOnly).SelectMany(fn => File.ReadAllLines(fn).Where(dr => dr.Length > 0)))
+            //foreach (string filename in File.ReadAllLines(@"lists\Battlezone 2016.txt").Where(dr => dr.Length > 0))
+            //foreach (string filename in File.ReadAllLines(@"WARN_ExtraTokens.txt").Where(dr => dr.Length > 0).Select(dr => dr.Split('\t')[1]))
             {
                 Console.WriteLine(filename);
 

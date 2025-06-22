@@ -9,19 +9,19 @@ namespace BZNParser.Battlezone.GameObject
     // BZ2
     public class ClassTrackedDeployableFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassTrackedDeployable(PrjID, isUser, classLabel);
-            ClassTrackedDeployable.Hydrate(reader, obj as ClassTrackedDeployable);
+            ClassTrackedDeployable.Hydrate(parent, reader, obj as ClassTrackedDeployable);
             return true;
         }
     }
     public class ClassTrackedDeployable : ClassTrackedVehicle
     {
         public ClassTrackedDeployable(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassTrackedDeployable? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTrackedDeployable? obj)
         {
             IBZNToken tok;
 
@@ -41,7 +41,7 @@ namespace BZNParser.Battlezone.GameObject
                 //    (a2->vftable->read_long)(a2, this + 2544, 4, "changeState");
             }
 
-            ClassTrackedVehicle.Hydrate(reader, obj as ClassTrackedVehicle);
+            ClassTrackedVehicle.Hydrate(parent, reader, obj as ClassTrackedVehicle);
         }
     }
 }

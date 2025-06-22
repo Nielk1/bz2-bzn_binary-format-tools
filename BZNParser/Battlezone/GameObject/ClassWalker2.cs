@@ -6,19 +6,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "fv_walker")]
     public class ClassWalker2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassWalker2(PrjID, isUser, classLabel);
-            ClassWalker2.Hydrate(reader, obj as ClassWalker2);
+            ClassWalker2.Hydrate(parent, reader, obj as ClassWalker2);
             return true;
         }
     }
     public class ClassWalker2 : ClassCraft
     {
         public ClassWalker2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassWalker2? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassWalker2? obj)
         {
             IBZNToken tok;
 
@@ -28,7 +28,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("Walker_IK", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse Walker_IK/VOID");
                 byte[] data = tok.GetBytes();
 
-                ClassCraft.Hydrate(reader, obj as ClassCraft);
+                ClassCraft.Hydrate(parent, reader, obj as ClassCraft);
                 return;
             }
 
@@ -53,9 +53,9 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("Control_Queue", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse Control_Queue/VOID");
             }
 
-            // reader.SaveType != 0 stuff
+            // parent.SaveType != SaveType.BZN stuff
 
-            ClassCraft.Hydrate(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(parent, reader, obj as ClassCraft);
         }
     }
 }

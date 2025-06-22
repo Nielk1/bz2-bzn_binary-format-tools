@@ -11,19 +11,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "turret")]
     public class ClassTurretCraftFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassTurretCraft(PrjID, isUser, classLabel);
-            ClassTurretCraft.Hydrate(reader, obj as ClassTurretCraft);
+            ClassTurretCraft.Hydrate(parent, reader, obj as ClassTurretCraft);
             return true;
         }
     }
     public class ClassTurretCraft : ClassCraft
     {
         public ClassTurretCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassTurretCraft? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTurretCraft? obj)
         {
             List<UInt32> powerHandles = new List<uint>();
 
@@ -126,7 +126,7 @@ namespace BZNParser.Battlezone.GameObject
                     }
                 }
 
-                // reader.SaveType != 0
+                // parent.SaveType != SaveType.BZN
                 /*if (a2[2].vftable)
                 {
                     (a2->vftable->out_bool)(a2, this + 2376, 1, "terminalOn");
@@ -160,7 +160,7 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     // saveClass must have a CHAR token as its first token if it's in binary mode, meaning the above loop consuming all LONGs is fine
                     // if the version was lower we might have had a LONG conflict
-                    string saveClass = reader.ReadGameObjectClass_BZ2("saveClass");
+                    string saveClass = reader.ReadGameObjectClass_BZ2(parent, "saveClass");
 
                     //if (*(this + 376))
                     if (!string.IsNullOrEmpty(saveClass))
@@ -209,7 +209,7 @@ namespace BZNParser.Battlezone.GameObject
                     Int32 autoTarget = tok.GetInt32();
                 }
 
-                ClassCraft.Hydrate(reader, obj as ClassCraft);
+                ClassCraft.Hydrate(parent, reader, obj as ClassCraft);
 
                 if (m_AlignsToObject)
                 {
@@ -219,7 +219,7 @@ namespace BZNParser.Battlezone.GameObject
                 return;
             }
 
-            ClassCraft.Hydrate(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(parent, reader, obj as ClassCraft);
             return;
         }
     }

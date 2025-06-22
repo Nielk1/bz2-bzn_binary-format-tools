@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "apc")]
     public class ClassAPC2Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassAPC2(PrjID, isUser, classLabel);
-            ClassAPC2.Hydrate(reader, obj as ClassAPC2);
+            ClassAPC2.Hydrate(parent, reader, obj as ClassAPC2);
             return true;
         }
     }
@@ -28,7 +28,7 @@ namespace BZNParser.Battlezone.GameObject
         public long undeployTimeout { get; set; }
 
         public ClassAPC2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassAPC2? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAPC2? obj)
         {
             IBZNToken tok;
 
@@ -62,7 +62,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
             
-            if (reader.SaveType != 0)
+            if (parent.SaveType != SaveType.BZN)
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("nextSoldierDelay", BinaryFieldType.DATA_FLOAT))
@@ -94,7 +94,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
             if (obj != null) obj.state = (VEHICLE_STATE)tok.GetUInt32(); // state
 
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

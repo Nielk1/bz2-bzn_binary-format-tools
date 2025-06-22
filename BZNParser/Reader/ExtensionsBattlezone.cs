@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BZNParser.Battlezone;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -108,7 +109,7 @@ namespace BZNParser.Reader
             return tok.GetString();
         }
         
-        public static string ReadGameObjectClass_BZ2(this BZNStreamReader reader, string name)
+        public static string ReadGameObjectClass_BZ2(this BZNStreamReader reader, BZNFileBattlezone parent, string name)
         {
             if (reader.Version < 1145)
             {
@@ -116,7 +117,7 @@ namespace BZNParser.Reader
             }
             else
             {
-                if (reader.SaveType == 3)
+                if (parent.SaveType == SaveType.LOCKSTEP)
                 {
                     throw new NotImplementedException();
                 }
@@ -259,9 +260,9 @@ namespace BZNParser.Reader
             }
         }
 
-        public static Euler GetEuler(this BZNStreamReader reader)
+        public static Euler GetEuler(this BZNStreamReader reader, BZNFileBattlezone parent)
         {
-            if (reader.Format != BZNFormat.Battlezone2 || reader.SaveType == 0) // Battlezone 2 has side paths
+            if (reader.Format != BZNFormat.Battlezone2 || parent.SaveType == SaveType.BZN) // Battlezone 2 has side paths
             {
                 if (reader.InBinary)
                 {

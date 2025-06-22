@@ -6,12 +6,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "deploybuildingh")]
     public class ClassDeployBuildingHFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassDeployBuildingH(PrjID, isUser, classLabel);
-            ClassDeployBuildingH.Hydrate(reader, obj as ClassDeployBuildingH);
+            ClassDeployBuildingH.Hydrate(parent, reader, obj as ClassDeployBuildingH);
             return true;
         }
     }
@@ -19,11 +19,11 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassDeployBuildingH(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Hydrate(BZNStreamReader reader, ClassDeployBuildingH? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassDeployBuildingH? obj)
         {
             IBZNToken tok;
 
-            if (reader.SaveType != 0) { }
+            if (parent.SaveType != SaveType.BZN) { }
 
             //if ( a2[2].vftable )
             //{
@@ -35,7 +35,7 @@ namespace BZNParser.Battlezone.GameObject
             if (!tok.Validate("buildMatrix", BinaryFieldType.DATA_MAT3D)) throw new Exception("Failed to parse buildMatrix/MAT3D"); // type unconfirmed
             //dropMat = tok.GetMatrix()
 
-            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(parent, reader, obj as ClassDeployable);
         }
     }
 }

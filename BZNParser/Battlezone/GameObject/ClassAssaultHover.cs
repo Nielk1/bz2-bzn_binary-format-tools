@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "assaulthover")]
     public class ClassAssaultHoverFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassAssaultHover(PrjID, isUser, classLabel);
-            ClassAssaultHover.Hydrate(reader, obj as ClassAssaultHover);
+            ClassAssaultHover.Hydrate(parent, reader, obj as ClassAssaultHover);
             return true;
         }
     }
@@ -18,14 +18,14 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassAssaultHover(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Hydrate(BZNStreamReader reader, ClassAssaultHover? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAssaultHover? obj)
         {
-            if (reader.SaveType != 0)
+            if (parent.SaveType != SaveType.BZN)
             {
 
             }
 
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

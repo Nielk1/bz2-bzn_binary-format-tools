@@ -9,19 +9,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "deployable")]
     public class ClassDeployableFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassDeployable(PrjID, isUser, classLabel);
-            ClassDeployable.Hydrate(reader, obj as ClassDeployable);
+            ClassDeployable.Hydrate(parent, reader, obj as ClassDeployable);
             return true;
         }
     }
     public class ClassDeployable : ClassHoverCraft
     {
         public ClassDeployable(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassDeployable? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassDeployable? obj)
         {
             IBZNToken tok;
 
@@ -36,7 +36,7 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("deployTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse deployTimer/FLOAT");
                 float deployTimer = tok.GetSingle();
 
-                if (reader.SaveType == 0)
+                if (parent.SaveType == 0)
                 {
                     // setup stuff where some vars are generated
                 }
@@ -51,7 +51,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

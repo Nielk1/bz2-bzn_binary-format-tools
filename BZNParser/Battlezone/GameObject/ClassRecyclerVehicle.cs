@@ -5,19 +5,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "recyclervehicle")]
     public class ClassRecyclerVehicleFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassRecyclerVehicle(PrjID, isUser, classLabel);
-            ClassRecyclerVehicle.Hydrate(reader, obj as ClassRecyclerVehicle);
+            ClassRecyclerVehicle.Hydrate(parent, reader, obj as ClassRecyclerVehicle);
             return true;
         }
     }
     public class ClassRecyclerVehicle : ClassDeployBuilding
     {
         public ClassRecyclerVehicle(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassRecyclerVehicle? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassRecyclerVehicle? obj)
         {
             if (reader.Version == 1047)
             {
@@ -42,11 +42,11 @@ namespace BZNParser.Battlezone.GameObject
                     //v5 = std::deque < GameObjectClass const *>::operator[] (v4);
                     //ILoadSaveVisitor::out(a2, *v5, "buildItem");
                     //++v4;
-                    string item = reader.ReadGameObjectClass_BZ2("buildItem");
+                    string item = reader.ReadGameObjectClass_BZ2(parent, "buildItem");
                 }
             }
 
-            ClassDeployBuilding.Hydrate(reader, obj as ClassDeployBuilding);
+            ClassDeployBuilding.Hydrate(parent, reader, obj as ClassDeployBuilding);
         }
     }
 }

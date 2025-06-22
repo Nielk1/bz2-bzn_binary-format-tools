@@ -10,12 +10,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "scavenger")]
     public class ClassScavenger1Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassScavenger1(PrjID, isUser, classLabel);
-            ClassScavenger1.Hydrate(reader, obj as ClassScavenger1);
+            ClassScavenger1.Hydrate(parent, reader, obj as ClassScavenger1);
             return true;
         }
     }
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
         public UInt32 scrapHeld { get; set; }
 
         public ClassScavenger1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassScavenger1? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassScavenger1? obj)
         {
             if (reader.Format == BZNFormat.Battlezone)
             {
@@ -38,7 +38,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

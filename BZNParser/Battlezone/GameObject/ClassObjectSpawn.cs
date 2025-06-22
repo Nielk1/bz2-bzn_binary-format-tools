@@ -9,19 +9,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "objectspawn")]
     public class ClassObjectSpawnFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassObjectSpawn(PrjID, isUser, classLabel);
-            ClassObjectSpawn.Hydrate(reader, obj as ClassObjectSpawn);
+            ClassObjectSpawn.Hydrate(parent, reader, obj as ClassObjectSpawn);
             return true;
         }
     }
     public class ClassObjectSpawn : ClassBuilding
     {
         public ClassObjectSpawn(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassObjectSpawn? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassObjectSpawn? obj)
         {
             IBZNToken tok;
 
@@ -36,7 +36,7 @@ namespace BZNParser.Battlezone.GameObject
                 //state = tok.GetSingle();
             }
 
-            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(parent, reader, obj as ClassBuilding);
         }
     }
 }

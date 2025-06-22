@@ -9,12 +9,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "flag")]
     public class ClassFlagFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassFlag(PrjID, isUser, classLabel);
-            ClassFlag.Hydrate(reader, obj as ClassFlag);
+            ClassFlag.Hydrate(parent, reader, obj as ClassFlag);
             return true;
         }
     }
@@ -22,7 +22,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassFlag(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Hydrate(BZNStreamReader reader, ClassFlag? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassFlag? obj)
         {
             IBZNToken tok;
 
@@ -37,7 +37,7 @@ namespace BZNParser.Battlezone.GameObject
                 //state = tok.GetUInt32();
             }
 
-            ClassPowerUp.Hydrate(reader, obj as ClassPowerUp);
+            ClassPowerUp.Hydrate(parent, reader, obj as ClassPowerUp);
         }
     }
 }

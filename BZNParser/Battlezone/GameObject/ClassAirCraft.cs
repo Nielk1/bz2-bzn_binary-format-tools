@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "aircraft")]
     public class ClassAirCraftFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassAirCraft(PrjID, isUser, classLabel);
-            ClassAirCraft.Hydrate(reader, obj as ClassAirCraft);
+            ClassAirCraft.Hydrate(parent, reader, obj as ClassAirCraft);
             return true;
         }
     }
@@ -24,9 +24,9 @@ namespace BZNParser.Battlezone.GameObject
         protected bool m_bLockModeDeployed { get; set; }
 
         public ClassAirCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassAirCraft? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAirCraft? obj)
         {
-            if (reader.SaveType != 0)
+            if (parent.SaveType != SaveType.BZN)
             {
                 IBZNToken tok;
 
@@ -40,7 +40,7 @@ namespace BZNParser.Battlezone.GameObject
                     throw new Exception("Failed to parse deployTimer/FLOAT");
                 if (obj != null) obj.deployTimer = tok.GetSingle();
 
-                if (reader.SaveType == 3)
+                if (parent.SaveType == SaveType.LOCKSTEP)
                 {
                     tok = reader.ReadToken();
                     if (!tok.Validate("lastSteer", BinaryFieldType.DATA_FLOAT))
@@ -80,7 +80,7 @@ namespace BZNParser.Battlezone.GameObject
                 }
             }
 
-            ClassCraft.Hydrate(reader, obj as ClassCraft);
+            ClassCraft.Hydrate(parent, reader, obj as ClassCraft);
         }
     }
 }

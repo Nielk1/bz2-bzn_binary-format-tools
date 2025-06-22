@@ -78,11 +78,11 @@ namespace BZNParser.Battlezone
                 //if (reader.Version < 1145)
                 if (reader.Version < 1155)
                 {
-                    PrjID = reader.ReadGameObjectClass_BZ2("config");
+                    PrjID = reader.ReadGameObjectClass_BZ2(parent, "config");
                 }
                 else
                 {
-                    if (reader.SaveType == 3)
+                    if (parent.SaveType == SaveType.LOCKSTEP)
                     {
 
                     }
@@ -90,7 +90,7 @@ namespace BZNParser.Battlezone
                     {
                         if (reader.Version == 1180)
                         {
-                            PrjID = reader.ReadGameObjectClass_BZ2("GetClass()");
+                            PrjID = reader.ReadGameObjectClass_BZ2(parent, "GetClass()");
                         }
                         //else if (reader.Version <= 1192 && reader.Version >= 1187)
                         //else if (reader.Version <= 1192 && reader.Version >= 1183)
@@ -99,7 +99,7 @@ namespace BZNParser.Battlezone
                         else
                         {
                             // 1183 1187 1188 1192
-                            PrjID = reader.ReadGameObjectClass_BZ2("objClass");
+                            PrjID = reader.ReadGameObjectClass_BZ2(parent, "objClass");
                         }
                     }
                 }
@@ -222,7 +222,7 @@ namespace BZNParser.Battlezone
 
             if (reader.Format == BZNFormat.Battlezone2)
             {
-                if (reader.SaveType != 2)
+                if (parent.SaveType != SaveType.JOIN)
                 {
                     tok = reader.ReadToken();
                     if (reader.Version < 1145)
@@ -320,7 +320,7 @@ namespace BZNParser.Battlezone
                     {
                         string label = ValidClassLabels.First();
                         IClassFactory classFactory = ClassLabelMap[label];
-                        if (classFactory.Create(reader, PrjID, isUser != 0, label, out gameObject))
+                        if (classFactory.Create(parent, reader, PrjID, isUser != 0, label, out gameObject))
                         {
                             reader.Bookmark.Discard();
                             return gameObject; // success! Keep the stream position where it is
@@ -365,7 +365,7 @@ namespace BZNParser.Battlezone
                             try
                             {
                                 IClassFactory classFactory = kv.Value;
-                                if (classFactory.Create(reader, PrjID, isUser != 0, classLableTempHolder, out tempGameObject) && tempGameObject != null)
+                                if (classFactory.Create(parent, reader, PrjID, isUser != 0, classLableTempHolder, out tempGameObject) && tempGameObject != null)
                                 {
                                     firstParseSuccess = true;
                                     if (CheckNext(parent, reader, countLeft - 1, RecursiveObjectGenreationMemo, ClassLabelTempLookup, Hints))

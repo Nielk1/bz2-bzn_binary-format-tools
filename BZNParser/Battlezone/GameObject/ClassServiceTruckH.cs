@@ -5,21 +5,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "serviceh")]
     public class ClassServiceTruckHFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassServiceTruckH(PrjID, isUser, classLabel);
-            ClassServiceTruckH.Hydrate(reader, obj as ClassServiceTruckH);
+            ClassServiceTruckH.Hydrate(parent, reader, obj as ClassServiceTruckH);
             return true;
         }
     }
     public class ClassServiceTruckH : ClassHoverCraft
     {
         public ClassServiceTruckH(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassServiceTruckH? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassServiceTruckH? obj)
         {
-            ClassHoverCraft.Hydrate(reader, obj as ClassHoverCraft);
+            ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }
     }
 }

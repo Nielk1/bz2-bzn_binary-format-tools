@@ -5,12 +5,12 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "computer")]
     public class ClassComputerBuildingFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassComputerBuilding(PrjID, isUser, classLabel);
-            ClassComputerBuilding.Hydrate(reader, obj as ClassComputerBuilding);
+            ClassComputerBuilding.Hydrate(parent, reader, obj as ClassComputerBuilding);
             return true;
         }
     }
@@ -19,9 +19,9 @@ namespace BZNParser.Battlezone.GameObject
         public string name { get; set; }
         public ClassComputerBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Hydrate(BZNStreamReader reader, ClassComputerBuilding? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassComputerBuilding? obj)
         {
-            ClassDummy.Hydrate(reader, obj as ClassDummy);
+            ClassDummy.Hydrate(parent, reader, obj as ClassDummy);
 
             IBZNToken tok;
 

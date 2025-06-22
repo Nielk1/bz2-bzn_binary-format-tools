@@ -10,21 +10,21 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "factory")]
     public class ClassFactory1Factory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassFactory1(PrjID, isUser, classLabel);
-            ClassFactory1.Hydrate(reader, obj as ClassFactory1);
+            ClassFactory1.Hydrate(parent, reader, obj as ClassFactory1);
             return true;
         }
     }
     public class ClassFactory1 : ClassProducer
     {
         public ClassFactory1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassFactory1? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassFactory1? obj)
         {
-            ClassProducer.Hydrate(reader, obj as ClassProducer);
+            ClassProducer.Hydrate(parent, reader, obj as ClassProducer);
         }
     }
 }

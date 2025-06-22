@@ -6,12 +6,12 @@ namespace BZNParser.Battlezone.GameObject
 
     public class ClassMineFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassMine(PrjID, isUser, classLabel);
-            ClassMine.Hydrate(reader, obj as ClassMine);
+            ClassMine.Hydrate(parent, reader, obj as ClassMine);
             return true;
         }
     }
@@ -19,11 +19,11 @@ namespace BZNParser.Battlezone.GameObject
     {
         public ClassMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
 
-        public static void Hydrate(BZNStreamReader reader, ClassMine? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassMine? obj)
         {
             if (reader.Format == BZNFormat.Battlezone)
             {
-                if (reader.Version >= 1038 && reader.SaveType != 0)
+                if (reader.Version >= 1038 && parent.SaveType != SaveType.BZN)
                 {
                     IBZNToken tok = reader.ReadToken();
                     if (!tok.Validate("lifeTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse lifeTimer/FLOAT");
@@ -65,7 +65,7 @@ namespace BZNParser.Battlezone.GameObject
                 //}
             }
 
-            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(parent, reader, obj as ClassBuilding);
         }
     }
 }

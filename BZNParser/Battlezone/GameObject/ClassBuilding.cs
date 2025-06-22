@@ -27,19 +27,19 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "artifact")]
     public class ClassBuildingFactory : IClassFactory
     {
-        public bool Create(BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
                 obj = new ClassBuilding(PrjID, isUser, classLabel);
-            ClassBuilding.Hydrate(reader, obj as ClassBuilding);
+            ClassBuilding.Hydrate(parent, reader, obj as ClassBuilding);
             return true;
         }
     }
     public class ClassBuilding : ClassGameObject
     {
         public ClassBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-        public static void Hydrate(BZNStreamReader reader, ClassBuilding? obj)
+        public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassBuilding? obj)
         {
             IBZNToken tok;
 
@@ -52,11 +52,11 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     if (reader.Version == 1147 || reader.Version == 1148 || reader.Version == 1149 || reader.Version == 1151 || reader.Version == 1154)
                     {
-                        saveClass = reader.ReadGameObjectClass_BZ2("config");
+                        saveClass = reader.ReadGameObjectClass_BZ2(parent, "config");
                     }
                     else
                     {
-                        saveClass = reader.ReadGameObjectClass_BZ2("saveClass");
+                        saveClass = reader.ReadGameObjectClass_BZ2(parent, "saveClass");
                     }
 
                     if (!string.IsNullOrEmpty(saveClass))
@@ -102,7 +102,7 @@ namespace BZNParser.Battlezone.GameObject
                     return;
                 }
 
-                ClassGameObject.Hydrate(reader, obj as ClassGameObject);
+                ClassGameObject.Hydrate(parent, reader, obj as ClassGameObject);
 
                 if (!string.IsNullOrEmpty(saveClass) && (reader.Version < 1148 || m_AlignsToObject))
                 {
@@ -111,7 +111,7 @@ namespace BZNParser.Battlezone.GameObject
                 return;
             }
 
-            ClassGameObject.Hydrate(reader, obj as ClassGameObject);
+            ClassGameObject.Hydrate(parent, reader, obj as ClassGameObject);
         }
     }
 }
