@@ -28,36 +28,59 @@
         public class MalformationManager
         {
             private readonly IMalformable _parent;
-            private readonly Dictionary<string, List<MalformationData>> malformations;
+            private readonly Stack<Dictionary<string, List<MalformationData>>> malformations;
 
             public MalformationData[] this[string property]
             {
                 get
                 {
-                    if (malformations.TryGetValue(property, out var list))
-                    {
-                        return list.ToArray();
-                    }
-                    return Array.Empty<MalformationData>();
+                    return malformations
+                        .SelectMany(stack => stack)
+                        .Where(kvp => kvp.Key == property)
+                        .SelectMany(kvp => kvp.Value)
+                        .ToArray();
                 }
             }
-            public string[] Keys => malformations.Keys.ToArray();
+            public string[] Keys => malformations.SelectMany(stack => stack.Keys).ToArray();
             public MalformationManager(IMalformable parent)
             {
                 _parent = parent;
-                malformations = new Dictionary<string, List<MalformationData>>();
+                malformations = new Stack<Dictionary<string, List<MalformationData>>>();
+                malformations.Push(new Dictionary<string, List<MalformationData>>());
             }
             public void Add(Malformation malformation, string property, params object[] fields)
             {
-                if (!malformations.ContainsKey(property))
+                if (!malformations.Peek().ContainsKey(property))
                 {
-                    malformations[property] = new List<MalformationData>();
+                    malformations.Peek()[property] = new List<MalformationData>();
                 }
-                malformations[property].Add(new MalformationData(malformation, property, fields));
+                malformations.Peek()[property].Add(new MalformationData(malformation, property, fields));
             }
-            public void Clear()
+            public void Push()
             {
-                malformations.Clear();
+                malformations.Push(new Dictionary<string, List<MalformationData>>());
+            }
+            public void Pop()
+            {
+                if (malformations.Count > 1)
+                {
+                    Dictionary<string, List<MalformationData>> old = malformations.Pop();
+                    foreach (var kvp in old)
+                    {
+                        if (!malformations.Peek().ContainsKey(kvp.Key))
+                        {
+                            malformations.Peek()[kvp.Key] = new List<MalformationData>();
+                        }
+                        malformations.Peek()[kvp.Key].AddRange(kvp.Value);
+                    }
+                }
+            }
+            public void Discard()
+            {
+                if (malformations.Count > 1)
+                {
+                    malformations.Pop();
+                }
             }
         }
     }
