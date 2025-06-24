@@ -5,18 +5,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "kingofhill")]
     public class ClassKingOfHillFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassKingOfHill(PrjID, isUser, classLabel);
+                obj = new ClassKingOfHill(preamble, classLabel);
             ClassKingOfHill.Hydrate(parent, reader, obj as ClassKingOfHill);
             return true;
         }
     }
     public class ClassKingOfHill : ClassBuilding
     {
-        public ClassKingOfHill(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassKingOfHill(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassKingOfHill? obj)
         {
             IBZNToken tok;

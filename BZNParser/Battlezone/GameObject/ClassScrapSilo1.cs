@@ -10,11 +10,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "scrapsilo")]
     public class ClassScrapSilo1Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassScrapSilo1(PrjID, isUser, classLabel);
+                obj = new ClassScrapSilo1(preamble, classLabel);
             ClassScrapSilo1.Hydrate(parent, reader, obj as ClassScrapSilo1);
             return true;
         }
@@ -23,7 +23,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public UInt32 undefptr { get; set; }
 
-        public ClassScrapSilo1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassScrapSilo1(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassScrapSilo1? obj)
         {
             if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version > 1020)

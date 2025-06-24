@@ -11,17 +11,26 @@ namespace BZNParser.Battlezone.GameObject
 
     public class Entity : IMalformable
     {
-        protected string PrjID;
-        protected bool isUser;
+        protected BZNGameObjectWrapper preamble;
         protected string classLabel;
+
+        public string PrjID => preamble.PrjID;
+        public UInt32 seqNo => preamble.seqNo;
+        public Vector3D pos { get { return preamble.pos; } set { preamble.pos = value; } }
+        public UInt32 team { get { return preamble.team; } set { preamble.team = value; } }
+        public string label { get { return preamble.label; } set { preamble.label = value; } }
+        public bool isUser { get { return preamble.isUser; } set { preamble.isUser = value; } }
+        public UInt32 obj_addr { get { return preamble.obj_addr; } set { preamble.obj_addr = value; } }
+        public Matrix transform { get { return preamble.transform; } set { preamble.transform = value; } }
+
 
         private readonly IMalformable.MalformationManager _malformationManager;
         public IMalformable.MalformationManager Malformations => _malformationManager;
         public virtual string ClassLabel { get { return classLabel; } }
-        public Entity(string PrjID, bool isUser, string classLabel)
+        public Entity(BZNGameObjectWrapper preamble, string classLabel)
         {
-            this.PrjID = PrjID;
-            this.isUser = isUser;
+            this.preamble = preamble;
+
             this.classLabel = classLabel;
 
             this._malformationManager = new IMalformable.MalformationManager(this);

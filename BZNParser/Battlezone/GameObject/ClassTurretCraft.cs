@@ -11,18 +11,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "turret")]
     public class ClassTurretCraftFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassTurretCraft(PrjID, isUser, classLabel);
+                obj = new ClassTurretCraft(preamble, classLabel);
             ClassTurretCraft.Hydrate(parent, reader, obj as ClassTurretCraft);
             return true;
         }
     }
     public class ClassTurretCraft : ClassCraft
     {
-        public ClassTurretCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassTurretCraft(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTurretCraft? obj)
         {
             List<UInt32> powerHandles = new List<uint>();

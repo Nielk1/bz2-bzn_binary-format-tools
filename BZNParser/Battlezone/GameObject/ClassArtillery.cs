@@ -5,18 +5,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "artillery")]
     public class ClassArtilleryFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassArtillery(PrjID, isUser, classLabel);
+                obj = new ClassArtillery(preamble, classLabel);
             ClassArtillery.Hydrate(parent, reader, obj as ClassArtillery);
             return true;
         }
     }
     public class ClassArtillery : ClassTurretTank2
     {
-        public ClassArtillery(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassArtillery(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassArtillery? obj)
         {
             if (reader.Version < 1110)

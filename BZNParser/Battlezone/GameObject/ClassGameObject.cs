@@ -39,7 +39,7 @@ namespace BZNParser.Battlezone.GameObject
         public string curPilot { get; set; }
         public Int32 perceivedTeam { get; set; }
 
-        public ClassGameObject(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel)
+        public ClassGameObject(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel)
         {
         }
 
@@ -116,7 +116,8 @@ namespace BZNParser.Battlezone.GameObject
             }
             if (reader.Format == BZNFormat.Battlezone2)
             {
-                if (obj != null) obj.name = reader.ReadSizedString_BZ2_1145("name", 32);
+                string name = reader.ReadSizedString_BZ2_1145("name", 32);
+                if (obj != null) obj.name = name;
             }
 
             // if save type != 0, msgString

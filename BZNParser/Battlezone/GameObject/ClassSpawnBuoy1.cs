@@ -10,18 +10,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "spawnpnt")]
     public class ClassSpawnBuoy1Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassSpawnBuoy1(PrjID, isUser, classLabel);
+                obj = new ClassSpawnBuoy1(preamble, classLabel);
             ClassSpawnBuoy1.Hydrate(parent, reader, obj as ClassSpawnBuoy1);
             return true;
         }
     }
     public class ClassSpawnBuoy1 : ClassGameObject
     {
-        public ClassSpawnBuoy1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassSpawnBuoy1(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassSpawnBuoy1? obj)
         {
             ClassGameObject.Hydrate(parent, reader, obj as ClassGameObject);

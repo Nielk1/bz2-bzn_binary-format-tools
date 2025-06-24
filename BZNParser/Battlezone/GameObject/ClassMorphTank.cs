@@ -9,18 +9,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "morphtank")]
     public class ClassMorphTankFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassMorphTank(PrjID, isUser, classLabel);
+                obj = new ClassMorphTank(preamble, classLabel);
             ClassMorphTank.Hydrate(parent, reader, obj as ClassMorphTank);
             return true;
         }
     }
     public class ClassMorphTank : ClassDeployable
     {
-        public ClassMorphTank(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassMorphTank(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassMorphTank? obj)
         {
             IBZNToken tok;

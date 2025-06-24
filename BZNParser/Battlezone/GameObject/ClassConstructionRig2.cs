@@ -5,11 +5,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "constructionrig")]
     public class ClassConstructionRig2Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassConstructionRig2(PrjID, isUser, classLabel);
+                obj = new ClassConstructionRig2(preamble, classLabel);
             ClassConstructionRig2.Hydrate(parent, reader, obj as ClassConstructionRig2);
             return true;
         }
@@ -19,7 +19,7 @@ namespace BZNParser.Battlezone.GameObject
         public Matrix dropMat { get; set; }
         public string dropClass { get; set; }
 
-        public ClassConstructionRig2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassConstructionRig2(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassConstructionRig2? obj)
         {
             IBZNToken tok;

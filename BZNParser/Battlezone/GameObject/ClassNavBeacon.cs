@@ -9,18 +9,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "beacon")]
     public class ClassNavBeaconFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassNavBeacon(PrjID, isUser, classLabel);
+                obj = new ClassNavBeacon(preamble, classLabel);
             ClassNavBeacon.Hydrate(parent, reader, obj as ClassNavBeacon);
             return true;
         }
     }
     public class ClassNavBeacon : ClassGameObject
     {
-        public ClassNavBeacon(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassNavBeacon(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassNavBeacon? obj)
         {
             IBZNToken tok;

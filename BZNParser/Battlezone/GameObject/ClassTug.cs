@@ -11,11 +11,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "tug")]
     public class ClassTugFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassTug(PrjID, isUser, classLabel);
+                obj = new ClassTug(preamble, classLabel);
             ClassTug.Hydrate(parent, reader, obj as ClassTug);
             return true;
         }
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public UInt32 undefptr { get; set; }
 
-        public ClassTug(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassTug(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTug? obj)
         {
             IBZNToken tok;

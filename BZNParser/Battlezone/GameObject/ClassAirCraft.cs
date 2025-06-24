@@ -5,11 +5,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "aircraft")]
     public class ClassAirCraftFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassAirCraft(PrjID, isUser, classLabel);
+                obj = new ClassAirCraft(preamble, classLabel);
             ClassAirCraft.Hydrate(parent, reader, obj as ClassAirCraft);
             return true;
         }
@@ -23,7 +23,7 @@ namespace BZNParser.Battlezone.GameObject
         protected bool m_bLockMode { get; set; }
         protected bool m_bLockModeDeployed { get; set; }
 
-        public ClassAirCraft(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassAirCraft(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAirCraft? obj)
         {
             if (parent.SaveType != SaveType.BZN)

@@ -5,11 +5,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "armory")]
     public class ClassArmory2Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassArmory2(PrjID, isUser, classLabel);
+                obj = new ClassArmory2(preamble, classLabel);
             ClassArmory2.Hydrate(parent, reader, obj as ClassArmory2);
             return true;
         }
@@ -25,7 +25,7 @@ namespace BZNParser.Battlezone.GameObject
         Vector3D launchTarget { get; set; }
         int launchHandle { get; set; }
 
-        public ClassArmory2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassArmory2(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassArmory2? obj)
         {
             IBZNToken tok;

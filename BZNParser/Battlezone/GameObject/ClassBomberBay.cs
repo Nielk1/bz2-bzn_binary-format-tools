@@ -9,11 +9,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "bomberbay")]
     public class ClassBomberBayFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassBomberBay(PrjID, isUser, classLabel);
+                obj = new ClassBomberBay(preamble, classLabel);
             ClassBomberBay.Hydrate(parent, reader, obj as ClassBomberBay);
             return true;
         }
@@ -21,7 +21,7 @@ namespace BZNParser.Battlezone.GameObject
     public class ClassBomberBay : ClassPoweredBuilding
     {
         protected int m_MyBomber { get; set; }
-        public ClassBomberBay(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassBomberBay(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassBomberBay? obj)
         {
             IBZNToken tok;

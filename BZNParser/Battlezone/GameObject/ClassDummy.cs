@@ -9,11 +9,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "terrain")]
     public class ClassDummyFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassDummy(PrjID, isUser, classLabel);
+                obj = new ClassDummy(preamble, classLabel);
             ClassDummy.Hydrate(parent, reader, obj as ClassDummy);
             return true;
         }
@@ -21,7 +21,7 @@ namespace BZNParser.Battlezone.GameObject
     public class ClassDummy : ClassGameObject
     {
         public string name { get; set; }
-        public ClassDummy(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassDummy(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
 
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassDummy? obj)
         {

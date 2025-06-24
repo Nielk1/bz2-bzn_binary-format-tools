@@ -41,8 +41,12 @@ namespace BZNParser.Battlezone
         public Dictionary<string, IClassFactory> ClassLabelMap => _classLabelMap;
 
 
+        internal Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache;
+
         public BZNFileBattlezone(BZNStreamReader reader, BattlezoneBZNHints? Hints = null)
         {
+            this.LongTermClassLabelLookupCache = new Dictionary<string, HashSet<string>>();
+
             this._malformationManager = new IMalformable.MalformationManager(this);
             this._classLabelMap = new Dictionary<string, IClassFactory>();
             this.Hints = Hints;
@@ -259,8 +263,12 @@ namespace BZNParser.Battlezone
             for (int gameObjectCounter = 0; gameObjectCounter < CountItems; gameObjectCounter++)
             {
                 //GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader, (gameObjectCounter + 1) == CountItems);
-                GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(this, reader, CountItems - gameObjectCounter, LongTermClassLabelLookupCache, Hints: Hints);
-                Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
+                BZNGameObjectWrapper? tmpObj;
+                if (BZNGameObjectWrapper.Create(this, reader, CountItems - gameObjectCounter, out tmpObj, true, Hints: Hints) && tmpObj != null)
+                {
+                    GameObjects[gameObjectCounter] = tmpObj;
+                    Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
+                }
             }
 
             TailParse(reader);

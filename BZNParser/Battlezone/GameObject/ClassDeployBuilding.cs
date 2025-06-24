@@ -9,18 +9,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "deploybuilding")]
     public class ClassDeployBuildingFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassDeployBuilding(PrjID, isUser, classLabel);
+                obj = new ClassDeployBuilding(preamble, classLabel);
             ClassDeployBuilding.Hydrate(parent, reader, obj as ClassDeployBuilding);
             return true;
         }
     }
     public class ClassDeployBuilding : ClassTrackedDeployable
     {
-        public ClassDeployBuilding(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassDeployBuilding(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
 
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassDeployBuilding? obj)
         {

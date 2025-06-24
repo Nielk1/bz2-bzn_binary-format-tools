@@ -6,18 +6,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "fv_walker")]
     public class ClassWalker2Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassWalker2(PrjID, isUser, classLabel);
+                obj = new ClassWalker2(preamble, classLabel);
             ClassWalker2.Hydrate(parent, reader, obj as ClassWalker2);
             return true;
         }
     }
     public class ClassWalker2 : ClassCraft
     {
-        public ClassWalker2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassWalker2(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassWalker2? obj)
         {
             IBZNToken tok;

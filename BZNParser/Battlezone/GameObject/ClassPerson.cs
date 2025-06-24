@@ -11,11 +11,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "person")] // ?
     public class ClassPersonFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassPerson(PrjID, isUser, classLabel);
+                obj = new ClassPerson(preamble, classLabel);
             ClassPerson.Hydrate(parent, reader, obj as ClassPerson);
             return true;
         }
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
     {
         public float nextScream { get; set; }
 
-        public ClassPerson(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassPerson(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassPerson? obj)
         {
             IBZNToken tok;

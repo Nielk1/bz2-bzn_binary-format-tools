@@ -5,11 +5,11 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "apc")]
     public class ClassAPC2Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassAPC2(PrjID, isUser, classLabel);
+                obj = new ClassAPC2(preamble, classLabel);
             ClassAPC2.Hydrate(parent, reader, obj as ClassAPC2);
             return true;
         }
@@ -27,7 +27,7 @@ namespace BZNParser.Battlezone.GameObject
         public bool DeployOnLanding { get; set; }
         public long undeployTimeout { get; set; }
 
-        public ClassAPC2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassAPC2(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAPC2? obj)
         {
             IBZNToken tok;

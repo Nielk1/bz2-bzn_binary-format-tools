@@ -7,18 +7,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "weaponmine")]
     public class ClassWeaponMineFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassWeaponMine(PrjID, isUser, classLabel);
+                obj = new ClassWeaponMine(preamble, classLabel);
             ClassWeaponMine.Hydrate(parent, reader, obj as ClassWeaponMine);
             return true;
         }
     }
     public class ClassWeaponMine : ClassMine
     {
-        public ClassWeaponMine(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassWeaponMine(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassWeaponMine? obj)
         {
             if (reader.Format == BZNFormat.Battlezone2)

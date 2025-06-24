@@ -6,18 +6,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "armory")]
     public class ClassArmory1Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassArmory1(PrjID, isUser, classLabel);
+                obj = new ClassArmory1(preamble, classLabel);
             ClassArmory1.Hydrate(parent, reader, obj as ClassArmory1);
             return true;
         }
     }
     public class ClassArmory1 : ClassProducer
     {
-        public ClassArmory1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassArmory1(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassArmory1? obj)
         {
             ClassProducer.Hydrate(parent, reader, obj as ClassProducer);

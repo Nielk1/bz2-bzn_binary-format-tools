@@ -9,18 +9,18 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "deposit")]
     public class ClassDepositFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
-                obj = new ClassDeposit(PrjID, isUser, classLabel);
+                obj = new ClassDeposit(preamble, classLabel);
             ClassDeposit.Hydrate(parent, reader, obj as ClassDeposit);
             return true;
         }
     }
     public class ClassDeposit : ClassBuilding
     {
-        public ClassDeposit(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
+        public ClassDeposit(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassDeposit? obj)
         {
             IBZNToken tok;
