@@ -126,7 +126,7 @@ namespace BZNParser.Battlezone.GameObject
 
                 if (!string.IsNullOrEmpty(saveClass) && (reader.Version < 1148 || m_AlignsToObject))
                 {
-                    //if (obj != null) obj.saveMatrix = obj.objectMatrix;
+                    if (obj != null) obj.saveMatrix = obj.transform; // TODO: this may be incorrect, figure that out
                 }
                 return;
             }

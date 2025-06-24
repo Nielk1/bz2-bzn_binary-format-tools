@@ -3,10 +3,11 @@
     public enum Malformation
     {
         UNKNOWN = 0,
-        INCOMPAT,     // fieldName                 // Not loadable by game
-        MISINTERPRET, // fieldName, interpretedAs  // Misinterpreted by game but thus is loadable
-        OVERCOUNT,    // fieldName                 // Too many objects of this type, maximum may have changed
-        INCORRECT,    // fieldName, incorrectValue // Value is incorrect and has been corrected
+        INCOMPAT,       // fieldName                 // Not loadable by game
+        MISINTERPRET,   // fieldName, interpretedAs  // Misinterpreted by game but thus is loadable
+        OVERCOUNT,      // fieldName                 // Too many objects of this type, maximum may have changed
+        NOTIMPLEMENTED, // fieldName                 // Field not implemented, but it probably won't break the BZN read
+        INCORRECT,      // fieldName, incorrectValue // Value is incorrect and has been corrected
     }
     public interface IMalformable
     {

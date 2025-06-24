@@ -67,7 +67,7 @@ namespace BZNParser.Battlezone
                 throw new Exception("Failed to parse LONG/SHORT/CHAR");
             }
         }
-        public static string ReadBZ2InputString(this BZNStreamReader reader, string name)
+        public static string? ReadBZ2InputString(this BZNStreamReader reader, string name)
         {
             IBZNToken tok;
             if (reader.InBinary)
@@ -89,7 +89,7 @@ namespace BZNParser.Battlezone
             if (!tok.Validate(name, BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
             return tok.GetString();
         }
-        public static string ReadBZ2StringInSized(this BZNStreamReader reader, string name, int bufferSize)
+        public static string? ReadBZ2StringInSized(this BZNStreamReader reader, string name, int bufferSize)
         {
             IBZNToken tok;
             if (reader.InBinary)
@@ -110,7 +110,7 @@ namespace BZNParser.Battlezone
             return tok.GetString();
         }
         
-        public static string ReadGameObjectClass_BZ2(this BZNStreamReader reader, BZNFileBattlezone parent, string name, [System.Runtime.CompilerServices.CallerFilePath] string callerFile = "")
+        public static string? ReadGameObjectClass_BZ2(this BZNStreamReader reader, BZNFileBattlezone parent, string name, [System.Runtime.CompilerServices.CallerFilePath] string callerFile = "")
         {
             if (reader.Version < 1145)
             {
@@ -127,7 +127,6 @@ namespace BZNParser.Battlezone
                     return reader.ReadBZ2InputString(name);
                 }
             }
-            return null;
         }
 
         /// <summary>
@@ -160,7 +159,7 @@ namespace BZNParser.Battlezone
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <exception cref="Exception"></exception>
-        public static string ReadSizedString_BZ2_1145(this BZNStreamReader reader, string name, int bufferSize)
+        public static string? ReadSizedString_BZ2_1145(this BZNStreamReader reader, string name, int bufferSize)
         {
             if (reader.Format != BZNFormat.Battlezone2)
                 throw new NotImplementedException();
@@ -389,17 +388,18 @@ namespace BZNParser.Battlezone
 
                     tok = reader.ReadToken();
                     if (!tok.Validate("Att", BinaryFieldType.DATA_QUAT)) throw new Exception("Failed to parse euler's QUAT");
-                throw new NotImplementedException("Euler Save");
+                    
+                    throw new NotImplementedException("Euler Save");
                     //Quaternion euler_Att = tok.GetQuaternion();
 
-                    euler.Pos = euler_Pos;
+                    //euler.Pos = euler_Pos;
                     //euler.Att = euler_Att;
 
                     // And, reconstruct unsaved params now
-                    euler.CalcMassIInv();
-                    euler.CalcVMag();
+                    //euler.CalcMassIInv();
+                    //euler.CalcVMag();
 
-                    return euler;
+                    //return euler;
                 }
             }
             throw new NotImplementedException("Euler Save");

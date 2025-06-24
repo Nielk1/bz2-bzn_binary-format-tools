@@ -18,6 +18,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassCameraPod : ClassPowerUp
     {
+        protected int navSlot { get; set; }
         public ClassCameraPod(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassCameraPod? obj)
         {
@@ -27,14 +28,10 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     IBZNToken tok;
 
-                    //tok = reader.ReadToken();
-                    //if (!tok.Validate("name", BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse name/CHAR");
-                    //name = tok.GetString();
-
                     tok = reader.ReadToken();
                     if (!tok.Validate("navSlot", BinaryFieldType.DATA_LONG))
                         throw new Exception("Failed to parse navSlot/LONG");
-                    //int navSlot = tok.GetInt32();
+                    if (obj != null) obj.navSlot = tok.GetInt32();
                 }
             }
 

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BZNParser.Battlezone.GameObject
 {
-    [ObjectClass(BZNFormat.Battlezone2, "commtower")]
+    [ObjectClass(BZNFormat.Battlezone2, "commtower")] // commtower > commbunker > powered
     [ObjectClass(BZNFormat.Battlezone2, "commbunker")]
     [ObjectClass(BZNFormat.Battlezone2, "supplydepot")]
     [ObjectClass(BZNFormat.Battlezone2, "barracks")]

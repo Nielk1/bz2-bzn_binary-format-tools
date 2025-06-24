@@ -23,7 +23,7 @@ namespace BZNParser.Battlezone.GameObject
         public float nextSoldierAngle { get; set; }
         public float nextReturnToAPC { get; set; }
         public int ExternalSoldierCount { get; set; }
-        public int[] ExternalSoldiers { get; set; }
+        public int[]? ExternalSoldiers { get; set; }
         public bool DeployOnLanding { get; set; }
         public long undeployTimeout { get; set; }
 

@@ -16,7 +16,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassArmory2 : ClassPoweredBuilding
     {
-        public Queue<string> buildQueue { get; private set; }
+        public Queue<string?> buildQueue { get; private set; }
         public float buildDoneTime { get; set; }
         public bool buildActive { get; set; }
         public bool buildStall { get; set; }
@@ -45,11 +45,11 @@ namespace BZNParser.Battlezone.GameObject
                 throw new Exception("Failed to parse buildCount/LONG");
             int buildCount = tok.GetInt32();
 
-            if (obj != null) obj.buildQueue = new Queue<string>(buildCount);
+            if (obj != null) obj.buildQueue = new Queue<string?>(buildCount);
 
             for (int i = 0; i < buildCount; i++)
             {
-                string item = reader.ReadGameObjectClass_BZ2(parent, "buildItem");
+                string? item = reader.ReadGameObjectClass_BZ2(parent, "buildItem");
                 if (obj != null) obj.buildQueue.Enqueue(item);
             }
             if (parent.SaveType != SaveType.BZN)

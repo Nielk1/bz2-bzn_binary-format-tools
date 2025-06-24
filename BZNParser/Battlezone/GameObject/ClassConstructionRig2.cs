@@ -62,16 +62,30 @@ namespace BZNParser.Battlezone.GameObject
                 if (!tok.Validate("upgradeHandle", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse upgradeHandle/LONG");
             }
 
-            // if parent.SaveType != SaveType.BZN
-            /*if (a2[2].vftable)
-            {
-                (a2->vftable->read_long)(a2, this + 2372, 4, "buildGroup");
-                if (!*(this + 2380))
-                    ANIMATION_STRUCT::Save((this + 2492), a2);
-                (a2->vftable->out_bool)(a2, this + 2378, 1, "Alive");
-                (a2->vftable->out_float)(a2, this + 2472, 4, "Dying_Timer");
-                (a2->vftable->out_bool)(a2, this + 2379, 1, "Explosion");
-            }*/
+            if (parent.SaveType != SaveType.BZN)
+            { 
+                if (reader.Version >= 1120)
+                {
+                    tok = reader.ReadToken();
+                    if (!tok.Validate("buildGroup", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse buildGroup/LONG");
+                    //buildGroup = tok.GetUInt32H();
+                }
+
+                //if (!mbIsHoverRig)
+                //{
+                    //Load AminControl
+                //}
+
+                //(a2->vftable->out_bool)(a2, this + 2378, 1, "Alive");
+                //(a2->vftable->out_float)(a2, this + 2472, 4, "Dying_Timer");
+                //(a2->vftable->out_bool)(a2, this + 2379, 1, "Explosion");
+
+                if (reader.Version < 1107)
+                {
+                    //float bornTime;
+                    //float lifeTime;
+                }
+            }
 
             ClassDeployable.Hydrate(parent, reader, obj as ClassDeployable);
         }

@@ -30,7 +30,9 @@ namespace BZNParser.Battlezone
 
         private readonly IMalformable.MalformationManager _malformationManager;
         public IMalformable.MalformationManager Malformations => _malformationManager;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public EntityDescriptor()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         {
             this._malformationManager = new IMalformable.MalformationManager(this);
         }
@@ -59,7 +61,7 @@ namespace BZNParser.Battlezone
             {
                 tok = reader.ReadToken();
                 UInt16 ItemID = tok.GetUInt16();
-                PrjID = parent?.Hints?.EnumerationPrjID?[ItemID] ?? string.Format("bzn64prjid_{0,4:X4}", ItemID);
+                PrjID = parent.Hints?.EnumerationPrjID?[ItemID] ?? string.Format("bzn64prjid_{0,4:X4}", ItemID);
             }
             else if (reader.Format == BZNFormat.Battlezone)
             {
@@ -101,10 +103,6 @@ namespace BZNParser.Battlezone
                         {
                             PrjID = reader.ReadGameObjectClass_BZ2(parent, "GetClass()");
                         }
-                        //else if (reader.Version <= 1192 && reader.Version >= 1187)
-                        //else if (reader.Version <= 1192 && reader.Version >= 1183)
-                        //else if (reader.Version <= 1192 && reader.Version >= 1178)
-                        //else if (reader.Version <= 1192 && reader.Version >= 1171)
                         else
                         {
                             // 1183 1187 1188 1192
@@ -113,6 +111,8 @@ namespace BZNParser.Battlezone
                     }
                 }
             }
+            if (PrjID == null)
+                throw new Exception("Failed to parse PrjID/ID");
             if (obj != null) obj.PrjID = PrjID;
 
             uint seqNo = 0;
@@ -322,7 +322,7 @@ namespace BZNParser.Battlezone
             return true;
         }
 
-        private static Entity? ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints Hints, EntityDescriptor obj)
+        private static Entity? ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints? Hints, EntityDescriptor obj)
         {
             List<string>? ValidClassLabels = null;
 
@@ -335,7 +335,7 @@ namespace BZNParser.Battlezone
                     var possibleClasses = Hints.ClassLabels[lookupKey];
                     foreach (string possibleClass in possibleClasses)
                     {
-                        if (possibleClass != null && (parent.ClassLabelMap?.ContainsKey(possibleClass) ?? false))
+                        if (possibleClass != null && parent.ClassLabelMap.ContainsKey(possibleClass))
                         {
                             ValidClassLabels.Add(possibleClass);
                         }
@@ -385,7 +385,7 @@ namespace BZNParser.Battlezone
                 
                 List<(Entity Object, bool Expected, long Next, string Name)> Candidates = new List<(Entity Object, bool Expected, long Next, string Name)>();
 
-                foreach (var kv in parent.ClassLabelMap.OrderBy(dr => dr.Key))
+                foreach (var kv in parent.ClassLabelMap.OrderBy(dr => ValidClassLabels != null && ValidClassLabels.Contains(dr.Key) ? 0 : 1).ThenBy(dr => dr.Key))
                 {
                     string classLabel = kv.Key;
                     if (!parent.LongTermClassLabelLookupCache.ContainsKey(obj.PrjID.ToLowerInvariant()) || parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()].Contains(classLabel))
@@ -432,8 +432,6 @@ namespace BZNParser.Battlezone
                     throw new Exception($"Failed to parse GameObject {obj.PrjID}");
                 }
             }
-
-            return null;
         }
 
         private static bool CheckNext(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints? Hints)
