@@ -22,7 +22,7 @@ namespace BZNParser.Battlezone.GameObject
         {
             if (parent.SaveType != SaveType.BZN)
             {
-
+                // turret control
             }
 
             ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);

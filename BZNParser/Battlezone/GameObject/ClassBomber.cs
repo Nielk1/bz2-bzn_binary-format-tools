@@ -16,20 +16,22 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassBomber : ClassHoverCraft
     {
+        protected float m_ReloadTime { get; set; }
         public ClassBomber(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassBomber? obj)
         {
-            // if parent.SaveType != SaveType.BZN
-            // m_ReloadTime
-
             IBZNToken tok;
 
             tok = reader.ReadToken();
             if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
             UInt32 state = tok.GetUInt32H();
 
-            // if parent.SaveType != SaveType.BZN
-            // reloadTime float
+            if (parent.SaveType != SaveType.BZN)
+            {
+                tok = reader.ReadToken();
+                if (!tok.Validate("m_ReloadTime", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse m_ReloadTime/FLOAT");
+                if (obj != null) obj.m_ReloadTime = tok.GetSingle();
+            }
 
             ClassHoverCraft.Hydrate(parent, reader, obj as ClassHoverCraft);
         }

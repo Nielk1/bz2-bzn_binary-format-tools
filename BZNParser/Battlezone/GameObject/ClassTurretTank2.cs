@@ -22,6 +22,7 @@ namespace BZNParser.Battlezone.GameObject
         protected int change_state { get; set; }
         protected float delayTimer { get; set; }
         protected bool turretAligned { get; set; }
+        protected bool wantTurret { get; set; } // obsolete, minterpreted as turretAligned
         protected float prevYaw { get; set; }
         public ClassTurretTank2(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTurretTank2? obj)
@@ -126,17 +127,16 @@ namespace BZNParser.Battlezone.GameObject
                         throw new Exception("Failed to parse delayTimer/FLOAT");
                     if (obj != null) obj.delayTimer = tok.GetSingle(); // delayTimer
 
-                    // not readable by game's code, game would just missread it as turretAligned so maybe allow it?
                     if (reader.Version == 1100)
                     {
                         // obsolete
                         tok = reader.ReadToken();
-                        if (!tok.Validate("wantTurret", BinaryFieldType.DATA_BOOL)) throw new Exception("Failed to parse wantTurret/BOOL");
-                        bool wantTurret = tok.GetBoolean(); // wantTurret
+                        if (!tok.Validate("wantTurret", BinaryFieldType.DATA_BOOL))
+                            throw new Exception("Failed to parse wantTurret/BOOL");
                         if (obj != null)
                         {
                             obj.Malformations.Add(Malformation.MISINTERPRET, "wantTurret", "turretAligned");
-                            obj.turretAligned = tok.GetBoolean(); // turretAligned // game would do this, so is it right? // TODO figure this out
+                            obj.wantTurret = tok.GetBoolean(); // wantTurret
                         }
                     }
                     else

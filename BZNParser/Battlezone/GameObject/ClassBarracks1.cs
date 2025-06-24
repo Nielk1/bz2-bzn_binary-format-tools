@@ -17,10 +17,18 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassBarracks1 : ClassBuilding
     {
+        protected long nextEmptyCheck { get; set; }
         public ClassBarracks1(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
-
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassBarracks1? obj)
         {
+            if (parent.SaveType != SaveType.BZN)
+            {
+                IBZNToken tok = reader.ReadToken();
+                if (!tok.Validate("nextEmptyCheck", BinaryFieldType.DATA_LONG))
+                    throw new Exception("Failed to parse nextEmptyCheck/LONG");
+                if (obj != null) obj.nextEmptyCheck = tok.GetInt32();
+            }
+
             ClassBuilding.Hydrate(parent, reader, obj as ClassBuilding);
         }
     }

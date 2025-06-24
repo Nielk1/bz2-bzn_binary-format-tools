@@ -20,6 +20,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassBomberBay : ClassPoweredBuilding
     {
+        protected int m_MyBomber { get; set; }
         public ClassBomberBay(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassBomberBay? obj)
         {
@@ -29,12 +30,16 @@ namespace BZNParser.Battlezone.GameObject
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate("Handle", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse Handle/LONG");
-                //int buildCount = tok.GetInt32();
-                // m_MyBomber
+                if (obj != null) obj.m_MyBomber = tok.GetInt32();
             }
             else
             {
-                // find bomber via slot scan
+                if (obj != null)
+                {
+                    obj.m_MyBomber = 0;
+                    // find bomber via TEAM_SLOT_BOMBER scan
+                    // if this is mid load doesn't that require the bomber come first in the BZN file? Maybe do this in a post-load step or write a malformation that tries to auto-fix?
+                }
             }
 
             ClassPoweredBuilding.Hydrate(parent, reader, obj as ClassPoweredBuilding);

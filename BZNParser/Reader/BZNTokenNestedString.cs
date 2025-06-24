@@ -25,52 +25,18 @@ namespace BZNParser.Reader
             throw new InvalidOperationException();
         }
 
-        public Int32 GetInt32(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public UInt32 GetUInt32(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
+        public Int32 GetInt32(int index = 0) { throw new InvalidOperationException(); }
+        public Int32 GetInt32H(int index = 0) { return GetInt32(index); }
+        public UInt32 GetUInt32(int index = 0) { throw new InvalidOperationException(); }
         public UInt32 GetUInt32H(int index = 0) { return GetUInt32(index); }
         public UInt32 GetUInt32Raw(int index = 0) { return GetUInt32(index); }
-
-        public Int16 GetInt16(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public UInt16 GetUInt16(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public UInt16 GetUInt16H(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-        public SByte GetInt8(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public byte GetUInt8(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public string GetString(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public float GetSingle(int index = 0)
-        {
-            throw new InvalidOperationException();
-        }
+        public Int16 GetInt16(int index = 0) { throw new InvalidOperationException(); }
+        public UInt16 GetUInt16(int index = 0) { throw new InvalidOperationException(); }
+        public UInt16 GetUInt16H(int index = 0) { throw new InvalidOperationException(); }
+        public SByte GetInt8(int index = 0) { throw new InvalidOperationException(); }
+        public byte GetUInt8(int index = 0) { throw new InvalidOperationException(); }
+        public string GetString(int index = 0) { throw new InvalidOperationException(); }
+        public float GetSingle(int index = 0) { throw new InvalidOperationException(); }
 
         public Vector3D GetVector3D(int index = 0)
         {

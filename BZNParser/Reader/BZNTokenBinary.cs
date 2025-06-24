@@ -11,12 +11,12 @@ namespace BZNParser.Reader
         private byte[] data;
         private bool IsBigEndian;
 
-        public BZNTokenBinary(BinaryFieldType fIELD_TYPE, byte[] data, bool IsBigEndian)
+        public BZNTokenBinary(BinaryFieldType fieldType, byte[] data, bool isBigEndian)
         {
             // TODO: Complete member initialization
-            this.type = fIELD_TYPE;
+            this.type = fieldType;
             this.data = data;
-            this.IsBigEndian = IsBigEndian;
+            this.IsBigEndian = isBigEndian;
         }
         public bool IsBinary => true;
         public int GetCount()
@@ -56,6 +56,7 @@ namespace BZNParser.Reader
             if (IsBigEndian) return BitConverter.ToInt32(data.Skip(index * sizeof(Int32)).Take(sizeof(Int32)).Reverse().ToArray(), 0);
             return BitConverter.ToInt32(data, index * sizeof(Int32));
         }
+        public Int32 GetInt32H(int index = 0) => GetInt32(index);
 
         public UInt32 GetUInt32(int index = 0)
         {
@@ -64,15 +65,9 @@ namespace BZNParser.Reader
             return BitConverter.ToUInt32(data, index * sizeof(UInt32));
         }
 
-        public UInt32 GetUInt32H(int index = 0)
-        {
-            return GetUInt32(index);
-        }
+        public UInt32 GetUInt32H(int index = 0) => GetUInt32(index);
 
-        public UInt32 GetUInt32Raw(int index = 0)
-        {
-            return GetUInt32(index);
-        }
+        public UInt32 GetUInt32Raw(int index = 0) => GetUInt32(index);
 
         public UInt32 GetUInt32N64Fix(int index = 0)
         {

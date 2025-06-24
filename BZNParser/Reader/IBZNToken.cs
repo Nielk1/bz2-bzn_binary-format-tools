@@ -11,6 +11,7 @@ namespace BZNParser.Reader
         int GetCount();
         bool GetBoolean(int index = 0);
         Int32 GetInt32(int index = 0);
+        Int32 GetInt32H(int index = 0);
         UInt32 GetUInt32(int index = 0);
         UInt32 GetUInt32H(int index = 0);
         UInt32 GetUInt32Raw(int index = 0);

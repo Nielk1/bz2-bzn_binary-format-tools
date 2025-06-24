@@ -38,6 +38,16 @@ namespace BZNParser.Reader
             return Int32.Parse(values[index]);
         }
 
+        public Int32 GetInt32H(int index = 0)
+        {
+            if (index >= values.Length) throw new ArgumentOutOfRangeException();
+            if (values[index].StartsWith('-'))
+            {
+                return Int32.Parse(values[index], System.Globalization.NumberStyles.HexNumber);
+            }
+            return unchecked((Int32)UInt32.Parse(values[index], System.Globalization.NumberStyles.HexNumber));
+        }
+
         public UInt32 GetUInt32(int index = 0)
         {
             if (index >= values.Length) throw new ArgumentOutOfRangeException();

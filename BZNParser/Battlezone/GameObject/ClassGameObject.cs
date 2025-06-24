@@ -371,43 +371,23 @@ namespace BZNParser.Battlezone.GameObject
 
             if (reader.Format == BZNFormat.Battlezone2 && reader.Version != 1041 && reader.Version != 1047) // avoid bz2001.bzn via != 1041
             {
-                if (reader.Version < 1145 || !reader.InBinary)
+                tok = reader.ReadToken();
+                Int32 groupNumber;
+                if (tok.Validate("groupNumber", BinaryFieldType.DATA_LONG))
                 {
-                    tok = reader.ReadToken();
-                    if (tok.Validate("groupNumber", BinaryFieldType.DATA_LONG))
-                    {
-                        Int32 groupNumber = tok.GetInt32();
-                    }
-                    else if (tok.Validate("groupNumber", BinaryFieldType.DATA_SHORT)) {
-                        Int16 groupNumber = tok.GetInt16();
-                    }
-                    else if (tok.Validate("groupNumber", BinaryFieldType.DATA_CHAR)) {
-                        SByte groupNumber = tok.GetInt8();
-                    }
-                    else
-                    {
-                        throw new Exception("Failed to parse groupNumber/LONG/SHORT/CHAR");
-                    }
+                    groupNumber = tok.GetInt32();
+                }
+                else if (tok.Validate("groupNumber", BinaryFieldType.DATA_SHORT))
+                {
+                    groupNumber = tok.GetInt16();
+                }
+                else if (tok.Validate("groupNumber", BinaryFieldType.DATA_CHAR))
+                {
+                    groupNumber = tok.GetInt8();
                 }
                 else
                 {
-                    tok = reader.ReadToken();
-                    if (tok.Validate("groupNumber", BinaryFieldType.DATA_LONG))
-                    {
-                        Int32 groupNumber = tok.GetInt32();
-                    }
-                    else if (tok.Validate("groupNumber", BinaryFieldType.DATA_SHORT))
-                    {
-                        Int32 groupNumber = tok.GetInt16();
-                    }
-                    else if (tok.Validate("groupNumber", BinaryFieldType.DATA_CHAR))
-                    {
-                        Int32 groupNumber = tok.GetInt8();
-                    }
-                    else
-                    {
-                        throw new Exception("Failed to parse groupNumber/LONG/SHORT/CHAR"); // appears to be a compression
-                    }
+                    throw new Exception("Failed to parse groupNumber/LONG/SHORT/CHAR");
                 }
             }
 

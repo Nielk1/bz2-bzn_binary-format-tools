@@ -1,4 +1,4 @@
-﻿using BZNParser.Battlezone;
+﻿using BZNParser.Reader;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,11 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace BZNParser.Reader
+namespace BZNParser.Battlezone
 {
     static class ExtensionsBattlezone
     {
-        public static UInt32 ReadBZ1_PtrDepricated(this BZNStreamReader reader, string name)
+        public static uint ReadBZ1_PtrDepricated(this BZNStreamReader reader, string name)
         {
             IBZNToken tok;
 
@@ -35,7 +35,7 @@ namespace BZNParser.Reader
                 return tok.GetUInt32Raw(); // might be only version 1001 of BZ1
             }
         }
-        public static UInt32 ReadBZ1_Ptr(this BZNStreamReader reader, string name)
+        public static uint ReadBZ1_Ptr(this BZNStreamReader reader, string name)
         {
             IBZNToken tok;
             
@@ -45,7 +45,7 @@ namespace BZNParser.Reader
             return tok.GetUInt32H();
         }
 
-        public static UInt32 ReadCompressedNumberFromBinary(this BZNStreamReader reader)
+        public static uint ReadCompressedNumberFromBinary(this BZNStreamReader reader)
         {
             IBZNToken tok;
 
@@ -74,7 +74,7 @@ namespace BZNParser.Reader
             {
                 tok = reader.ReadToken();
                 if (!tok.Validate(null, BinaryFieldType.DATA_CHAR)) throw new Exception("Failed to parse ?/CHAR");
-                UInt32 length = tok.GetUInt8();
+                uint length = tok.GetUInt8();
 
                 if (length > 0)
                 {
@@ -94,7 +94,7 @@ namespace BZNParser.Reader
             IBZNToken tok;
             if (reader.InBinary)
             {
-                UInt32 length = reader.ReadCompressedNumberFromBinary();
+                uint length = reader.ReadCompressedNumberFromBinary();
 
                 if (length > 0)
                 {
@@ -110,7 +110,7 @@ namespace BZNParser.Reader
             return tok.GetString();
         }
         
-        public static string ReadGameObjectClass_BZ2(this BZNStreamReader reader, BZNFileBattlezone parent, string name)
+        public static string ReadGameObjectClass_BZ2(this BZNStreamReader reader, BZNFileBattlezone parent, string name, [System.Runtime.CompilerServices.CallerFilePath] string callerFile = "")
         {
             if (reader.Version < 1145)
             {
@@ -177,21 +177,21 @@ namespace BZNParser.Reader
             {
                 // bufferSize applies in this branch
                 // in
-                return ReadBZ2StringInSized(reader, name, bufferSize);
+                return reader.ReadBZ2StringInSized(name, bufferSize);
             }
             else
             {
                 // inputstring
-                return ReadBZ2InputString(reader, name);
+                return reader.ReadBZ2InputString(name);
             }
         }
         public static void GetAiCmdInfo(this BZNStreamReader reader)
         {
-            UInt32 priority;
-            UInt32 what;
-            Int32 who;
-            UInt32 where;
-            UInt32 param;
+            uint priority;
+            uint what;
+            int who;
+            uint where;
+            uint param;
 
             IBZNToken tok = reader.ReadToken();
             if (!tok.Validate("priority", BinaryFieldType.DATA_LONG)) throw new Exception("Failed to parse priority/LONG");

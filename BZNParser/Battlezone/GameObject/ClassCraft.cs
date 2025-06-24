@@ -8,6 +8,7 @@ using System.Text;
 namespace BZNParser.Battlezone.GameObject
 {
     [ObjectClass(BZNFormat.Battlezone, "craft")]
+    [ObjectClass(BZNFormat.Battlezone2, "boid")]
     public class ClassCraftFactory : IClassFactory
     {
         public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, string PrjID, bool isUser, string classLabel, out Entity? obj, bool create = true)

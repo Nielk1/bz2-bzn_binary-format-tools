@@ -19,6 +19,11 @@ namespace BZNParser.Battlezone.GameObject
         public ClassAssaultTank(string PrjID, bool isUser, string classLabel) : base(PrjID, isUser, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassAssaultTank? obj)
         {
+            if (parent.SaveType != SaveType.BZN)
+            {
+                // turret control
+            }
+
             ClassTrackedVehicle.Hydrate(parent, reader, obj as ClassTrackedVehicle);
         }
     }
