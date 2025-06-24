@@ -11,13 +11,26 @@
     }
     public interface IMalformable
     {
+        public struct MalformationData
+        {
+            public Malformation Type { get; }
+            public string Property { get; }
+            public object[] Fields { get; }
+            public MalformationData(Malformation type, string property, object[] fields)
+            {
+                Type = type;
+                Property = property;
+                Fields = fields;
+            }
+        }
+
         public MalformationManager Malformations { get; }
         public class MalformationManager
         {
             private readonly IMalformable _parent;
-            private readonly Dictionary<string, List<(Malformation, string, object[])>> malformations;
+            private readonly Dictionary<string, List<MalformationData>> malformations;
 
-            public (Malformation, string, object[])[] this[string property]
+            public MalformationData[] this[string property]
             {
                 get
                 {
@@ -25,21 +38,26 @@
                     {
                         return list.ToArray();
                     }
-                    return Array.Empty<(Malformation, string, object[])>();
+                    return Array.Empty<MalformationData>();
                 }
             }
+            public string[] Keys => malformations.Keys.ToArray();
             public MalformationManager(IMalformable parent)
             {
                 _parent = parent;
-                malformations = new Dictionary<string, List<(Malformation, string, object[])>>();
+                malformations = new Dictionary<string, List<MalformationData>>();
             }
             public void Add(Malformation malformation, string property, params object[] fields)
             {
                 if (!malformations.ContainsKey(property))
                 {
-                    malformations[property] = new List<(Malformation, string, object[])>();
+                    malformations[property] = new List<MalformationData>();
                 }
-                malformations[property].Add((malformation, property, fields));
+                malformations[property].Add(new MalformationData(malformation, property, fields));
+            }
+            public void Clear()
+            {
+                malformations.Clear();
             }
         }
     }

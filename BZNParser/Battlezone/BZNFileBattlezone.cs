@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
+using static BZNParser.Reader.IMalformable;
 
 namespace BZNParser.Battlezone
 {
@@ -226,17 +227,29 @@ namespace BZNParser.Battlezone
             if (reader.Format == BZNFormat.Battlezone && SaveType == SaveType.SAVE)
             {
                 reader.Bookmark.Push();
+                Dictionary<string, List<MalformationData>> SavedMalformations = new Dictionary<string, List<MalformationData>>();
                 try
                 {
+                    // Save the current Malformations to restore later in case of failure (consider a Push/Pop scope system for Malformations)
+                    foreach (string key in Malformations.Keys)
+                        SavedMalformations[key] = Malformations[key].ToList();
+
                     Hydrate(reader);
                     reader.Bookmark.Discard();
                 }
                 catch
                 {
+                    // Restore saved Malformations
+                    Malformations.Clear();
+                    foreach (string key in SavedMalformations.Keys)
+                        foreach (var mal in SavedMalformations[key])
+                            Malformations.Add(mal.Type, mal.Property, mal.Fields);
+
                     reader.Bookmark.Pop();
                     SaveType = SaveType.BZN;
+                    LongTermClassLabelLookupCache.Clear();
                     Hydrate(reader);
-                    // Malformation: missionSave wrong
+
                     Malformations.Add(Malformation.INCORRECT, "missionSave", true);
                 }
             }

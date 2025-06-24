@@ -589,7 +589,7 @@ namespace BZNParser.Battlezone.GameObject
             }
             else if (reader.Format == BZNFormat.Battlezone || reader.Format == BZNFormat.BattlezoneN64)
             {
-                if (parent.SaveType == 0)
+                if (parent.SaveType == SaveType.BZN)
                 {
                     if (reader.Format == BZNFormat.Battlezone && (reader.Version == 1001 || reader.Version == 1011 || reader.Version == 1012))
                     {

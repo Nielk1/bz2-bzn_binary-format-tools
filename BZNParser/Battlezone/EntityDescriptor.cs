@@ -342,95 +342,57 @@ namespace BZNParser.Battlezone
                     }
                 }
             }
+            
+            // try every possible object
+            reader.Bookmark.Push();
+                
+            List<(Entity Object, bool Expected, long Next, string Name)> Candidates = new List<(Entity Object, bool Expected, long Next, string Name)>();
 
-            Entity? gameObject = null;
-
+            foreach (var kv in parent.ClassLabelMap.OrderBy(dr => ValidClassLabels != null && ValidClassLabels.Contains(dr.Key) ? 0 : 1).ThenBy(dr => dr.Key))
             {
-                reader.Bookmark.Push();
-                try
+                string classLabel = kv.Key;
+                if (!parent.LongTermClassLabelLookupCache.ContainsKey(obj.PrjID.ToLowerInvariant()) || parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()].Contains(classLabel))
                 {
-                    if (ValidClassLabels != null && ValidClassLabels.Count == 1)
-                    {
-                        string label = ValidClassLabels.First();
-                        IClassFactory classFactory = parent.ClassLabelMap[label];
-                        if (classFactory.Create(parent, reader, obj, label, out gameObject))
+                    if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Count == 0 || ValidClassLabels.Contains(classLabel))
+                        try
                         {
-                            reader.Bookmark.Discard();
-                            return gameObject; // success! Keep the stream position where it is
+                            Entity? tempGameObject;
+                            IClassFactory classFactory = kv.Value;
+                            if (classFactory.Create(parent, reader, obj, classLabel, out tempGameObject) && tempGameObject != null)
+                                if (CheckNext(parent, reader, countLeft - 1, Hints))
+                                    Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLabel) ?? false, reader.Bookmark.Get(), classLabel));
                         }
-                        else
+                        catch
                         {
-                            reader.Bookmark.Pop();
-                            gameObject = null;
                         }
-                    }
-                    else
-                    {
-                        reader.Bookmark.Discard();
-                    }
-                }
-                catch
-                {
-                    // roll back to the start of the object
-                    reader.Bookmark.Pop();
-                    gameObject = null;
+                    reader.Bookmark.Peek();
                 }
             }
+            reader.Bookmark.Pop();
 
-            // if we're here, we failed to load the game object so now recursive hell starts
-            //if (gameObject == null)
+            if (!parent.LongTermClassLabelLookupCache.ContainsKey(obj.PrjID.ToLowerInvariant()))
+                parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()] = new HashSet<string>(Candidates.Select(dr => dr.Name));
+            parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()] = new HashSet<string>(parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()].Intersect(Candidates.Select(dr => dr.Name)));
+
+            if (Candidates.Count > 0)
             {
-                // try every possible object
-                reader.Bookmark.Push();
-                
-                List<(Entity Object, bool Expected, long Next, string Name)> Candidates = new List<(Entity Object, bool Expected, long Next, string Name)>();
+                // limit to only the shortest valid parsings, avoiding issues with objects that overflow over a 2nd object perfectly
+                long minEnd = Candidates.Min(dr => dr.Next);
+                reader.Bookmark.Set(minEnd);
+                Candidates = Candidates.Where(dr => dr.Next == minEnd).ToList();
 
-                foreach (var kv in parent.ClassLabelMap.OrderBy(dr => ValidClassLabels != null && ValidClassLabels.Contains(dr.Key) ? 0 : 1).ThenBy(dr => dr.Key))
+                if (Candidates.Count == 1)
                 {
-                    string classLabel = kv.Key;
-                    if (!parent.LongTermClassLabelLookupCache.ContainsKey(obj.PrjID.ToLowerInvariant()) || parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()].Contains(classLabel))
-                    {
-                        if (!(Hints?.Strict ?? false) || ValidClassLabels == null || ValidClassLabels.Count == 0 || ValidClassLabels.Contains(classLabel))
-                            try
-                            {
-                                Entity? tempGameObject;
-                                IClassFactory classFactory = kv.Value;
-                                if (classFactory.Create(parent, reader, obj, classLabel, out tempGameObject) && tempGameObject != null)
-                                    if (CheckNext(parent, reader, countLeft - 1, Hints))
-                                        Candidates.Add((tempGameObject, ValidClassLabels?.Contains(classLabel) ?? false, reader.Bookmark.Get(), classLabel));
-                            }
-                            catch
-                            {
-                            }
-                        reader.Bookmark.Peek();
-                    }
-                }
-                reader.Bookmark.Pop();
-
-                if (!parent.LongTermClassLabelLookupCache.ContainsKey(obj.PrjID.ToLowerInvariant()))
-                    parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()] = new HashSet<string>(Candidates.Select(dr => dr.Name));
-                parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()] = new HashSet<string>(parent.LongTermClassLabelLookupCache[obj.PrjID.ToLowerInvariant()].Intersect(Candidates.Select(dr => dr.Name)));
-
-                if (Candidates.Count > 0)
-                {
-                    // limit to only the shortest valid parsings, avoiding issues with objects that overflow over a 2nd object perfectly
-                    long minEnd = Candidates.Min(dr => dr.Next);
-                    reader.Bookmark.Set(minEnd);
-                    Candidates = Candidates.Where(dr => dr.Next == minEnd).ToList();
-
-                    if (Candidates.Count == 1)
-                    {
-                        return Candidates[0].Object;
-                    }
-                    else
-                    {
-                        return new MultiClass(obj, Candidates);
-                    }
+                    return Candidates[0].Object;
                 }
                 else
                 {
-                    throw new Exception($"Failed to parse GameObject {obj.PrjID}");
+                    return new MultiClass(obj, Candidates);
                 }
+            }
+            else
+            {
+                throw new Exception($"Failed to parse GameObject {obj.PrjID}");
             }
         }
 
