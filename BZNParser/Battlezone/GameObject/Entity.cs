@@ -11,7 +11,7 @@ namespace BZNParser.Battlezone.GameObject
 
     public class Entity : IMalformable
     {
-        protected BZNGameObjectWrapper preamble;
+        protected EntityDescriptor preamble;
         protected string classLabel;
 
         public string PrjID => preamble.PrjID;
@@ -27,7 +27,7 @@ namespace BZNParser.Battlezone.GameObject
         private readonly IMalformable.MalformationManager _malformationManager;
         public IMalformable.MalformationManager Malformations => _malformationManager;
         public virtual string ClassLabel { get { return classLabel; } }
-        public Entity(BZNGameObjectWrapper preamble, string classLabel)
+        public Entity(EntityDescriptor preamble, string classLabel)
         {
             this.preamble = preamble;
 

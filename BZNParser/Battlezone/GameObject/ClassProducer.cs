@@ -8,7 +8,7 @@ namespace BZNParser.Battlezone.GameObject
 {
     public class ClassProducerFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -31,7 +31,7 @@ namespace BZNParser.Battlezone.GameObject
         //public UInt32 buildDoneTime { get; set; }
         public float buildDoneTime { get; set; }
 
-        public ClassProducer(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassProducer(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassProducer? obj)
         {
             IBZNToken tok;
@@ -39,36 +39,43 @@ namespace BZNParser.Battlezone.GameObject
             if (reader.Format == BZNFormat.Battlezone && reader.Version < 1011)
             {
                 tok = reader.ReadToken();
-                if (!tok.Validate("setAltitude", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse setAltitude/FLOAT");
+                if (!tok.Validate("setAltitude", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse setAltitude/FLOAT");
                 float setAltitude = tok.GetSingle();
             }
 
             if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version != 1042)
             {
                 tok = reader.ReadToken();
-                if (!tok.Validate("timeDeploy", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse timeDeploy/FLOAT");
+                if (!tok.Validate("timeDeploy", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse timeDeploy/FLOAT");
                 if (obj != null) obj.timeDeploy = tok.GetSingle();
 
                 tok = reader.ReadToken();
-                if (!tok.Validate("timeUndeploy", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse timeUndeploy/FLOAT");
+                if (!tok.Validate("timeUndeploy", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse timeUndeploy/FLOAT");
                 if (obj != null) obj.timeUndeploy = tok.GetSingle();
             }
 
             tok = reader.ReadToken();
-            if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR)) throw new Exception("Failed to parse undefptr/PTR");
+            if (!tok.Validate("undefptr", BinaryFieldType.DATA_PTR))
+                throw new Exception("Failed to parse undefptr/PTR");
             if (obj != null) obj.undefptr2 = tok.GetUInt32H(); // powerSource
 
             tok = reader.ReadToken();
-            if (!tok.Validate("state", BinaryFieldType.DATA_VOID)) throw new Exception("Failed to parse state/VOID");
+            if (!tok.Validate("state", BinaryFieldType.DATA_VOID))
+                throw new Exception("Failed to parse state/VOID");
             //state = tok.GetBytes(0, 4); // probably need to reverse for n64
             if (obj != null) obj.state = tok.GetUInt32(); // probably need to reverse for n64
 
             tok = reader.ReadToken();
-            if (!tok.Validate("delayTimer", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse delayTimer/FLOAT");
+            if (!tok.Validate("delayTimer", BinaryFieldType.DATA_FLOAT))
+                throw new Exception("Failed to parse delayTimer/FLOAT");
             if (obj != null) obj.delayTimer = tok.GetSingle();//tok.GetUInt32();
 
             tok = reader.ReadToken();
-            if (!tok.Validate("nextRepair", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse nextRepair/FLOAT");
+            if (!tok.Validate("nextRepair", BinaryFieldType.DATA_FLOAT))
+                throw new Exception("Failed to parse nextRepair/FLOAT");
             if (obj != null) obj.nextRepair = tok.GetSingle();
 
             if (reader.Format == BZNFormat.BattlezoneN64 || reader.Version >= 1006)
@@ -77,18 +84,19 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     tok = reader.ReadToken();
                     UInt16 buildClassItemID = tok.GetUInt16();
-                    if (!BZNFile.BZn64IdMap.ContainsKey(buildClassItemID)) throw new InvalidCastException(string.Format("Cannot convert n64 buildClass enumeration 0x(0:X2} to string buildClass", buildClassItemID));
-                    if (obj != null) obj.buildClass = BZNFile.BZn64IdMap[buildClassItemID];
+                    if (obj != null) obj.buildClass = parent?.Hints?.EnumerationPrjID?[buildClassItemID] ?? string.Format("bzn64prjid_{0,4:X4}", buildClassItemID);
                 }
                 else
                 {
                     tok = reader.ReadToken();
-                    if (!tok.Validate("buildClass", BinaryFieldType.DATA_ID)) throw new Exception("Failed to parse buildClass/ID");
+                    if (!tok.Validate("buildClass", BinaryFieldType.DATA_ID))
+                        throw new Exception("Failed to parse buildClass/ID");
                     if (obj != null) obj.buildClass = tok.GetString();
                 }
 
                 tok = reader.ReadToken();
-                if (!tok.Validate("buildDoneTime", BinaryFieldType.DATA_FLOAT)) throw new Exception("Failed to parse buildDoneTime/FLOAT");
+                if (!tok.Validate("buildDoneTime", BinaryFieldType.DATA_FLOAT))
+                    throw new Exception("Failed to parse buildDoneTime/FLOAT");
                 if (obj != null) obj.buildDoneTime = tok.GetSingle();
                 // BZn64 might be invalid when it has CDCDCDCA here.
 

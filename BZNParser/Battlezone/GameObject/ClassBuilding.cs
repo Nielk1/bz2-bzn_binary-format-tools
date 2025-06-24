@@ -27,7 +27,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "artifact")]
     public class ClassBuildingFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -51,7 +51,7 @@ namespace BZNParser.Battlezone.GameObject
         public bool CLASS_m_AlignsToObject { get; private set; } // Class fields are from the ODF and are readonly
         public bool CLASS_loadAsDummy { get; private set; } // Class fields are from the ODF and are readonly
 
-        public ClassBuilding(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassBuilding(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassBuilding? obj)
         {
             IBZNToken tok;

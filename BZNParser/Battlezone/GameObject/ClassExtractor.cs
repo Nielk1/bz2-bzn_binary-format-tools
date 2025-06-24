@@ -9,7 +9,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "extractor")]
     public class ClassExtractorFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -20,7 +20,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassExtractor : ClassBuilding
     {
-        public ClassExtractor(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassExtractor(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassExtractor? obj)
         {
             IBZNToken tok;

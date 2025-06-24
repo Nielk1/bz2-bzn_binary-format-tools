@@ -4,7 +4,7 @@ namespace BZNParser.Battlezone.GameObject
 {
     public class ClassGrenadeFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -15,7 +15,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassGrenade : ClassRocket
     {
-        public ClassGrenade(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassGrenade(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassGrenade? obj)
         {
             ClassRocket.Hydrate(parent, reader, obj as ClassRocket);

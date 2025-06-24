@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "walker")]
     public class ClassWalker1Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -21,7 +21,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassWalker1 : ClassCraft
     {
-        public ClassWalker1(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassWalker1(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassWalker1? obj)
         {
             if (reader.Version > 1001 && reader.Version < 1026)

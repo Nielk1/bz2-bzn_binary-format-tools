@@ -10,7 +10,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.BattlezoneN64, "constructionrig")]
     public class ClassConstructionRig1Factory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -24,7 +24,7 @@ namespace BZNParser.Battlezone.GameObject
         public Matrix dropMat { get; set; }
         public string dropClass { get; set; }
 
-        public ClassConstructionRig1(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassConstructionRig1(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassConstructionRig1? obj)
         {
             IBZNToken tok;
@@ -39,8 +39,7 @@ namespace BZNParser.Battlezone.GameObject
                 {
                     tok = reader.ReadToken();
                     UInt16 dropClassItemID = tok.GetUInt16();
-                    if (!BZNFile.BZn64IdMap.ContainsKey(dropClassItemID)) throw new InvalidCastException(string.Format("Cannot convert n64 dropClass enumeration 0x(0:X2} to string dropClass", dropClassItemID));
-                    if (obj != null) obj.dropClass = BZNFile.BZn64IdMap[dropClassItemID];
+                    if (obj != null) obj.dropClass = parent?.Hints?.EnumerationPrjID?[dropClassItemID] ?? string.Format("bzn64prjid_{0,4:X4}", dropClassItemID);
                 }
                 else
                 {

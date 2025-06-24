@@ -13,7 +13,7 @@ using System.Reflection.Emit;
 
 namespace BZNParser.Battlezone
 {
-    public class BZNGameObjectWrapper : IMalformable
+    public class EntityDescriptor : IMalformable
     {
         public string PrjID { get; set; }
         public UInt32 seqNo { get; set; }
@@ -30,21 +30,21 @@ namespace BZNParser.Battlezone
 
         private readonly IMalformable.MalformationManager _malformationManager;
         public IMalformable.MalformationManager Malformations => _malformationManager;
-        public BZNGameObjectWrapper()
+        public EntityDescriptor()
         {
             this._malformationManager = new IMalformable.MalformationManager(this);
         }
 
-        public static bool Create(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, out BZNGameObjectWrapper? obj, bool create = true, BattlezoneBZNHints? Hints = null)
+        public static bool Create(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, out EntityDescriptor? obj, bool create = true, BattlezoneBZNHints? Hints = null)
         {
             obj = null;
             if (create)
-                obj = new BZNGameObjectWrapper();
-            BZNGameObjectWrapper.Hydrate(parent, reader, countLeft, obj, Hints);
+                obj = new EntityDescriptor();
+            EntityDescriptor.Hydrate(parent, reader, countLeft, obj, Hints);
             return true;
         }
 
-        public static bool Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BZNGameObjectWrapper? obj, BattlezoneBZNHints? Hints = null)
+        public static bool Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, EntityDescriptor? obj, BattlezoneBZNHints? Hints = null)
         {
             IBZNToken tok;
             if (!reader.InBinary)
@@ -54,14 +54,12 @@ namespace BZNParser.Battlezone
                     throw new Exception("Failed to parse [GameObject]");
             }
 
-            string PrjID = null;
+            string? PrjID = null;
             if (reader.Format == BZNFormat.BattlezoneN64)
             {
                 tok = reader.ReadToken();
                 UInt16 ItemID = tok.GetUInt16();
-                if (!BZNFile.BZn64IdMap.ContainsKey(ItemID))
-                    throw new InvalidCastException(string.Format("Cannot convert n64 PrjID enumeration 0x(0:X2} to string PrjID", ItemID));
-                PrjID = BZNFile.BZn64IdMap[ItemID];
+                PrjID = parent?.Hints?.EnumerationPrjID?[ItemID] ?? string.Format("bzn64prjid_{0,4:X4}", ItemID);
             }
             else if (reader.Format == BZNFormat.Battlezone)
             {
@@ -324,7 +322,7 @@ namespace BZNParser.Battlezone
             return true;
         }
 
-        private static Entity? ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints Hints, BZNGameObjectWrapper obj)
+        private static Entity? ParseGameObject(BZNFileBattlezone parent, BZNStreamReader reader, int countLeft, BattlezoneBZNHints Hints, EntityDescriptor obj)
         {
             List<string>? ValidClassLabels = null;
 
@@ -474,7 +472,7 @@ namespace BZNParser.Battlezone
                     reader.Bookmark.Push();
                     try
                     {
-                        if (BZNGameObjectWrapper.Hydrate(parent, reader, countLeft, null, Hints: Hints))
+                        if (EntityDescriptor.Hydrate(parent, reader, countLeft, null, Hints: Hints))
                         {
                             reader.Bookmark.Pop();
                             return true;

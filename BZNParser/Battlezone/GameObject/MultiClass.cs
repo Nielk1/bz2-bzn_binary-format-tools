@@ -12,7 +12,7 @@ namespace BZNParser.Battlezone.GameObject
         public override string ClassLabel { get { return $"[{string.Join(',', Candidates.Select(dr => dr.Object.ClassLabel))}]"; } }
 
 
-        public MultiClass(BZNGameObjectWrapper preamble, List<(Entity Object, bool Expected, long Next, string Name)> candidates) : base(preamble, null)
+        public MultiClass(EntityDescriptor preamble, List<(Entity Object, bool Expected, long Next, string Name)> candidates) : base(preamble, null)
         {
             this.Candidates = candidates;
         }

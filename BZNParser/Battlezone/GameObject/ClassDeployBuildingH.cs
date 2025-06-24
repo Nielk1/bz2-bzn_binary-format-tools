@@ -6,7 +6,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "deploybuildingh")]
     public class ClassDeployBuildingHFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -17,7 +17,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassDeployBuildingH : ClassDeployable
     {
-        public ClassDeployBuildingH(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassDeployBuildingH(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
 
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassDeployBuildingH? obj)
         {

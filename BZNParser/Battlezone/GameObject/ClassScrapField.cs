@@ -7,7 +7,7 @@ namespace BZNParser.Battlezone.GameObject
     [ObjectClass(BZNFormat.Battlezone2, "scrapfield")]
     public class ClassScrapFieldFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -18,7 +18,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassScrapField : ClassBuilding
     {
-        public ClassScrapField(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassScrapField(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassScrapField? obj)
         {
             ClassBuilding.Hydrate(parent, reader, obj as ClassBuilding);

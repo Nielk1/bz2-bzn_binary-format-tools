@@ -39,7 +39,7 @@ namespace BZNParser.Battlezone.GameObject
         public string curPilot { get; set; }
         public Int32 perceivedTeam { get; set; }
 
-        public ClassGameObject(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel)
+        public ClassGameObject(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel)
         {
         }
 
@@ -684,8 +684,7 @@ namespace BZNParser.Battlezone.GameObject
             {
                 tok = reader.ReadToken();
                 UInt16 curPilotID = tok.GetUInt16();
-                if (!BZNFile.BZn64IdMap.ContainsKey(curPilotID)) throw new InvalidCastException(string.Format("Cannot convert n64 curPilotID enumeration 0x(0:X2} to string curPilotID", curPilotID));
-                if (obj != null) obj.curPilot = BZNFile.BZn64IdMap[curPilotID];
+                if (obj != null) obj.curPilot = parent?.Hints?.EnumerationPrjID?[curPilotID] ?? string.Format("bzn64prjid_{0,4:X4}", curPilotID);
             }
             if (reader.Format == BZNFormat.Battlezone && reader.Version > 1016)
             {

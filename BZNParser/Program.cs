@@ -1,6 +1,8 @@
 ﻿using BZNParser.Battlezone;
 using BZNParser.Reader;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 
@@ -9,12 +11,25 @@ namespace BZNParser
     internal class Program
     {
         record struct BznType(int version, bool binary, BZNFormat format);
+        static bool TryParseFlexibleUInt16(string input, out ushort value)
+        {
+            if (input.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return UInt16.TryParse(
+                    input.Substring(2),
+                    NumberStyles.AllowHexSpecifier,
+                    CultureInfo.InvariantCulture,
+                    out value
+                );
+            }
+            return UInt16.TryParse(input, out value);
+        }
         static void Main(string[] args)
         {
             BattlezoneBZNHints BZ1Hints = new BattlezoneBZNHints();
             BZ1Hints.Strict = true;
             BZ1Hints.ClassLabels = new Dictionary<string, HashSet<string>>();
-            if (File.Exists("ClassLabels_BZ1.txt"))
+            if (File.Exists("BZ1_ClassLabels.txt"))
             {
                 HashSet<string> ValidClassLabelsBZ1 = new HashSet<string>();
                 foreach (Type type in typeof(BZNFileBattlezone).Assembly.GetTypes())
@@ -25,7 +40,7 @@ namespace BZNParser
                             ValidClassLabelsBZ1.Add(attr.ClassName);
                 }
 
-                foreach (string line in File.ReadAllLines("ClassLabels_BZ1.txt"))
+                foreach (string line in File.ReadAllLines("BZ1_ClassLabels.txt"))
                 {
                     string[] parts = line.Split(new char[] { '\t' }, 3);
                     if (parts.Length == 2 || parts.Length == 3)
@@ -40,13 +55,36 @@ namespace BZNParser
                     }
                 }
             }
+            if (File.Exists("BZN64_Enum_PrjID.txt"))
+            {
+                Dictionary<UInt16, string?> EnumPrjID = new Dictionary<UInt16, string?>();
+
+                foreach (string line in File.ReadAllLines("BZN64_Enum_PrjID.txt"))
+                {
+                    string[] parts = line.Split(new char[] { '\t' }, 3);
+                    if (parts.Length == 2 || parts.Length == 3)
+                    {
+                        string keyS = parts[0].Trim();
+                        UInt16 key;
+                        if (TryParseFlexibleUInt16(keyS, out key))
+                        {
+                            string? value = parts[1].Trim();
+                            if (value.Length == 0)
+                                value = null;
+                            EnumPrjID[key] = value;
+                        }
+                    }
+                }
+                if (EnumPrjID.Any())
+                    BZ1Hints.EnumerationPrjID = EnumPrjID;
+            }
 
             BattlezoneBZNHints BZ2Hints = new BattlezoneBZNHints();
             BZ2Hints.Strict = true;
             BZ2Hints.ClassLabels = new Dictionary<string, HashSet<string>>();
-            if (File.Exists("ClassLabels_BZ2.txt"))
+            if (File.Exists("BZ2_ClassLabels.txt"))
             {
-                foreach (string line in File.ReadAllLines("ClassLabels_BZ2.txt"))
+                foreach (string line in File.ReadAllLines("BZ2_ClassLabels.txt"))
                 {
                     string[] parts = line.Split(new char[] { '\t' }, 3);
                     if (parts.Length == 2 || parts.Length == 3)

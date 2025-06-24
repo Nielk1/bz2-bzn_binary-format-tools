@@ -9,7 +9,7 @@ namespace BZNParser.Battlezone.GameObject
     // BZ2
     public class ClassTrackedVehicleFactory : IClassFactory
     {
-        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, BZNGameObjectWrapper preamble, string classLabel, out Entity? obj, bool create = true)
+        public bool Create(BZNFileBattlezone parent, BZNStreamReader reader, EntityDescriptor preamble, string classLabel, out Entity? obj, bool create = true)
         {
             obj = null;
             if (create)
@@ -20,7 +20,7 @@ namespace BZNParser.Battlezone.GameObject
     }
     public class ClassTrackedVehicle : ClassCraft
     {
-        public ClassTrackedVehicle(BZNGameObjectWrapper preamble, string classLabel) : base(preamble, classLabel) { }
+        public ClassTrackedVehicle(EntityDescriptor preamble, string classLabel) : base(preamble, classLabel) { }
         public static void Hydrate(BZNFileBattlezone parent, BZNStreamReader reader, ClassTrackedVehicle? obj)
         {
             IBZNToken tok;

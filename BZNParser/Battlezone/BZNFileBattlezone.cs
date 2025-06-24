@@ -26,10 +26,11 @@ namespace BZNParser.Battlezone
         /// </summary>
         public bool Strict { get; set; }
         public Dictionary<string, HashSet<string>>? ClassLabels { get; set; }
+        public Dictionary<UInt16, string?>? EnumerationPrjID { get; set; }
     }
     public class BZNFileBattlezone : IMalformable
     {
-        private BattlezoneBZNHints? Hints;
+        public BattlezoneBZNHints? Hints;
         public SaveType SaveType { get; private set; }
 
 
@@ -256,15 +257,15 @@ namespace BZNParser.Battlezone
             Int32 CountItems = tok.GetInt32();
             Console.WriteLine($"size: {CountItems}");
 
-            BZNGameObjectWrapper[] GameObjects = new BZNGameObjectWrapper[CountItems];
+            EntityDescriptor[] GameObjects = new EntityDescriptor[CountItems];
 
             int CntPad = CountItems.ToString().Length;
             Dictionary<string, HashSet<string>> LongTermClassLabelLookupCache = new Dictionary<string, HashSet<string>>();
             for (int gameObjectCounter = 0; gameObjectCounter < CountItems; gameObjectCounter++)
             {
                 //GameObjects[gameObjectCounter] = new BZNGameObjectWrapper(reader, (gameObjectCounter + 1) == CountItems);
-                BZNGameObjectWrapper? tmpObj;
-                if (BZNGameObjectWrapper.Create(this, reader, CountItems - gameObjectCounter, out tmpObj, true, Hints: Hints) && tmpObj != null)
+                EntityDescriptor? tmpObj;
+                if (EntityDescriptor.Create(this, reader, CountItems - gameObjectCounter, out tmpObj, true, Hints: Hints) && tmpObj != null)
                 {
                     GameObjects[gameObjectCounter] = tmpObj;
                     Console.WriteLine($"GameObject[{gameObjectCounter.ToString().PadLeft(CntPad)}]: {GameObjects[gameObjectCounter].seqNo.ToString("X8")} {GameObjects[gameObjectCounter].PrjID.ToString().PadRight(16)} {(GameObjects[gameObjectCounter].gameObject.ClassLabel ?? string.Empty).PadRight(16)} {GameObjects[gameObjectCounter].gameObject.ToString().Replace(@"BZNParser.Battlezone.GameObject.", string.Empty)}");
