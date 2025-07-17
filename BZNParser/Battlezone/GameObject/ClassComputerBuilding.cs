@@ -43,8 +43,8 @@ namespace BZNParser.Battlezone.GameObject
                 // realy hackery here, but hopefully no BZNs exist with this
                 if (obj != null)
                 {
-                    obj.Malformations.Add(Malformation.NOTIMPLEMENTED, "Nozzle1_Handle");
-                    obj.Malformations.Add(Malformation.NOTIMPLEMENTED, "Nozzle2_Handle");
+                    obj.Malformations.Add(Malformation.NOT_IMPLEMENTED, "Nozzle1_Handle");
+                    obj.Malformations.Add(Malformation.NOT_IMPLEMENTED, "Nozzle2_Handle");
                 }
             }
         }

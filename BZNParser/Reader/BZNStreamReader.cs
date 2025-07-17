@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
@@ -152,6 +153,15 @@ namespace BZNParser.Reader
 
         public string? Filename { get; private set; }
 
+
+
+
+        // TODO Battlezone BZNs should always end in CRLF, though we have seen some that don't so we need to figure out if they're damaged or not
+        // It is unknown if this matters for non Battlezone BZNs
+        public long CountCR { get; private set; }
+        public long CountLF { get; private set; }
+        public long CountCRLF { get; private set; }
+
         public BZNStreamReader(Stream stream, string? filename = null)
         {
             this.Filename = filename;
@@ -163,6 +173,10 @@ namespace BZNParser.Reader
             Format = BZNFormat.Battlezone;
 
             this.BaseStream = stream;
+
+            CountCR = 0;
+            CountLF = 0;
+            CountCRLF = 0;
 
             long position = stream.Position;
             BinaryReader reader = new BinaryReader(stream);
@@ -704,8 +718,16 @@ namespace BZNParser.Reader
                 if (character == 0x0D)
                 {
                     // 1022, 1033, 1037, 1038, 1048, 1105, 1108, 1018, 1128, 1034, 1135, 1137, 1143, 1045, 1148, 1149, 1154, 1169, 1171, 1179, 1180, 1182, 1183, 1186, 1187, 1188, 1192, 2016
+                    
+                    CountCR++;
 
                     int nextBytes = fileStream.ReadByte(); // 0x0A
+
+                    if (nextBytes == 0x0A)
+                    {
+                        CountLF++;
+                        CountCRLF++;
+                    }
 
                     //if (nextBytes != 0x0A)
                     //{
@@ -731,6 +753,9 @@ namespace BZNParser.Reader
                 else if (character == 0x0A)
                 {
                     // 1045
+
+                    // TODO this is likely a bug in the BZN file as it should always be CRLF, but this is just LF which is invalid
+                    CountLF++;
 
                     // strange, how is this even possible, maybe only BZ1?
                     if (Version <= 1180 && idx == 4095)

@@ -3,14 +3,17 @@
     public enum Malformation
     {
         UNKNOWN = 0,
-        INCOMPAT,       // fieldName                 // Not loadable by game
-        MISINTERPRET,   // fieldName, interpretedAs  // Misinterpreted by game but thus is loadable
-        OVERCOUNT,      // fieldName                 // Too many objects of this type, maximum may have changed
-        NOTIMPLEMENTED, // fieldName                 // Field not implemented, but it probably won't break the BZN read
-        INCORRECT,      // fieldName, incorrectValue // Value is incorrect and has been corrected
+        INCOMPAT,        // ?????????                         // Not loadable by game
+        MISINTERPRET,    // <fieldName>,     <interpretedAs>  // Misinterpreted by game but thus is loadable
+        OVERCOUNT,       // <fieldName>                       // Too many objects of this type, maximum may have changed
+        NOT_IMPLEMENTED, // <fieldName>                       // Field not implemented, but it probably won't break the BZN read
+        INCORRECT,       // <fieldName>,     <incorrectValue> // Value is incorrect and has been corrected
+        LINE_ENDING,     // MAL_LINE_ENDING, <incorrectValue> // Line ending is incorrect, "CR" for all "CR"s, "LF" for all "LF"s, "?" for other counts
     }
     public interface IMalformable
     {
+        public const string MAL_LINE_ENDING = "ALL:LINE_ENDING";
+
         public struct MalformationData
         {
             public Malformation Type { get; }
@@ -58,7 +61,7 @@
             }
             public void Push()
             {
-                malformations.Push(new Dictionary<string, List<MalformationData>>());
+                 malformations.Push(new Dictionary<string, List<MalformationData>>());
             }
             public void Pop()
             {

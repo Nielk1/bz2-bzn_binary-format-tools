@@ -71,8 +71,26 @@ namespace BZNParser.Battlezone
                             ClassLabelMap[attr.ClassName] = (IClassFactory)Activator.CreateInstance(type)!;
             }
 
-
-
+            // extra info to print at start and end
+            {
+                Console.WriteLine($"---------------- START READER INFO ----------------");
+                Console.WriteLine($"StartBinary: {reader.StartBinary}");
+                Console.WriteLine($"HasBinary: {reader.HasBinary}");
+                Console.WriteLine($"InBinary: {reader.InBinary}");
+                Console.WriteLine($"StartBinary: {reader.StartBinary}");
+                Console.WriteLine($"IsBigEndian: {reader.IsBigEndian}");
+                Console.WriteLine($"TypeSize: {reader.TypeSize}");
+                Console.WriteLine($"SizeSize: {reader.SizeSize}");
+                Console.WriteLine($"Version: {reader.Version}");
+                Console.WriteLine($"AlignmentBytes: {reader.AlignmentBytes}");
+                Console.WriteLine($"Format: {reader.Format}");
+                Console.WriteLine($"QuoteStrings: {reader.QuoteStrings}");
+                Console.WriteLine($"Filename: {reader.Filename}");
+                Console.WriteLine($"CountCR: {reader.CountCR}");
+                Console.WriteLine($"CountLF: {reader.CountLF}");
+                Console.WriteLine($"CountCRLF: {reader.CountCRLF}");
+                Console.WriteLine($"----------------- END READER INFO -----------------");
+            }
 
             IBZNToken tok;
 
@@ -250,6 +268,44 @@ namespace BZNParser.Battlezone
             else
             {
                 Hydrate(reader);
+            }
+
+            // extra info to print at start and end
+            {
+                Console.WriteLine($"---------------- START READER INFO ----------------");
+                Console.WriteLine($"StartBinary: {reader.StartBinary}");
+                Console.WriteLine($"HasBinary: {reader.HasBinary}");
+                Console.WriteLine($"InBinary: {reader.InBinary}");
+                Console.WriteLine($"StartBinary: {reader.StartBinary}");
+                Console.WriteLine($"IsBigEndian: {reader.IsBigEndian}");
+                Console.WriteLine($"TypeSize: {reader.TypeSize}");
+                Console.WriteLine($"SizeSize: {reader.SizeSize}");
+                Console.WriteLine($"Version: {reader.Version}");
+                Console.WriteLine($"AlignmentBytes: {reader.AlignmentBytes}");
+                Console.WriteLine($"Format: {reader.Format}");
+                Console.WriteLine($"QuoteStrings: {reader.QuoteStrings}");
+                Console.WriteLine($"Filename: {reader.Filename}");
+                Console.WriteLine($"CountCR: {reader.CountCR}");
+                Console.WriteLine($"CountLF: {reader.CountLF}");
+                Console.WriteLine($"CountCRLF: {reader.CountCRLF}");
+                Console.WriteLine($"----------------- END READER INFO -----------------");
+            }
+
+            // Battlezone requires CRLF for ASCII BZN portions
+            if (reader.CountLF != reader.CountCR || reader.CountCR != reader.CountCRLF)
+            {
+                if (reader.CountCR == 0 && reader.CountLF > 0)
+                {
+                    Malformations.Add(Malformation.LINE_ENDING, MAL_LINE_ENDING, "LF");
+                }
+                else if (reader.CountLF == 0 && reader.CountCR > 0)
+                {
+                    Malformations.Add(Malformation.LINE_ENDING, MAL_LINE_ENDING, "CR");
+                }
+                else
+                {
+                    Malformations.Add(Malformation.LINE_ENDING, MAL_LINE_ENDING, "?");
+                }
             }
         }
 
